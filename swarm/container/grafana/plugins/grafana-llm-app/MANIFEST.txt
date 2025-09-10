@@ -1,0 +1,35 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+{
+  "manifestVersion": "2.0.0",
+  "signatureType": "grafana",
+  "signedByOrg": "grafana",
+  "signedByOrgName": "Grafana Labs",
+  "plugin": "grafana-llm-app",
+  "version": "0.22.8",
+  "time": 1756909528656,
+  "keyId": "7e4d0c6a708866e7",
+  "files": {
+    "LICENSE": "c5accbbd8546e94c34aed24afe689a617627d18eed5a6c48277e48db57c23851",
+    "img/logo.svg": "ae787a336c2bdaa945116b895299fa43134226dbad64a45cf6901d7b0d8d870f",
+    "img/screenshot-configuration.png": "fd6af62e5ac9c3073dae314b64248cd6fba46263ea88d40e9531e8fcf86b70cd",
+    "gpx_llm_linux_arm64": "e92e2fca85cd28c7e3893544ca01b912eb77db3c6fc55539a8a40e3219ffa3c5",
+    "CHANGELOG.md": "d63f82bebb5b56fdb7bea251fc45e09a2688a5a66b4a9c990d35b2bf90256623",
+    "module.js": "116b9aa82fa2bf9ba1fa71d68027dcd23e80fd01a9628c9d2a828706f7b73c51",
+    "module.js.map": "945d8eb497a06e287d928946359f71e386790bcd38404c663831a8d7fb042f00",
+    "go_plugin_build_manifest": "5dd09d38712e690f5829bae23d704afcab5cf1a00058ed59c950ec44e1eb439c",
+    "plugin.json": "1a4888f896702c5b5494270ee256b78c136f1c5df3b4a6faf0dc016404116201",
+    "README.md": "77d195c7da17d135c91319d879a7822863b1ec7bc7b7dd2cc3f3248bf4df505f"
+  }
+}
+-----BEGIN PGP SIGNATURE-----
+
+wsA/BAETCgBtBYJouE/YCZB+TQxqcIhm50UUAAAAAAAcACBzYWx0QG5vdGF0
+aW9ucy5vcGVucGdwanMub3JnECpAjLCbhc3HehrXwRPQlCCQMpuUdxT5m8qK
+cFLGyTsWIQTzOyW2kQdOhGNlcPN+TQxqcIhm5wAAZwMCCQGToLv4yfvCrU1W
+iJqp260nJWyxZ5HrVpwe5cvMYo6lCtCGJ49WU2QC8vUgwhRAsWM7uwSgXUy5
+17sWVE6aVOGM/QIJAbF9Bamc/uvAMkBnuiA/uw5FXuy3oHj+JyyjblUzbCol
+HxGosB3F5G22bbMAdMx8zae8lwnkmWdr+OdEAp7mJ7qf
+=5t8H
+-----END PGP SIGNATURE-----
