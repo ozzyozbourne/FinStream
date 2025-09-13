@@ -1,0 +1,503 @@
+# db/changelog/002-insert-default-stocks.yaml
+databaseChangeLog:
+  - changeSet:
+      id: 005-insert-technology-stocks
+      author: finstream
+      comment: Insert Technology sector stocks with default values
+      changes:
+        - insert:
+            tableName: stocks
+            columns:
+              - column:
+                  name: symbol
+                  value: AAPL
+              - column:
+                  name: name
+                  value: Apple Inc.
+              - column:
+                  name: sector
+                  value: Technology
+              - column:
+                  name: starting_price
+                  valueNumeric: 175.50
+              - column:
+                  name: current_price
+                  valueNumeric: 175.50
+              - column:
+                  name: volatility
+                  valueNumeric: 0.020
+              - column:
+                  name: market_cap
+                  valueNumeric: 2800000000000
+              - column:
+                  name: shares_outstanding
+                  valueNumeric: 15943600000
+              - column:
+                  name: exchange
+                  value: NASDAQ
+
+        - insert:
+            tableName: stocks
+            columns:
+              - column:
+                  name: symbol
+                  value: GOOGL
+              - column:
+                  name: name
+                  value: Alphabet Inc.
+              - column:
+                  name: sector
+                  value: Technology
+              - column:
+                  name: starting_price
+                  valueNumeric: 2450.75
+              - column:
+                  name: current_price
+                  valueNumeric: 2450.75
+              - column:
+                  name: volatility
+                  valueNumeric: 0.020
+              - column:
+                  name: market_cap
+                  valueNumeric: 1800000000000
+              - column:
+                  name: shares_outstanding
+                  valueNumeric: 735000000
+              - column:
+                  name: exchange
+                  value: NASDAQ
+
+        - insert:
+            tableName: stocks
+            columns:
+              - column:
+                  name: symbol
+                  value: MSFT
+              - column:
+                  name: name
+                  value: Microsoft Corporation
+              - column:
+                  name: sector
+                  value: Technology
+              - column:
+                  name: starting_price
+                  valueNumeric: 325.20
+              - column:
+                  name: current_price
+                  valueNumeric: 325.20
+              - column:
+                  name: volatility
+                  valueNumeric: 0.020
+              - column:
+                  name: market_cap
+                  valueNumeric: 2400000000000
+              - column:
+                  name: shares_outstanding
+                  valueNumeric: 7380000000
+              - column:
+                  name: exchange
+                  value: NASDAQ
+
+        - insert:
+            tableName: stocks
+            columns:
+              - column:
+                  name: symbol
+                  value: META
+              - column:
+                  name: name
+                  value: Meta Platforms Inc.
+              - column:
+                  name: sector
+                  value: Technology
+              - column:
+                  name: starting_price
+                  valueNumeric: 280.90
+              - column:
+                  name: current_price
+                  valueNumeric: 280.90
+              - column:
+                  name: volatility
+                  valueNumeric: 0.030
+              - column:
+                  name: market_cap
+                  valueNumeric: 750000000000
+              - column:
+                  name: shares_outstanding
+                  valueNumeric: 2670000000
+              - column:
+                  name: exchange
+                  value: NASDAQ
+
+        - insert:
+            tableName: stocks
+            columns:
+              - column:
+                  name: symbol
+                  value: NVDA
+              - column:
+                  name: name
+                  value: NVIDIA Corporation
+              - column:
+                  name: sector
+                  value: Technology
+              - column:
+                  name: starting_price
+                  valueNumeric: 420.15
+              - column:
+                  name: current_price
+                  valueNumeric: 420.15
+              - column:
+                  name: volatility
+                  valueNumeric: 0.030
+              - column:
+                  name: market_cap
+                  valueNumeric: 1000000000000
+              - column:
+                  name: shares_outstanding
+                  valueNumeric: 2470000000
+              - column:
+                  name: exchange
+                  value: NASDAQ
+
+        - insert:
+            tableName: stocks
+            columns:
+              - column:
+                  name: symbol
+                  value: ADBE
+              - column:
+                  name: name
+                  value: Adobe Inc.
+              - column:
+                  name: sector
+                  value: Technology
+              - column:
+                  name: starting_price
+                  valueNumeric: 485.90
+              - column:
+                  name: current_price
+                  valueNumeric: 485.90
+              - column:
+                  name: volatility
+                  valueNumeric: 0.025
+              - column:
+                  name: market_cap
+                  valueNumeric: 230000000000
+              - column:
+                  name: shares_outstanding
+                  valueNumeric: 473000000
+              - column:
+                  name: exchange
+                  value: NASDAQ
+
+  - changeSet:
+      id: 006-insert-consumer-stocks
+      author: finstream
+      comment: Insert Consumer sector stocks
+      changes:
+        - insert:
+            tableName: stocks
+            columns:
+              - column:
+                  name: symbol
+                  value: AMZN
+              - column:
+                  name: name
+                  value: Amazon.com Inc.
+              - column:
+                  name: sector
+                  value: Consumer Discretionary
+              - column:
+                  name: starting_price
+                  valueNumeric: 3100.00
+              - column:
+                  name: current_price
+                  valueNumeric: 3100.00
+              - column:
+                  name: volatility
+                  valueNumeric: 0.025
+              - column:
+                  name: market_cap
+                  valueNumeric: 1600000000000
+              - column:
+                  name: shares_outstanding
+                  valueNumeric: 516000000
+              - column:
+                  name: exchange
+                  value: NASDAQ
+
+        - insert:
+            tableName: stocks
+            columns:
+              - column:
+                  name: symbol
+                  value: TSLA
+              - column:
+                  name: name
+                  value: Tesla Inc.
+              - column:
+                  name: sector
+                  value: Consumer Discretionary
+              - column:
+                  name: starting_price
+                  valueNumeric: 850.25
+              - column:
+                  name: current_price
+                  valueNumeric: 850.25
+              - column:
+                  name: volatility
+                  valueNumeric: 0.030
+              - column:
+                  name: market_cap
+                  valueNumeric: 850000000000
+              - column:
+                  name: shares_outstanding
+                  valueNumeric: 1000000000
+              - column:
+                  name: exchange
+                  value: NASDAQ
+
+        - insert:
+            tableName: stocks
+            columns:
+              - column:
+                  name: symbol
+                  value: HD
+              - column:
+                  name: name
+                  value: Home Depot Inc.
+              - column:
+                  name: sector
+                  value: Consumer Discretionary
+              - column:
+                  name: starting_price
+                  valueNumeric: 315.75
+              - column:
+                  name: current_price
+                  valueNumeric: 315.75
+              - column:
+                  name: volatility
+                  valueNumeric: 0.020
+              - column:
+                  name: market_cap
+                  valueNumeric: 330000000000
+              - column:
+                  name: shares_outstanding
+                  valueNumeric: 1045000000
+              - column:
+                  name: exchange
+                  value: NYSE
+
+        - insert:
+            tableName: stocks
+            columns:
+              - column:
+                  name: symbol
+                  value: DIS
+              - column:
+                  name: name
+                  value: Walt Disney Co.
+              - column:
+                  name: sector
+                  value: Communication Services
+              - column:
+                  name: starting_price
+                  valueNumeric: 95.40
+              - column:
+                  name: current_price
+                  valueNumeric: 95.40
+              - column:
+                  name: volatility
+                  valueNumeric: 0.025
+              - column:
+                  name: market_cap
+                  valueNumeric: 175000000000
+              - column:
+                  name: shares_outstanding
+                  valueNumeric: 1830000000
+              - column:
+                  name: exchange
+                  value: NYSE
+
+  - changeSet:
+      id: 007-insert-financial-healthcare-stocks
+      author: finstream
+      comment: Insert Financial and Healthcare sector stocks
+      changes:
+        - insert:
+            tableName: stocks
+            columns:
+              - column:
+                  name: symbol
+                  value: JPM
+              - column:
+                  name: name
+                  value: JPMorgan Chase & Co.
+              - column:
+                  name: sector
+                  value: Financial Services
+              - column:
+                  name: starting_price
+                  valueNumeric: 145.80
+              - column:
+                  name: current_price
+                  valueNumeric: 145.80
+              - column:
+                  name: volatility
+                  valueNumeric: 0.015
+              - column:
+                  name: market_cap
+                  valueNumeric: 430000000000
+              - column:
+                  name: shares_outstanding
+                  valueNumeric: 2950000000
+              - column:
+                  name: exchange
+                  value: NYSE
+
+        - insert:
+            tableName: stocks
+            columns:
+              - column:
+                  name: symbol
+                  value: V
+              - column:
+                  name: name
+                  value: Visa Inc.
+              - column:
+                  name: sector
+                  value: Financial Services
+              - column:
+                  name: starting_price
+                  valueNumeric: 230.60
+              - column:
+                  name: current_price
+                  valueNumeric: 230.60
+              - column:
+                  name: volatility
+                  valueNumeric: 0.015
+              - column:
+                  name: market_cap
+                  valueNumeric: 500000000000
+              - column:
+                  name: shares_outstanding
+                  valueNumeric: 2170000000
+              - column:
+                  name: exchange
+                  value: NYSE
+
+        - insert:
+            tableName: stocks
+            columns:
+              - column:
+                  name: symbol
+                  value: BAC
+              - column:
+                  name: name
+                  value: Bank of America Corp.
+              - column:
+                  name: sector
+                  value: Financial Services
+              - column:
+                  name: starting_price
+                  valueNumeric: 32.85
+              - column:
+                  name: current_price
+                  valueNumeric: 32.85
+              - column:
+                  name: volatility
+                  valueNumeric: 0.015
+              - column:
+                  name: market_cap
+                  valueNumeric: 270000000000
+              - column:
+                  name: shares_outstanding
+                  valueNumeric: 8220000000
+              - column:
+                  name: exchange
+                  value: NYSE
+
+        - insert:
+            tableName: stocks
+            columns:
+              - column:
+                  name: symbol
+                  value: JNJ
+              - column:
+                  name: name
+                  value: Johnson & Johnson
+              - column:
+                  name: sector
+                  value: Healthcare
+              - column:
+                  name: starting_price
+                  valueNumeric: 165.45
+              - column:
+                  name: current_price
+                  valueNumeric: 165.45
+              - column:
+                  name: volatility
+                  valueNumeric: 0.010
+              - column:
+                  name: market_cap
+                  valueNumeric: 435000000000
+              - column:
+                  name: shares_outstanding
+                  valueNumeric: 2630000000
+              - column:
+                  name: exchange
+                  value: NYSE
+
+        - insert:
+            tableName: stocks
+            columns:
+              - column:
+                  name: symbol
+                  value: PG
+              - column:
+                  name: name
+                  value: Procter & Gamble Co.
+              - column:
+                  name: sector
+                  value: Consumer Staples
+              - column:
+                  name: starting_price
+                  valueNumeric: 155.25
+              - column:
+                  name: current_price
+                  valueNumeric: 155.25
+              - column:
+                  name: volatility
+                  valueNumeric: 0.010
+              - column:
+                  name: market_cap
+                  valueNumeric: 370000000000
+              - column:
+                  name: shares_outstanding
+                  valueNumeric: 2380000000
+              - column:
+                  name: exchange
+                  value: NYSE
+
+  - changeSet:
+      id: 008-insert-market-session-today
+      author: finstream
+      comment: Insert today's market session
+      changes:
+        - insert:
+            tableName: market_sessions
+            columns:
+              - column:
+                  name: session_date
+                  valueComputed: CURRENT_DATE
+              - column:
+                  name: market_open
+                  valueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: is_trading_day
+                  valueBoolean: true
+              - column:
+                  name: session_type
+                  value: REGULAR
+
