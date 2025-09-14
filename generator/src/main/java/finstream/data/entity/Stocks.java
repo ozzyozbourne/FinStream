@@ -31,7 +31,7 @@ public class Stocks {
     @Column(name = "starting_price", nullable = false, precision = 12, scale = 4)
     public BigDecimal startingPrice;
 
-    @Column(name = "current_price", precision = 12, scale = 4)
+    @Column(name = "current_price", nullable = false, precision = 12, scale = 4)
     public BigDecimal currentPrice;
 
     @Column(nullable = false, precision = 12, scale = 4)
@@ -40,10 +40,10 @@ public class Stocks {
     @Column(nullable = false)
     public Boolean active = true;
 
-    @Column(name = "market_cap")
+    @Column(name = "market_cap", nullable = false)
     public Long marketCap;
 
-    @Column(name = "shares_outstanding")
+    @Column(name = "shares_outstanding", nullable = false)
     public Long sharesOutstanding;
 
     @Enumerated(EnumType.STRING)

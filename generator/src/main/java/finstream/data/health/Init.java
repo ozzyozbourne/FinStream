@@ -9,6 +9,6 @@ import org.eclipse.microprofile.health.Startup;
 final class Init implements AsyncHealthCheck {
     @Override
     public Uni<HealthCheckResponse> call() {
-        return Uni.createFrom().item(HealthCheckResponse.named("One").up().withData("foo", "1").withData("bar", "1").build());
+        return Uni.createFrom().item(HealthCheckResponse.named("Generator").up().build());
     }
 }
