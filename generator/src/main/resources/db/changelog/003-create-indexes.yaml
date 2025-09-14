@@ -1,0 +1,151 @@
+# db/changelog/003-create-indexes.yaml
+databaseChangeLog:
+  - changeSet:
+      id: 009-create-market-events-indexes
+      author: finstream
+      comment: Create optimized indexes for market events time-series queries
+      changes:
+        - createIndex:
+            indexName: idx_market_events_symbol_timestamp
+            tableName: market_events
+            columns:
+              - column:
+                  name: symbol
+              - column:
+                  name: timestamp
+
+        - createIndex:
+            indexName: idx_market_events_timestamp
+            tableName: market_events
+            columns:
+              - column:
+                  name: timestamp
+
+        - createIndex:
+            indexName: idx_market_events_event_type_timestamp
+            tableName: market_events
+            columns:
+              - column:
+                  name: event_type
+              - column:
+                  name: timestamp
+
+        - createIndex:
+            indexName: idx_market_events_sequence_number
+            tableName: market_events
+            columns:
+              - column:
+                  name: sequence_number
+
+        - sql:
+            sql: CREATE INDEX idx_market_events_payload_gin ON market_events USING gin (event_payload);
+            comment: GIN index for JSONB payload queries
+
+        - createIndex:
+            indexName: idx_market_events_symbol_event_type
+            tableName: market_events
+            columns:
+              - column:
+                  name: symbol
+              - column:
+                  name: event_type
+
+  - changeSet:
+      id: 010-create-stocks-indexes
+      author: finstream
+      comment: Create indexes for stocks table
+      changes:
+        - createIndex:
+            indexName: idx_stocks_sector
+            tableName: stocks
+            columns:
+              - column:
+                  name: sector
+
+        - createIndex:
+            indexName: idx_stocks_active
+            tableName: stocks
+            columns:
+              - column:
+                  name: active
+
+        - createIndex:
+            indexName: idx_stocks_exchange
+            tableName: stocks
+            columns:
+              - column:
+                  name: exchange
+
+        - createIndex:
+            indexName: idx_stocks_active_sector
+            tableName: stocks
+            columns:
+              - column:
+                  name: active
+              - column:
+                  name: sector
+
+  - changeSet:
+      id: 011-create-foreign-keys
+      author: finstream
+      comment: Create foreign key relationships
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: market_events
+            baseColumnNames: symbol
+            referencedTableName: stocks
+            referencedColumnNames: symbol
+            constraintName: fk_market_events_symbol
+            onDelete: CASCADE
+            onUpdate: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: event_sequences
+            baseColumnNames: symbol
+            referencedTableName: stocks
+            referencedColumnNames: symbol
+            constraintName: fk_event_sequences_symbol
+            onDelete: CASCADE
+            onUpdate: CASCADE
+
+  - changeSet:
+      id: 012-create-triggers-and-functions
+      author: finstream
+      comment: Create PostgreSQL functions and triggers
+      changes:
+        - sql:
+            sql: |
+              CREATE OR REPLACE FUNCTION update_updated_at_column()
+              RETURNS TRIGGER AS $$
+              BEGIN
+                  NEW.updated_at = CURRENT_TIMESTAMP;
+                  RETURN NEW;
+              END;
+              $$ language 'plpgsql';
+            comment: Function to update updated_at timestamp
+
+        - sql:
+            sql: |
+              CREATE TRIGGER update_stocks_updated_at 
+              BEFORE UPDATE ON stocks 
+              FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+            comment: Trigger for stocks table
+
+        - sql:
+            sql: |
+              CREATE TRIGGER update_event_sequences_updated_at 
+              BEFORE UPDATE ON event_sequences 
+              FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+            comment: Trigger for event_sequences table
+
+        - sql:
+            sql: COMMENT ON TABLE market_events IS 'Event sourcing table - consider partitioning by timestamp for large datasets';
+            comment: Add table documentation
+
+        - sql:
+            sql: COMMENT ON COLUMN market_events.timestamp IS 'Partition key for time-based partitioning';
+            comment: Add column documentation
+
+        - sql:
+            sql: COMMENT ON COLUMN market_events.event_payload IS 'JSONB payload with event-specific data';
+            comment: Add column documentation
