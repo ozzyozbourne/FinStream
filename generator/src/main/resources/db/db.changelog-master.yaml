@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: db/001-create-schema.sql
+  - include:
+      file: db/002-insert-default-stocks.sql
