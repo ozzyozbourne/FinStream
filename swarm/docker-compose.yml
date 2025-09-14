@@ -50,7 +50,7 @@ services:
 
   # PostgreSQL Database
   postgres:
-    image: postgres
+    image: ghcr.io/dbsystel/postgresql-partman@sha256:87ab5b74dba2cbbfa17433d49f44242be7ea61cf0ab2ec639a94a64e9bd9bcad
     hostname: postgreshost
     container_name: postgres
     env_file:
