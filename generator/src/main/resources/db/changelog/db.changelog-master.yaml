@@ -1,8 +1,0 @@
-# db/changelog/db.changelog-master.yaml
-databaseChangeLog:
-  - include:
-      file: db/changelog/001-create-schema.sql
-  - include:
-      file: db/changelog/002-insert-default-stocks.sql
-  - include:
-      file: db/changelog/003-create-indexes.yaml
