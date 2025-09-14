@@ -1,6 +1,6 @@
   -- comment: Create stocks table for master stock data
     CREATE TABLE stocks (
-        id BIGSERIAL PRIMARY KEY NOT NULL,
+    id BIGSERIAL PRIMARY KEY NOT NULL,
     symbol VARCHAR(10) NOT NULL UNIQUE,
     name VARCHAR(200) NOT NULL,
     sector VARCHAR(100) NOT NULL,
@@ -15,9 +15,7 @@
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
-    -- rollback DROP TABLE stocks;
-    
-    -- changeset finstream:002-create-market-events-table
+
   -- comment: Create market_events table for event sourcing
     CREATE TABLE market_events (
     id BIGSERIAL PRIMARY KEY NOT NULL,
@@ -29,9 +27,7 @@
     event_payload JSONB NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
-    -- rollback DROP TABLE market_events;
-    
-    -- changeset finstream:003-create-event-sequences-table
+
   -- comment: Create event_sequences table for tracking sequence numbers
     CREATE TABLE event_sequences (
     id BIGSERIAL PRIMARY KEY NOT NULL,
@@ -39,9 +35,7 @@
     last_sequence_number BIGINT NOT NULL DEFAULT 0,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
-    -- rollback DROP TABLE event_sequences;
-    
-    -- changeset finstream:004-create-market-sessions-table
+
   -- comment: Create market_sessions table for tracking market open/close
     CREATE TABLE market_sessions (
     id BIGSERIAL PRIMARY KEY NOT NULL,
@@ -54,4 +48,3 @@
     total_trades INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
-    -- rollback DROP TABLE market_sessions;
