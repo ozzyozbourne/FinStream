@@ -1,4 +1,4 @@
-package finstream.data.constants;
+package finstream.data;
 
 public final class Enums {
 

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import finstream.data.constants.Enums;
+import finstream.data.Enums;
 
 import java.io.IOException;
 import java.math.BigDecimal;

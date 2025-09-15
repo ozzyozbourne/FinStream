@@ -2,7 +2,7 @@ package finstream.data.events;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import finstream.data.constants.Enums;
+import finstream.data.Enums;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
