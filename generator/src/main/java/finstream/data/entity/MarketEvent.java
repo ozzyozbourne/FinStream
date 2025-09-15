@@ -1,11 +1,33 @@
 package finstream.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import finstream.data.events.*;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "eventType")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = TradePayload.class, name = "TRADE"),
+        @JsonSubTypes.Type(value = TradePayload.class, name = "TRADE"),
+        @JsonSubTypes.Type(value = QuotePayload.class, name = "QUOTE"),
+        @JsonSubTypes.Type(value = OrderBookPayload.class, name = "ORDER_BOOK"),
+        @JsonSubTypes.Type(value = BarPayload.class, name = "BAR"),
+        @JsonSubTypes.Type(value = MarketStatusPayload.class, name = "MARKET_STATUS"),
+        @JsonSubTypes.Type(value = PriceMovementPayload.class, name = "PRICE_MOVEMENT"),
+        @JsonSubTypes.Type(value = CorporateActionPayload.class, name = "CORPORATE_ACTION"),
+        @JsonSubTypes.Type(value = NewsPayload.class, name = "NEWS"),
+        @JsonSubTypes.Type(value = VolumeSpikePayload.class, name = "VOLUME_SPIKE"),
+        @JsonSubTypes.Type(value = OptionsActivityPayload.class, name = "OPTIONS_ACTIVITY"),
+        @JsonSubTypes.Type(value = TechnicalIndicatorPayload.class, name = "TECHNICAL_INDICATOR"),
+        @JsonSubTypes.Type(value = OrderUpdatePayload.class, name = "ORDER_UPDATE"),
+        @JsonSubTypes.Type(value = PositionUpdatePayload.class, name = "POSITION_UPDATE"),
+        @JsonSubTypes.Type(value = AccountUpdatePayload.class, name = "ACCOUNT_UPDATE")
+})
 
 @Entity
 @Table(name = "market_events")
@@ -21,8 +43,9 @@ public class MarketEvent {
     @Column(name = "symbol", nullable = false, length = 10)
     private String symbol;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "event_type", nullable = false, length = 50)
-    private String eventType;
+    private EventType eventType;
 
     @Column(name = "timestamp", nullable = false)
     private OffsetDateTime timestamp;
