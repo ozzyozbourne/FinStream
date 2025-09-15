@@ -27,7 +27,17 @@ public final class Enums {
         HKEX,
         SSE,
         BSE,
-        ASX;
+        ASX
+    }
+
+    public enum SessionType {
+        REGULAR,
+        PRE_MARKET,
+        AFTER_HOURS,
+        HOLIDAY,
+        HALF_DAY,
+        EXTENDED,
+        MAINTENANCE
     }
 
     public enum Sector {

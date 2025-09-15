@@ -1,5 +1,6 @@
 package finstream.data.entity;
 
+import finstream.data.enums.Enums;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -26,8 +27,9 @@ public class MarketSession {
     @Column(name = "is_trading_day", nullable = false)
     private Boolean isTradingDay = true;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "session_type", nullable = false, length = 20)
-    private String sessionType = "REGULAR";
+    private Enums.SessionType sessionType = Enums.SessionType.REGULAR;
 
     @Column(name = "total_volume", nullable = false)
     private Long totalVolume = 0L;
@@ -45,7 +47,7 @@ public class MarketSession {
         this.sessionDate = sessionDate;
     }
 
-    public MarketSession(LocalDate sessionDate, boolean isTradingDay, String sessionType) {
+    public MarketSession(LocalDate sessionDate, boolean isTradingDay, Enums.SessionType sessionType) {
         this.sessionDate = sessionDate;
         this.isTradingDay = isTradingDay;
         this.sessionType = sessionType;
@@ -91,11 +93,11 @@ public class MarketSession {
         this.isTradingDay = isTradingDay;
     }
 
-    public String getSessionType() {
+    public Enums.SessionType getSessionType() {
         return sessionType;
     }
 
-    public void setSessionType(String sessionType) {
+    public void setSessionType(Enums.SessionType sessionType) {
         this.sessionType = sessionType;
     }
 
