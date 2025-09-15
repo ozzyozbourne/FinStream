@@ -51,4 +51,92 @@ public final class Enums {
         public String toString() {return displayName;}
     }
 
+    public enum TradeSide { BUY, SELL }
+
+    public enum PositionSide { LONG, SHORT }
+
+    public enum AccountUpdateReason { TRADE, DEPOSIT, WITHDRAWAL, DIVIDEND, FEE }
+
+    public enum PositionUpdateReason { TRADE, MARKET_MOVE, ADJUSTMENT }
+
+    public enum MarketStatus { OPEN, CLOSED, PRE_MARKET, AFTER_HOURS, HALTED }
+
+    public enum CorporateActionType { DIVIDEND, SPLIT, MERGER, SPINOFF }
+
+    public enum DividendType { CASH, STOCK }
+
+    public enum DividendFrequency { QUARTERLY, ANNUAL, SPECIAL }
+
+    public enum NewsSentiment { POSITIVE, NEGATIVE, NEUTRAL }
+
+    public enum NewsImpactLevel { HIGH, MEDIUM, LOW }
+
+    public enum OptionType { CALL, PUT }
+
+    public enum TechnicalIndicatorType { RSI, MACD, BOLLINGER_BANDS }
+
+    public enum TechnicalSignal { OVERBOUGHT, OVERSOLD, BUY, SELL }
+
+    public enum TechnicalTrend { RISING, FALLING, SIDEWAYS }
+
+    public enum OrderStatus { NEW, PARTIALLY_FILLED, FILLED, CANCELED, REJECTED, EXPIRED }
+
+    public enum OrderType { MARKET, LIMIT, STOP, STOP_LIMIT }
+
+    public enum TimeInForce { DAY, GTC, IOC, FOK }
+
+    public enum BarTimeframe {
+        ONE_MINUTE("1m"),
+        FIVE_MINUTES("5m"),
+        FIFTEEN_MINUTES("15m"),
+        ONE_HOUR("1h"),
+        FOUR_HOURS("4h"),
+        ONE_DAY("1d");
+
+        public final String code;
+
+        BarTimeframe(final String code) { this.code = code; }
+
+        public static BarTimeframe fromCode(final String code) throws IllegalArgumentException {
+            for (final var timeframe : values()) {
+                if (timeframe.code.equals(code)) return timeframe;
+            }
+            throw new IllegalArgumentException("Unknown timeframe code: " + code);
+        }
+    }
+
+    public enum TechnicalTimeframe {
+        ONE_MINUTE("1M"),
+        FIVE_MINUTES("5M"),
+        ONE_HOUR("1H"),
+        ONE_DAY("1D");
+
+        public final String code;
+
+        TechnicalTimeframe(final String code) { this.code = code; }
+
+        public static TechnicalTimeframe fromCode(final String code) throws IllegalArgumentException {
+            for (final var timeframe : values()) {
+                if (timeframe.code.equals(code)) return timeframe;
+            }
+            throw new IllegalArgumentException("Unknown technical timeframe code: " + code);
+        }
+    }
+
+    public enum VolumeSpikePeriod {
+        ONE_HOUR("1H"),
+        FOUR_HOURS("4H"),
+        ONE_DAY("1D");
+
+        public final String code;
+
+        VolumeSpikePeriod(final String code) { this.code = code; }
+
+        public static VolumeSpikePeriod fromCode(final String code) throws IllegalArgumentException  {
+            for (final var period : values()) {
+                if (period.code.equals(code)) return period;
+            }
+            throw new IllegalArgumentException("Unknown volume spike period code: " + code);
+        }
+    }
 }

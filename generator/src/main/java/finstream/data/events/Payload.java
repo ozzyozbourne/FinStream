@@ -1,6 +1,9 @@
 package finstream.data.events;
 
+import finstream.data.enums.Enums;
+
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -25,84 +28,213 @@ public final class Payload {
             AccountUpdate {
     }
 
-    public static final class AccountUpdate implements Event {}
-    public static final class TradePay implements Event {
-        public String tradeId;
-        public BigDecimal price;
-        public Long volume;
-        public String side; // "BUY" or "SELL"
-        public OffsetDateTime executionTime;
-        public List<String> tradeConditions;
-        public String counterparty;
-        public Fees fees;
+    public record AccountUpdate(
+            String accountId,
+            BigDecimal buyingPower,
+            BigDecimal cash,
+            BigDecimal portfolioValue,
+            BigDecimal equity,
+            BigDecimal longMarketValue,
+            BigDecimal shortMarketValue,
+            BigDecimal dayTradeBuyingPower,
+            Integer dayTradeCount,
+            Boolean patternDayTrader,
+            OffsetDateTime lastUpdated,
+            Enums.AccountUpdateReason updateReason,
+            AccountBalances balances
+    ) implements Event {
 
-        public static class Fees {
-            public BigDecimal commission;
-            public BigDecimal secFee;
-            public BigDecimal tafFee;
-        }
+        public record AccountBalances(
+                BigDecimal cashSettled,
+                BigDecimal cashUnsettled,
+                BigDecimal marginMaintenanceExcess,
+                BigDecimal regTCallAmount
+        ) {}
     }
-    public static final class QuotePay implements Event {
-        public BigDecimal bidPrice;
-        public Long bidSize;
-        public BigDecimal askPrice;
-        public Long askSize;
-        public OffsetDateTime quoteTime;
-        public String marketMaker;
-        public BigDecimal spread;
-        public BigDecimal midPrice;
-    }
-    public static final class OrderBook implements Event {
-        public List<PriceLevel> bids;
-        public List<PriceLevel> asks;
-        public Long totalBidVolume;
-        public Long totalAskVolume;
-        public Integer bookDepth;
 
-        public static class PriceLevel {
-            public BigDecimal price;
-            public Long size;
-            public Integer orders;
-        }
+    public record TradePay(
+            String tradeId,
+            BigDecimal price,
+            Long volume,
+            Enums.TradeSide side,
+            OffsetDateTime executionTime,
+            List<String> tradeConditions,
+            String counterparty,
+            Fees fees
+    ) implements Event {
+
+        public record Fees(
+                BigDecimal commission,
+                BigDecimal secFee,
+                BigDecimal tafFee
+        ) {}
     }
-    public static final class BarPay implements Event {
-        public String timeframe; // "1m", "5m", "15m", "1h", "4h", "1d"
-        public OffsetDateTime startTime;
-        public OffsetDateTime endTime;
-        public BigDecimal open;
-        public BigDecimal high;
-        public BigDecimal low;
-        public BigDecimal close;
-        public Long volume;
-        public BigDecimal vwap; // Volume Weighted Average Price
-        public Integer tradeCount;
-        public Boolean isComplete; // true for historical, false for live updating
+
+    public record QuotePay(
+            BigDecimal bidPrice,
+            Long bidSize,
+            BigDecimal askPrice,
+            Long askSize,
+            OffsetDateTime quoteTime,
+            String marketMaker,
+            BigDecimal spread,
+            BigDecimal midPrice
+    ) implements Event {}
+
+    public record OrderBook(
+            List<PriceLevel> bids,
+            List<PriceLevel> asks,
+            Long totalBidVolume,
+            Long totalAskVolume,
+            Integer bookDepth
+    ) implements Event {
+
+        public record PriceLevel(
+                BigDecimal price,
+                Long size,
+                Integer orders
+        ) {}
     }
-    public static final class MarketStatus implements Event {
-        public String status; // "OPEN", "CLOSED", "PRE_MARKET", "AFTER_HOURS", "HALTED"
-        public String previousStatus;
-        public OffsetDateTime statusChangeTime;
-        public String reason;
-        public OffsetDateTime nextStatusTime;
-        public String tradingSession;
-        public String haltReason;
+
+    public record BarPay(
+            Enums.BarTimeframe timeframe,
+            OffsetDateTime startTime,
+            OffsetDateTime endTime,
+            BigDecimal open,
+            BigDecimal high,
+            BigDecimal low,
+            BigDecimal close,
+            Long volume,
+            BigDecimal vwap, // Volume Weighted Average Price
+            Integer tradeCount,
+            Boolean isComplete // true for historical, false for live updating
+    ) implements Event {}
+
+    public record MarketStatus(
+            Enums.MarketStatus status,
+            Enums.MarketStatus previousStatus,
+            OffsetDateTime statusChangeTime,
+            String reason,
+            OffsetDateTime nextStatusTime,
+            String tradingSession,
+            String haltReason
+    ) implements Event {}
+
+    public record PriceMovement(
+            BigDecimal previousPrice,
+            BigDecimal currentPrice,
+            BigDecimal priceChange,
+            BigDecimal priceChangePercent,
+            BigDecimal volumeWeightedPrice,
+            BigDecimal dayHigh,
+            BigDecimal dayLow,
+            String movementTrigger,
+            Boolean volatilitySpike
+    ) implements Event {}
+
+    public record CorporateAction(
+            Enums.CorporateActionType actionType,
+            BigDecimal dividendAmount,
+            String currency,
+            LocalDate exDividendDate,
+            LocalDate recordDate,
+            LocalDate paymentDate,
+            Enums.DividendType dividendType,
+            Enums.DividendFrequency frequency
+    ) implements Event {}
+
+    public record News(
+            String headline,
+            String source,
+            Enums.NewsSentiment sentiment,
+            BigDecimal relevanceScore,
+            OffsetDateTime newsTime,
+            Enums.NewsImpactLevel impactLevel,
+            List<String> categories,
+            List<String> relatedSymbols
+    ) implements Event {}
+
+    public record VolumeSpike(
+            Long currentVolume,
+            Long averageVolume,
+            BigDecimal volumeRatio,
+            Enums.VolumeSpikePeriod timePeriod,
+            OffsetDateTime spikeStartTime,
+            List<String> contributingFactors,
+            Boolean unusualActivity
+    ) implements Event {}
+
+    public record OptionsActivity(
+            Enums.OptionType optionType,
+            BigDecimal strikePrice,
+            LocalDate expirationDate,
+            Long volume,
+            Long openInterest,
+            BigDecimal impliedVolatility,
+            BigDecimal delta,
+            BigDecimal gamma,
+            BigDecimal theta,
+            Boolean unusualVolume
+    ) implements Event {}
+
+    public record TechnicalIndicator(
+            Enums.TechnicalIndicatorType indicatorType,
+            BigDecimal value,
+            Enums.TechnicalSignal signal,
+            Enums.TechnicalTimeframe timeframe,
+            BigDecimal previousValue,
+            Enums.TechnicalTrend trend,
+            AdditionalIndicators additionalIndicators
+    ) implements Event {
+
+        public record AdditionalIndicators(
+                BigDecimal macd,
+                BigDecimal movingAverage50,
+                BigDecimal movingAverage200,
+                BigDecimal bollingerUpper,
+                BigDecimal bollingerLower
+        ) {}
     }
-    public static final class PriceMovement implements Event {
-        public BigDecimal previousPrice;
-        public BigDecimal currentPrice;
-        public BigDecimal priceChange;
-        public BigDecimal priceChangePercent;
-        public BigDecimal volumeWeightedPrice;
-        public BigDecimal dayHigh;
-        public BigDecimal dayLow;
-        public String movementTrigger;
-        public Boolean volatilitySpike;
+
+    public record OrderUpdate(
+            String orderId,
+            String clientOrderId,
+            Enums.OrderStatus status,
+            String symbol,
+            Enums.TradeSide side,
+            Enums.OrderType orderType,
+            Long quantity,
+            Long remainingQuantity,
+            BigDecimal limitPrice,
+            BigDecimal stopPrice,
+            Long filledQuantity,
+            BigDecimal filledAvgPrice,
+            Enums.TimeInForce timeInForce,
+            OffsetDateTime submittedAt,
+            OffsetDateTime updatedAt,
+            String rejectReason,
+            List<Fill> fills
+    ) implements Event {
+
+        public record Fill(
+                String fillId,
+                BigDecimal price,
+                Long quantity,
+                OffsetDateTime timestamp
+        ) {}
     }
-    public static final class CorporateAction implements Event {}
-    public static final class News implements Event {}
-    public static final class VolumeSpike implements Event {}
-    public static final class OptionsActivity implements Event {}
-    public static final class TechnicalIndicator implements Event {}
-    public static final class OrderUpdate implements Event {}
-    public static final class PositionUpdate implements Event {}
+
+    public record PositionUpdate(
+            String symbol,
+            Enums.PositionSide side,
+            Long quantity,
+            BigDecimal marketValue,
+            BigDecimal costBasis,
+            BigDecimal unrealizedPnl,
+            BigDecimal realizedPnl,
+            BigDecimal avgEntryPrice,
+            BigDecimal currentPrice,
+            OffsetDateTime lastUpdated,
+            Enums.PositionUpdateReason updateReason
+    ) implements Event {}
 }
