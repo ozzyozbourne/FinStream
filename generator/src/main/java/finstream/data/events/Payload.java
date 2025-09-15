@@ -1,7 +1,7 @@
 package finstream.data.events;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import finstream.data.constants.Enums;
 
 import java.math.BigDecimal;
@@ -12,7 +12,9 @@ import java.util.List;
 public final class Payload {
 
     private Payload(){}
-    
+
+    @JsonSerialize(using = EventSerializer.class)
+    @JsonDeserialize(using = EventDeserializer.class)
     public sealed interface Event permits
             TradePay,
             QuotePay,
