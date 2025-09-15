@@ -1,8 +1,6 @@
 package finstream.data.entity;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import finstream.data.enums.Enums;
+import finstream.data.constants.Enums;
 import finstream.data.events.*;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -10,24 +8,6 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
-
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "eventType")
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = Payload.TradePay.class, name = "TRADE"),
-        @JsonSubTypes.Type(value = Payload.QuotePay.class, name = "QUOTE"),
-        @JsonSubTypes.Type(value = Payload.OrderBook.class, name = "ORDER_BOOK"),
-        @JsonSubTypes.Type(value = Payload.BarPay.class, name = "BAR"),
-        @JsonSubTypes.Type(value = Payload.MarketStatus.class, name = "MARKET_STATUS"),
-        @JsonSubTypes.Type(value = Payload.PriceMovement.class, name = "PRICE_MOVEMENT"),
-        @JsonSubTypes.Type(value = Payload.CorporateAction.class, name = "CORPORATE_ACTION"),
-        @JsonSubTypes.Type(value = Payload.News.class, name = "NEWS"),
-        @JsonSubTypes.Type(value = Payload.VolumeSpike.class, name = "VOLUME_SPIKE"),
-        @JsonSubTypes.Type(value = Payload.OptionsActivity.class, name = "OPTIONS_ACTIVITY"),
-        @JsonSubTypes.Type(value = Payload.TechnicalIndicator.class, name = "TECHNICAL_INDICATOR"),
-        @JsonSubTypes.Type(value = Payload.OrderUpdate.class, name = "ORDER_UPDATE"),
-        @JsonSubTypes.Type(value = Payload.PositionUpdate.class, name = "POSITION_UPDATE"),
-        @JsonSubTypes.Type(value = Payload.AccountUpdate.class, name = "ACCOUNT_UPDATE")
-})
 
 @Entity
 @Table(name = "market_events")

@@ -1,10 +1,17 @@
 package finstream.data.events;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
-import jakarta.persistence.Convert;
+import jakarta.persistence.Converter;
 
-@Convert
-public class EventPayloadConverter implements AttributeConverter<Payload.Event, String> {
+@Converter(autoApply = true)
+public class EventPayloadConverter  implements AttributeConverter<Payload.Event, String> {
+
+    private final ObjectMapper objectMapper;
+
+    public EventPayloadConverter(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     public String convertToDatabaseColumn(Payload.Event attribute) {

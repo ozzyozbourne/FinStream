@@ -3,7 +3,7 @@ package finstream.data.entity;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
-import finstream.data.enums.Enums;
+import finstream.data.constants.Enums;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;

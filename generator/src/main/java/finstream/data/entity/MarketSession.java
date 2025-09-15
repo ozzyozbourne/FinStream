@@ -1,6 +1,6 @@
 package finstream.data.entity;
 
-import finstream.data.enums.Enums;
+import finstream.data.constants.Enums;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 

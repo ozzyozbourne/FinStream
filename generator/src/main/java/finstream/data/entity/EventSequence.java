@@ -23,16 +23,12 @@ public class EventSequence {
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
 
-    // --- Constructors ---
-
     public EventSequence() {}
 
     public EventSequence(String symbol, Long lastSequenceNumber) {
         this.symbol = symbol;
         this.lastSequenceNumber = lastSequenceNumber;
     }
-
-    // --- Getters and Setters ---
 
     public Long getId() {
         return id;

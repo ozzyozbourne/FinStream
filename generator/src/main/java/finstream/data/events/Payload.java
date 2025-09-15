@@ -1,6 +1,8 @@
 package finstream.data.events;
 
-import finstream.data.enums.Enums;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import finstream.data.constants.Enums;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,7 +12,7 @@ import java.util.List;
 public final class Payload {
 
     private Payload(){}
-
+    
     public sealed interface Event permits
             TradePay,
             QuotePay,
