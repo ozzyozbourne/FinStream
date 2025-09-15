@@ -51,6 +51,29 @@ public final class Enums {
         public String toString() {return displayName;}
     }
 
+    public enum EventType {
+        TRADE("TRADE"),
+        QUOTE("QUOTE"),
+        ORDER_BOOK("ORDER_BOOK"),
+        BAR("BAR"),
+        MARKET_STATUS("MARKET_STATUS"),
+        PRICE_MOVEMENT("PRICE_MOVEMENT"),
+        CORPORATE_ACTION("CORPORATE_ACTION"),
+        NEWS("NEWS"),
+        VOLUME_SPIKE("VOLUME_SPIKE"),
+        OPTIONS_ACTIVITY("OPTIONS_ACTIVITY"),
+        TECHNICAL_INDICATOR("TECHNICAL_INDICATOR"),
+        ORDER_UPDATE("ORDER_UPDATE"),
+        POSITION_UPDATE("POSITION_UPDATE"),
+        ACCOUNT_UPDATE("ACCOUNT_UPDATE");
+
+        public final String value;
+
+        EventType(final String value) {
+            this.value = value;
+        }
+    }
+
     public enum TradeSide { BUY, SELL }
 
     public enum PositionSide { LONG, SHORT }

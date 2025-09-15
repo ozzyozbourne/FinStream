@@ -2,6 +2,7 @@ package finstream.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import finstream.data.enums.Enums;
 import finstream.data.events.*;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -42,8 +43,9 @@ public class MarketEvent {
     @Column(name = "symbol", nullable = false, length = 10)
     private String symbol;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "event_type", nullable = false, length = 50)
-    private String eventType;
+    private Enums.EventType eventType;
 
     @Column(name = "timestamp", nullable = false)
     private OffsetDateTime timestamp;
@@ -84,11 +86,11 @@ public class MarketEvent {
         this.symbol = symbol;
     }
 
-    public String getEventType() {
+    public Enums.EventType getEventType() {
         return eventType;
     }
 
-    public void setEventType(String eventType) {
+    public void setEventType(Enums.EventType eventType) {
         this.eventType = eventType;
     }
 
