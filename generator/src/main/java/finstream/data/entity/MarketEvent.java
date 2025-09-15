@@ -12,21 +12,20 @@ import java.time.OffsetDateTime;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "eventType")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = TradePayload.class, name = "TRADE"),
-        @JsonSubTypes.Type(value = TradePayload.class, name = "TRADE"),
-        @JsonSubTypes.Type(value = QuotePayload.class, name = "QUOTE"),
-        @JsonSubTypes.Type(value = OrderBookPayload.class, name = "ORDER_BOOK"),
-        @JsonSubTypes.Type(value = BarPayload.class, name = "BAR"),
-        @JsonSubTypes.Type(value = MarketStatusPayload.class, name = "MARKET_STATUS"),
-        @JsonSubTypes.Type(value = PriceMovementPayload.class, name = "PRICE_MOVEMENT"),
-        @JsonSubTypes.Type(value = CorporateActionPayload.class, name = "CORPORATE_ACTION"),
-        @JsonSubTypes.Type(value = NewsPayload.class, name = "NEWS"),
-        @JsonSubTypes.Type(value = VolumeSpikePayload.class, name = "VOLUME_SPIKE"),
-        @JsonSubTypes.Type(value = OptionsActivityPayload.class, name = "OPTIONS_ACTIVITY"),
-        @JsonSubTypes.Type(value = TechnicalIndicatorPayload.class, name = "TECHNICAL_INDICATOR"),
-        @JsonSubTypes.Type(value = OrderUpdatePayload.class, name = "ORDER_UPDATE"),
-        @JsonSubTypes.Type(value = PositionUpdatePayload.class, name = "POSITION_UPDATE"),
-        @JsonSubTypes.Type(value = AccountUpdatePayload.class, name = "ACCOUNT_UPDATE")
+        @JsonSubTypes.Type(value = Payload.TradePay.class, name = "TRADE"),
+        @JsonSubTypes.Type(value = Payload.QuotePay.class, name = "QUOTE"),
+        @JsonSubTypes.Type(value = Payload.OrderBook.class, name = "ORDER_BOOK"),
+        @JsonSubTypes.Type(value = Payload.BarPay.class, name = "BAR"),
+        @JsonSubTypes.Type(value = Payload.MarketStatus.class, name = "MARKET_STATUS"),
+        @JsonSubTypes.Type(value = Payload.PriceMovement.class, name = "PRICE_MOVEMENT"),
+        @JsonSubTypes.Type(value = Payload.CorporateAction.class, name = "CORPORATE_ACTION"),
+        @JsonSubTypes.Type(value = Payload.News.class, name = "NEWS"),
+        @JsonSubTypes.Type(value = Payload.VolumeSpike.class, name = "VOLUME_SPIKE"),
+        @JsonSubTypes.Type(value = Payload.OptionsActivity.class, name = "OPTIONS_ACTIVITY"),
+        @JsonSubTypes.Type(value = Payload.TechnicalIndicator.class, name = "TECHNICAL_INDICATOR"),
+        @JsonSubTypes.Type(value = Payload.OrderUpdate.class, name = "ORDER_UPDATE"),
+        @JsonSubTypes.Type(value = Payload.PositionUpdate.class, name = "POSITION_UPDATE"),
+        @JsonSubTypes.Type(value = Payload.AccountUpdate.class, name = "ACCOUNT_UPDATE")
 })
 
 @Entity
@@ -43,9 +42,8 @@ public class MarketEvent {
     @Column(name = "symbol", nullable = false, length = 10)
     private String symbol;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "event_type", nullable = false, length = 50)
-    private EventType eventType;
+    private String eventType;
 
     @Column(name = "timestamp", nullable = false)
     private OffsetDateTime timestamp;
@@ -53,9 +51,10 @@ public class MarketEvent {
     @Column(name = "sequence_number", nullable = false)
     private Long sequenceNumber;
 
+    @Convert(converter = EventPayloadConverter.class)
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "event_payload", nullable = false, columnDefinition = "jsonb")
-    private String eventPayload;
+    private Payload.Event eventPayload;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -109,11 +108,11 @@ public class MarketEvent {
         this.sequenceNumber = sequenceNumber;
     }
 
-    public String getEventPayload() {
+    public Payload.Event getEventPayload() {
         return eventPayload;
     }
 
-    public void setEventPayload(String eventPayload) {
+    public void setEventPayload(Payload.Event eventPayload) {
         this.eventPayload = eventPayload;
     }
 

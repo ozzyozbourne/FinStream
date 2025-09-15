@@ -3,9 +3,7 @@ package finstream.data.entity;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
-import finstream.data.enums.Currency;
-import finstream.data.enums.Exchange;
-import finstream.data.enums.Sector;
+import finstream.data.enums.Enums;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -26,7 +24,7 @@ public class Stocks {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 100)
-    private Sector sector;
+    private Enums.Sector sector;
 
     @Column(name = "starting_price", nullable = false, precision = 12, scale = 4)
     private BigDecimal startingPrice;
@@ -48,11 +46,11 @@ public class Stocks {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 3)
-    private Currency currency = Currency.USD;
+    private Enums.Currency currency = Enums.Currency.USD;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
-    private Exchange exchange = Exchange.NASDAQ;
+    private Enums.Exchange exchange = Enums.Exchange.NASDAQ;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -64,7 +62,7 @@ public class Stocks {
 
     public Stocks() {}
 
-    public Stocks(String symbol, String name, Sector sector, BigDecimal startingPrice, BigDecimal volatility) {
+    public Stocks(String symbol, String name, Enums.Sector sector, BigDecimal startingPrice, BigDecimal volatility) {
         this.symbol = symbol;
         this.name = name;
         this.sector = sector;
@@ -96,11 +94,11 @@ public class Stocks {
         this.name = name;
     }
 
-    public Sector getSector() {
+    public Enums.Sector getSector() {
         return sector;
     }
 
-    public void setSector(Sector sector) {
+    public void setSector(Enums.Sector sector) {
         this.sector = sector;
     }
 
@@ -152,19 +150,19 @@ public class Stocks {
         this.sharesOutstanding = sharesOutstanding;
     }
 
-    public Currency getCurrency() {
+    public Enums.Currency getCurrency() {
         return currency;
     }
 
-    public void setCurrency(Currency currency) {
+    public void setCurrency(Enums.Currency currency) {
         this.currency = currency;
     }
 
-    public Exchange getExchange() {
+    public Enums.Exchange getExchange() {
         return exchange;
     }
 
-    public void setExchange(Exchange exchange) {
+    public void setExchange(Enums.Exchange exchange) {
         this.exchange = exchange;
     }
 
