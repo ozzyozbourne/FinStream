@@ -17,25 +17,25 @@ public class MarketEvent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "event_id", nullable = false, unique = true, length = 255)
+    @Column(name = "event_id", nullable = false, unique = true, length = 255, updatable = false)
     private String eventId;
 
-    @Column(name = "symbol", nullable = false, length = 10)
+    @Column(nullable = false, length = 10 , updatable = false)
     private String symbol;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "event_type", nullable = false, length = 50)
+    @Column(name = "event_type", nullable = false, length = 50, updatable = false)
     private Enums.EventType eventType;
 
-    @Column(name = "timestamp", nullable = false)
+    @Column(nullable = false, updatable = false)
     private OffsetDateTime timestamp;
 
-    @Column(name = "sequence_number", nullable = false)
+    @Column(name = "sequence_number", nullable = false, updatable = false)
     private Long sequenceNumber;
 
     @Convert(converter = EventPayloadConverter.class)
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "event_payload", nullable = false, columnDefinition = "jsonb")
+    @Column(name = "event_payload", nullable = false, columnDefinition = "jsonb", updatable = false)
     private Payload.Event eventPayload;
 
     @CreationTimestamp

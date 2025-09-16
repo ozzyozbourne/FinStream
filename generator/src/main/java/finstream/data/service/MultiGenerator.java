@@ -1,27 +1,57 @@
 package finstream.data.service;
 
 
+import finstream.data.Enums;
+import finstream.data.entity.MarketEvent;
 import finstream.data.entity.Stocks;
 import finstream.data.repository.StocksRepository;
 import io.quarkus.websockets.next.OnTextMessage;
 import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
+import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
 
+import javax.inject.Inject;
 import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
-
+@ApplicationScoped
 class MultiGenerator {
 
+    private static final Enums.EventType[] EVENT_TYPES = Enums.EventType.values();
+    private static final AtomicLong sequenceCounter = new AtomicLong(0);
+    private final Random random = new Random();
     private final StocksRepository stocksRepository;
 
+    @Inject
     MultiGenerator(StocksRepository stocksRepository) {
         this.stocksRepository = stocksRepository;
     }
 
     @Outgoing("data")
     Multi<Stocks> generator() {
-        return Multi.createFrom().ticks().every(Duration.ofSeconds(1)).map(tick -> new Stocks());
+        stocksRepository.listAll().onItem().transformToMulti(s ->null );
+        return null;
+    }
+
+    private MarketEvent generateRandomMarketEvent(final List<Stocks> stocks) {
+        final var stock = stocks.get(random.nextInt(stocks.size()));
+        final var event = new MarketEvent();
+
+        event.setEventId(UUID.randomUUID().toString());
+        event.setSymbol(stock.getSymbol());
+        event.setTimestamp(OffsetDateTime.now());
+        event.setSequenceNumber(sequenceCounter.incrementAndGet());
+
+        final var eventType = EVENT_TYPES[random.nextInt(EVENT_TYPES.length)];
+        event.setEventType(eventType);
+
+        return null;
     }
 
     @Incoming("data")

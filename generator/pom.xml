@@ -81,7 +81,6 @@
             <artifactId>quarkus-langchain4j-openai</artifactId>
             <version>${quarkus-langchain4j.version}</version>
         </dependency>
-
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-observability-devservices-lgtm</artifactId>
