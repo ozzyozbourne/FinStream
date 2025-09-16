@@ -7,7 +7,6 @@ import finstream.data.entity.Stocks;
 import finstream.data.repository.StocksRepository;
 import io.quarkus.websockets.next.OnTextMessage;
 import io.smallrye.mutiny.Multi;
-import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
@@ -39,21 +38,6 @@ class MultiGenerator {
         return null;
     }
 
-    private MarketEvent generateRandomMarketEvent(final List<Stocks> stocks) {
-        final var stock = stocks.get(random.nextInt(stocks.size()));
-        final var event = new MarketEvent();
-
-        event.setEventId(UUID.randomUUID().toString());
-        event.setSymbol(stock.getSymbol());
-        event.setTimestamp(OffsetDateTime.now());
-        event.setSequenceNumber(sequenceCounter.incrementAndGet());
-
-        final var eventType = EVENT_TYPES[random.nextInt(EVENT_TYPES.length)];
-        event.setEventType(eventType);
-
-        return null;
-    }
-
     @Incoming("data")
     @OnTextMessage
     Multi<Stocks> onText(Multi<Stocks> inStream) {
@@ -69,5 +53,20 @@ class MultiGenerator {
                .every(Duration.ofMinutes(2))
                .onItem()
                .transformToUniAndConcatenate(stocksRepository::persist);
+    }
+
+    private MarketEvent generateRandomMarketEvent(final List<Stocks> stocks) {
+        final var stock = stocks.get(random.nextInt(stocks.size()));
+        final var event = new MarketEvent();
+
+        event.setEventId(UUID.randomUUID().toString());
+        event.setSymbol(stock.getSymbol());
+        event.setTimestamp(OffsetDateTime.now());
+        event.setSequenceNumber(sequenceCounter.incrementAndGet());
+
+        final var eventType = EVENT_TYPES[random.nextInt(EVENT_TYPES.length)];
+        event.setEventType(eventType);
+
+        return null;
     }
 }

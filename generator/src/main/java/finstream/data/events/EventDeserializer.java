@@ -15,10 +15,6 @@ import java.util.List;
 
 public final class EventDeserializer extends JsonDeserializer<Payload.Event> {
 
-    private static final ArrayList<String> STRING_LIST_CACHE = new ArrayList<>(10);
-    private static final ArrayList<Payload.OrderBook.PriceLevel> PRICE_LEVEL_CACHE = new ArrayList<>(20);
-    private static final ArrayList<Payload.OrderUpdate.Fill> FILL_CACHE = new ArrayList<>(10);
-
     @Override
     public Payload.Event deserialize(JsonParser parser, DeserializationContext ctx) throws IOException {
 
@@ -456,7 +452,7 @@ public final class EventDeserializer extends JsonDeserializer<Payload.Event> {
     }
 
     private List<Payload.OrderBook.PriceLevel> readPriceLevels(JsonParser p) throws IOException {
-        PRICE_LEVEL_CACHE.clear();
+       final var collector = new ArrayList<Payload.OrderBook.PriceLevel>();
         while (p.nextToken() != JsonToken.END_ARRAY) {
             BigDecimal price = null;
             Long size = null;
@@ -471,9 +467,9 @@ public final class EventDeserializer extends JsonDeserializer<Payload.Event> {
                     case "orders" -> orders = p.getIntValue();
                 }
             }
-            PRICE_LEVEL_CACHE.add(new Payload.OrderBook.PriceLevel(price, size, orders));
+            collector.add(new Payload.OrderBook.PriceLevel(price, size, orders));
         }
-        return new ArrayList<>(PRICE_LEVEL_CACHE);
+        return collector;
     }
 
     private Payload.TechnicalIndicator.AdditionalIndicators readAdditionalIndicators(JsonParser p) throws IOException {
@@ -493,7 +489,7 @@ public final class EventDeserializer extends JsonDeserializer<Payload.Event> {
     }
 
     private List<Payload.OrderUpdate.Fill> readFills(JsonParser p) throws IOException {
-        FILL_CACHE.clear();
+        final var collector = new ArrayList<Payload.OrderUpdate.Fill>();
         while (p.nextToken() != JsonToken.END_ARRAY) {
             String fillId = null;
             BigDecimal price = null;
@@ -510,9 +506,9 @@ public final class EventDeserializer extends JsonDeserializer<Payload.Event> {
                     case "timestamp" -> timestamp = parseDateTime(p.getText());
                 }
             }
-            FILL_CACHE.add(new Payload.OrderUpdate.Fill(fillId, price, quantity, timestamp));
+            collector.add(new Payload.OrderUpdate.Fill(fillId, price, quantity, timestamp));
         }
-        return new ArrayList<>(FILL_CACHE);
+        return new ArrayList<>(collector);
     }
 
     private Payload.AccountUpdate.AccountBalances readAccountBalances(JsonParser p) throws IOException {
@@ -531,9 +527,9 @@ public final class EventDeserializer extends JsonDeserializer<Payload.Event> {
     }
 
     private List<String> readStringList(JsonParser p) throws IOException {
-        STRING_LIST_CACHE.clear();
-        while (p.nextToken() != JsonToken.END_ARRAY) { STRING_LIST_CACHE.add(p.getText()); }
-        return new ArrayList<>(STRING_LIST_CACHE);
+        final var collector = new ArrayList<String>();
+        while (p.nextToken() != JsonToken.END_ARRAY) { collector.add(p.getText()); }
+        return collector;
     }
 
     private static OffsetDateTime parseDateTime(String text) { return text != null ? OffsetDateTime.parse(text) : null; }
