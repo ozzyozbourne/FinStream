@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-import static finstream.data.ComUtils.TRADE_SIDES;
+import static finstream.data.ComUtils.*;
 
 public final class EventPayloadGenerator {
 
@@ -120,7 +120,7 @@ public final class EventPayloadGenerator {
         BigDecimal low = open.min(close).subtract(randomDecimal(0, 2));
 
         return new Payload.BarPay(
-                randomEnum(Enums.BarTimeframe.class), BAR_TIMEFRAMES[]
+                BAR_TIMEFRAMES[random.nextInt(BAR_TIMEFRAMES.length)],
                 OffsetDateTime.now().minusMinutes(5),
                 OffsetDateTime.now(),
                 open,
@@ -135,8 +135,8 @@ public final class EventPayloadGenerator {
     }
 
     private static Payload.MarketStatus generateMarketStatus() {
-        Enums.MarketStatus current = randomEnum(Enums.MarketStatus.class);
-        Enums.MarketStatus previous = randomEnum(Enums.MarketStatus.class);
+        Enums.MarketStatus current = MARKET_STATUSES[random.nextInt(MARKET_STATUSES.length)];
+        Enums.MarketStatus previous = MARKET_STATUSES[random.nextInt(MARKET_STATUSES.length)];
 
         return new Payload.MarketStatus(
                 current,
@@ -144,7 +144,7 @@ public final class EventPayloadGenerator {
                 OffsetDateTime.now(),
                 "Scheduled transition",
                 OffsetDateTime.now().plusHours(1),
-                randomEnum(Enums.SessionType.class).name(),
+                SESSION_TYPES[random.nextInt(SESSION_TYPES.length)].name(),
                 current == Enums.MarketStatus.HALTED ? "Volatility halt" : null
         );
     }
@@ -170,14 +170,14 @@ public final class EventPayloadGenerator {
 
     private static Payload.CorporateAction generateCorporateAction(final Stocks stock) {
         return new Payload.CorporateAction(
-                randomEnum(Enums.CorporateActionType.class),
+                CORPORATE_ACTION_TYPES[random.nextInt(CURRENCIES.length)],
                 randomDecimal(0.5, 5.0),
                 stock.getCurrency().name(),
                 LocalDate.now().plusDays(7),
                 LocalDate.now().plusDays(5),
                 LocalDate.now().plusDays(14),
-                randomEnum(Enums.DividendType.class),
-                randomEnum(Enums.DividendFrequency.class)
+                DIVIDEND_TYPES[random.nextInt(DIVIDEND_TYPES.length)],
+                DIVIDEND_FREQUENCIES[random.nextInt(DIVIDEND_FREQUENCIES.length)]
         );
     }
 
@@ -185,10 +185,10 @@ public final class EventPayloadGenerator {
         return new Payload.News(
                 NEWS_HEADLINES[random.nextInt(NEWS_HEADLINES.length)],
                 NEWS_SOURCES[random.nextInt(NEWS_SOURCES.length)],
-                randomEnum(Enums.NewsSentiment.class),
+                NEWS_SENTIMENTS[random.nextInt(NEWS_SENTIMENTS.length)],
                 randomDecimal(0.1, 1.0),
                 OffsetDateTime.now(),
-                randomEnum(Enums.NewsImpactLevel.class),
+                NEWS_IMPACT_LEVELS[random.nextInt(NEWS_IMPACT_LEVELS.length)],
                 List.of(stock.getSector().name()),
                 List.of(stock.getSymbol())
         );
@@ -202,7 +202,7 @@ public final class EventPayloadGenerator {
                 currentVolume,
                 averageVolume,
                 BigDecimal.valueOf(currentVolume).divide(BigDecimal.valueOf(averageVolume), 2, RoundingMode.HALF_UP),
-                randomEnum(Enums.VolumeSpikePeriod.class),
+                VOLUME_SPIKE_PERIODS[random.nextInt(VOLUME_SPIKE_PERIODS.length)],
                 OffsetDateTime.now().minusMinutes(30),
                 List.of("Earnings announcement", "News event"),
                 random.nextBoolean()
@@ -211,7 +211,7 @@ public final class EventPayloadGenerator {
 
     private static Payload.OptionsActivity generateOptionsActivity(final Stocks stock) {
         return new Payload.OptionsActivity(
-                randomEnum(Enums.OptionType.class),
+                OPTION_TYPES[random.nextInt(OPTION_TYPES.length)],
                 stock.getCurrentPrice().add(randomDecimal(-10, 10)),
                 LocalDate.now().plusMonths(1),
                 randomLong(100, 5000),
@@ -228,12 +228,12 @@ public final class EventPayloadGenerator {
         BigDecimal value = randomDecimal(20, 80);
 
         return new Payload.TechnicalIndicator(
-                randomEnum(Enums.TechnicalIndicatorType.class),
+                TECHNICAL_INDICATOR_TYPES[random.nextInt(TECHNICAL_INDICATOR_TYPES.length)],
                 value,
-                randomEnum(Enums.TechnicalSignal.class),
-                randomEnum(Enums.TechnicalTimeframe.class),
+                TECHNICAL_SIGNALS[random.nextInt(TECHNICAL_SIGNALS.length)],
+                TECHNICAL_TIMEFRAMES[random.nextInt(TECHNICAL_TIMEFRAMES.length)],
                 value.add(randomDecimal(-5, 5)),
-                randomEnum(Enums.TechnicalTrend.class),
+                TECHNICAL_TRENDS[random.nextInt(TECHNICAL_TRENDS.length)],
                 new Payload.TechnicalIndicator.AdditionalIndicators(
                         randomDecimal(-2, 2),
                         randomDecimal(100, 200),
@@ -251,17 +251,17 @@ public final class EventPayloadGenerator {
         return new Payload.OrderUpdate(
                 UUID.randomUUID().toString(),
                 "CLIENT_" + random.nextInt(10000),
-                randomEnum(Enums.OrderStatus.class),
+                ORDER_STATUSES[random.nextInt(ORDER_STATUSES.length)],
                 stock.getSymbol(),
-                randomEnum(Enums.TradeSide.class),
-                randomEnum(Enums.OrderType.class),
+                TRADE_SIDES[random.nextInt(TRADE_SIDES.length)],
+                ORDER_TYPES[random.nextInt(ORDER_TYPES.length)],
                 quantity,
                 quantity - filledQuantity,
                 randomPrice(stock.getCurrentPrice()),
                 randomPrice(stock.getCurrentPrice()),
                 filledQuantity,
                 randomPrice(stock.getCurrentPrice()),
-                randomEnum(Enums.TimeInForce.class),
+                TIME_IN_FORCE_VALUES[random.nextInt(TIME_IN_FORCE_VALUES.length)],
                 OffsetDateTime.now().minusMinutes(5),
                 OffsetDateTime.now(),
                 random.nextBoolean() ? "Insufficient funds" : null,
@@ -273,10 +273,10 @@ public final class EventPayloadGenerator {
         if (totalFilled == 0) return List.of();
 
         List<Payload.OrderUpdate.Fill> fills = new ArrayList<>();
-        Long remaining = totalFilled;
+        long remaining = totalFilled;
 
         while (remaining > 0) {
-            Long fillQty = Math.min(remaining, randomLong(10, 100));
+            long fillQty = Math.min(remaining, randomLong(10, 100));
             fills.add(new Payload.OrderUpdate.Fill(
                     UUID.randomUUID().toString(),
                     randomPrice(basePrice),
@@ -288,7 +288,7 @@ public final class EventPayloadGenerator {
         return fills;
     }
 
-    private Payload.PositionUpdate generatePositionUpdate(Stocks stock) {
+    private static Payload.PositionUpdate generatePositionUpdate(Stocks stock) {
         Long quantity = randomLong(100, 1000);
         BigDecimal avgEntryPrice = randomPrice(stock.getCurrentPrice());
         BigDecimal currentPrice = stock.getCurrentPrice();
@@ -298,7 +298,7 @@ public final class EventPayloadGenerator {
 
         return new Payload.PositionUpdate(
                 stock.getSymbol(),
-                randomEnum(Enums.PositionSide.class),
+                POSITION_SIDES[random.nextInt(POSITION_SIDES.length)],
                 quantity,
                 marketValue,
                 costBasis,
@@ -307,11 +307,11 @@ public final class EventPayloadGenerator {
                 avgEntryPrice,
                 currentPrice,
                 OffsetDateTime.now(),
-                randomEnum(Enums.PositionUpdateReason.class)
+                POSITION_UPDATE_REASONS[random.nextInt(POSITION_UPDATE_REASONS.length)]
         );
     }
 
-    private Payload.AccountUpdate generateAccountUpdate() {
+    private static Payload.AccountUpdate generateAccountUpdate() {
         return new Payload.AccountUpdate(
                 "ACCOUNT_" + random.nextInt(10000),
                 randomDecimal(10000, 100000),
@@ -324,7 +324,7 @@ public final class EventPayloadGenerator {
                 random.nextInt(10),
                 random.nextBoolean(),
                 OffsetDateTime.now(),
-                randomEnum(Enums.AccountUpdateReason.class),
+                ACCOUNT_UPDATE_REASONS[random.nextInt(ACCOUNT_UPDATE_REASONS.length)],
                 new Payload.AccountUpdate.AccountBalances(
                         randomDecimal(10000, 50000),
                         randomDecimal(0, 5000),
@@ -334,7 +334,6 @@ public final class EventPayloadGenerator {
         );
     }
 
-    // Helper methods
     private static BigDecimal randomPrice(final BigDecimal basePrice) {
         double variance = 0.05; // 5% variance
         double factor = 1 + (random.nextGaussian() * variance);

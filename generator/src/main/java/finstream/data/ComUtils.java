@@ -30,10 +30,4 @@ public final class ComUtils {
     public static final Enums.TechnicalTimeframe[] TECHNICAL_TIMEFRAMES = Enums.TechnicalTimeframe.values();
     public static final Enums.VolumeSpikePeriod[] VOLUME_SPIKE_PERIODS = Enums.VolumeSpikePeriod.values();
 
-    public static <T> T getRandEnums() {
-
-    }
-
-
-
 }
