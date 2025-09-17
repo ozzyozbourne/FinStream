@@ -19,10 +19,11 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static finstream.data.ComUtils.EVENT_TYPES;
+
 @ApplicationScoped
 class MultiGenerator {
 
-    private static final Enums.EventType[] EVENT_TYPES = Enums.EventType.values();
     private static final AtomicLong sequenceCounter = new AtomicLong(0);
     private final Random random = new Random();
     private final StocksRepository stocksRepository;

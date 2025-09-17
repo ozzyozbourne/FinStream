@@ -2,9 +2,35 @@ package finstream.data;
 
 public final class Enums {
 
-    private Enums(){}
+    public sealed interface TaggedEnum permits
+            Currency,
+            Exchange,
+            SessionType,
+            Sector,
+            EventType,
+            TradeSide,
+            PositionSide,
+            AccountUpdateReason,
+            PositionUpdateReason,
+            MarketStatus,
+            CorporateActionType,
+            DividendType,
+            DividendFrequency,
+            NewsSentiment,
+            NewsImpactLevel,
+            OptionType,
+            TechnicalIndicatorType,
+            TechnicalSignal,
+            TechnicalTrend,
+            OrderStatus,
+            OrderType,
+            TimeInForce,
+            BarTimeframe,
+            TechnicalTimeframe,
+            VolumeSpikePeriod
+    {}
 
-    public enum Currency {
+    public enum Currency implements TaggedEnum {
         USD,
         EUR,
         GBP,
@@ -19,7 +45,7 @@ public final class Enums {
         KRW
     }
 
-    public enum Exchange {
+    public enum Exchange implements TaggedEnum {
         NASDAQ,
         NYSE,
         LSE,
@@ -30,7 +56,7 @@ public final class Enums {
         ASX
     }
 
-    public enum SessionType {
+    public enum SessionType implements TaggedEnum {
         REGULAR,
         PRE_MARKET,
         AFTER_HOURS,
@@ -40,7 +66,7 @@ public final class Enums {
         MAINTENANCE
     }
 
-    public enum Sector {
+    public enum Sector implements TaggedEnum  {
         TECHNOLOGY("Technology"),
         CONSUMER_DISCRETIONARY("Consumer Discretionary"),
         CONSUMER_STAPLES("Consumer Staples"),
@@ -61,7 +87,7 @@ public final class Enums {
         public String toString() {return displayName;}
     }
 
-    public enum EventType {
+    public enum EventType implements TaggedEnum  {
         TRADE("TRADE"),
         QUOTE("QUOTE"),
         ORDER_BOOK("ORDER_BOOK"),
@@ -84,41 +110,41 @@ public final class Enums {
         }
     }
 
-    public enum TradeSide { BUY, SELL }
+    public enum TradeSide implements TaggedEnum { BUY, SELL }
 
-    public enum PositionSide { LONG, SHORT }
+    public enum PositionSide implements TaggedEnum  { LONG, SHORT }
 
-    public enum AccountUpdateReason { TRADE, DEPOSIT, WITHDRAWAL, DIVIDEND, FEE }
+    public enum AccountUpdateReason implements TaggedEnum  { TRADE, DEPOSIT, WITHDRAWAL, DIVIDEND, FEE }
 
-    public enum PositionUpdateReason { TRADE, MARKET_MOVE, ADJUSTMENT }
+    public enum PositionUpdateReason implements TaggedEnum  { TRADE, MARKET_MOVE, ADJUSTMENT }
 
-    public enum MarketStatus { OPEN, CLOSED, PRE_MARKET, AFTER_HOURS, HALTED }
+    public enum MarketStatus implements TaggedEnum  { OPEN, CLOSED, PRE_MARKET, AFTER_HOURS, HALTED }
 
-    public enum CorporateActionType { DIVIDEND, SPLIT, MERGER, SPINOFF }
+    public enum CorporateActionType implements TaggedEnum { DIVIDEND, SPLIT, MERGER, SPINOFF }
 
-    public enum DividendType { CASH, STOCK }
+    public enum DividendType implements TaggedEnum { CASH, STOCK }
 
-    public enum DividendFrequency { QUARTERLY, ANNUAL, SPECIAL }
+    public enum DividendFrequency implements TaggedEnum { QUARTERLY, ANNUAL, SPECIAL }
 
-    public enum NewsSentiment { POSITIVE, NEGATIVE, NEUTRAL }
+    public enum NewsSentiment implements TaggedEnum { POSITIVE, NEGATIVE, NEUTRAL }
 
-    public enum NewsImpactLevel { HIGH, MEDIUM, LOW }
+    public enum NewsImpactLevel implements TaggedEnum{ HIGH, MEDIUM, LOW }
 
-    public enum OptionType { CALL, PUT }
+    public enum OptionType implements TaggedEnum{ CALL, PUT }
 
-    public enum TechnicalIndicatorType { RSI, MACD, BOLLINGER_BANDS }
+    public enum TechnicalIndicatorType implements TaggedEnum{ RSI, MACD, BOLLINGER_BANDS }
 
-    public enum TechnicalSignal { OVERBOUGHT, OVERSOLD, BUY, SELL }
+    public enum TechnicalSignal implements TaggedEnum{ OVERBOUGHT, OVERSOLD, BUY, SELL }
 
-    public enum TechnicalTrend { RISING, FALLING, SIDEWAYS }
+    public enum TechnicalTrend implements TaggedEnum{ RISING, FALLING, SIDEWAYS }
 
-    public enum OrderStatus { NEW, PARTIALLY_FILLED, FILLED, CANCELED, REJECTED, EXPIRED }
+    public enum OrderStatus implements TaggedEnum{ NEW, PARTIALLY_FILLED, FILLED, CANCELED, REJECTED, EXPIRED }
 
-    public enum OrderType { MARKET, LIMIT, STOP, STOP_LIMIT }
+    public enum OrderType implements TaggedEnum{ MARKET, LIMIT, STOP, STOP_LIMIT }
 
-    public enum TimeInForce { DAY, GTC, IOC, FOK }
+    public enum TimeInForce implements TaggedEnum{ DAY, GTC, IOC, FOK }
 
-    public enum BarTimeframe {
+    public enum BarTimeframe implements TaggedEnum {
         ONE_MINUTE("1m"),
         FIVE_MINUTES("5m"),
         FIFTEEN_MINUTES("15m"),
@@ -138,7 +164,7 @@ public final class Enums {
         }
     }
 
-    public enum TechnicalTimeframe {
+    public enum TechnicalTimeframe implements TaggedEnum{
         ONE_MINUTE("1M"),
         FIVE_MINUTES("5M"),
         ONE_HOUR("1H"),
@@ -156,7 +182,7 @@ public final class Enums {
         }
     }
 
-    public enum VolumeSpikePeriod {
+    public enum VolumeSpikePeriod implements TaggedEnum {
         ONE_HOUR("1H"),
         FOUR_HOURS("4H"),
         ONE_DAY("1D");
