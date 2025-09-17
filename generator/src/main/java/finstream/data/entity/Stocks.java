@@ -3,9 +3,7 @@ package finstream.data.entity;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
-import finstream.data.enums.Currency;
-import finstream.data.enums.Exchange;
-import finstream.data.enums.Sector;
+import finstream.data.Enums;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -16,55 +14,55 @@ public class Stocks {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    private Long id;
 
     @Column(nullable = false, unique = true, length = 10)
-    public String symbol;
+    private String symbol;
 
     @Column(nullable = false, length = 200)
-    public String name;
+    private String name;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 100)
-    public Sector sector;
+    private Enums.Sector sector;
 
     @Column(name = "starting_price", nullable = false, precision = 12, scale = 4)
-    public BigDecimal startingPrice;
+    private BigDecimal startingPrice;
 
     @Column(name = "current_price", nullable = false, precision = 12, scale = 4)
-    public BigDecimal currentPrice;
+    private BigDecimal currentPrice;
 
     @Column(nullable = false, precision = 12, scale = 4)
-    public BigDecimal volatility;
+    private BigDecimal volatility;
 
     @Column(nullable = false)
-    public Boolean active = true;
+    private Boolean active = true;
 
     @Column(name = "market_cap", nullable = false)
-    public Long marketCap;
+    private Long marketCap;
 
     @Column(name = "shares_outstanding", nullable = false)
-    public Long sharesOutstanding;
+    private Long sharesOutstanding;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 3)
-    public Currency currency = Currency.USD;
+    private Enums.Currency currency = Enums.Currency.USD;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
-    public Exchange exchange = Exchange.NASDAQ;
+    private Enums.Exchange exchange = Enums.Exchange.NASDAQ;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false)
-    public OffsetDateTime createdAt;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private OffsetDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    public OffsetDateTime updatedAt;
+    private OffsetDateTime updatedAt;
 
     public Stocks() {}
 
-    public Stocks(String symbol, String name, Sector sector, BigDecimal startingPrice, BigDecimal volatility) {
+    public Stocks(String symbol, String name, Enums.Sector sector, BigDecimal startingPrice, BigDecimal volatility) {
         this.symbol = symbol;
         this.name = name;
         this.sector = sector;
@@ -72,9 +70,124 @@ public class Stocks {
         this.volatility = volatility;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Enums.Sector getSector() {
+        return sector;
+    }
+
+    public void setSector(Enums.Sector sector) {
+        this.sector = sector;
+    }
+
+    public BigDecimal getStartingPrice() {
+        return startingPrice;
+    }
+
+    public void setStartingPrice(BigDecimal startingPrice) {
+        this.startingPrice = startingPrice;
+    }
+
+    public BigDecimal getCurrentPrice() {
+        return currentPrice;
+    }
+
+    public void setCurrentPrice(BigDecimal currentPrice) {
+        this.currentPrice = currentPrice;
+    }
+
+    public BigDecimal getVolatility() {
+        return volatility;
+    }
+
+    public void setVolatility(BigDecimal volatility) {
+        this.volatility = volatility;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    public Long getMarketCap() {
+        return marketCap;
+    }
+
+    public void setMarketCap(Long marketCap) {
+        this.marketCap = marketCap;
+    }
+
+    public Long getSharesOutstanding() {
+        return sharesOutstanding;
+    }
+
+    public void setSharesOutstanding(Long sharesOutstanding) {
+        this.sharesOutstanding = sharesOutstanding;
+    }
+
+    public Enums.Currency getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(Enums.Currency currency) {
+        this.currency = currency;
+    }
+
+    public Enums.Exchange getExchange() {
+        return exchange;
+    }
+
+    public void setExchange(Enums.Exchange exchange) {
+        this.exchange = exchange;
+    }
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public OffsetDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     @Override
     public String toString() {
-        return String.format("Stock{id=%d, symbol='%s', name='%s', currentPrice=%s}", id, symbol, name, currentPrice);
+        return String.format(
+                "Stocks{id=%d, symbol='%s', name='%s', sector=%s, exchange=%s, currentPrice=%s, currency=%s, active=%s}",
+                id, symbol, name, sector, exchange, currentPrice, currency, active
+        );
     }
 
 }

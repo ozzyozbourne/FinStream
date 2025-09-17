@@ -1,4 +1,4 @@
-package finstream.data;
+package finstream.data.resource;
 
 import io.quarkus.logging.Log;
 import io.quarkus.websockets.next.OnClose;
