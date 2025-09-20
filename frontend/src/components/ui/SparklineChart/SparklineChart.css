@@ -1,0 +1,8 @@
+.sparkline-chart {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.sparkline-chart svg {
+  display: block;
+}
