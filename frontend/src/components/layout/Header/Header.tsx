@@ -32,20 +32,7 @@ const Header: React.FC = () => {
           </div>
         </div>
 
-        {/* Navigation */}
-        <div className="header-nav">
-          <nav className="main-nav">
-            <a href="/news" className="nav-link">News</a>
-            <a href="/finance" className="nav-link">Finance</a>
-            <a href="/sports" className="nav-link">Sports</a>
-            <a href="/more" className="nav-link nav-link--dropdown">
-              More
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="6,9 12,15 18,9"/>
-              </svg>
-            </a>
-          </nav>
-        </div>
+
 
         {/* User Actions */}
         <div className="header-actions">

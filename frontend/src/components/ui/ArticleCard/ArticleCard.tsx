@@ -3,22 +3,22 @@ import { ArticleCardProps } from '../../../types';
 import StockTicker from '../StockTicker';
 import './ArticleCard.css';
 
-const ArticleCard: React.FC<ArticleCardProps> = ({ 
+const ArticleCard: React.FC<ArticleCardProps> = 
+({ 
   article, 
   variant = 'standard', 
   onClick 
 }) => {
   const { 
     title, 
-    description, 
-    source, 
-    timestamp, 
-    imageUrl, 
+    description,  
+    urlToImage: imageUrl, 
     stockTicker, 
     stockChange, 
     stockChangePercent,
-    isPremium 
-  } = article;
+  } = (article as any) || {};
+
+
 
   const handleClick = () => {
     if (onClick) {
@@ -32,7 +32,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
         <StockTicker
           ticker={{
             symbol: stockTicker,
-            price: 0, // We'll use a placeholder since we only have change data
+            price: 0,
             change: stockChange,
             changePercent: stockChangePercent
           }}
@@ -43,30 +43,28 @@ const ArticleCard: React.FC<ArticleCardProps> = ({
     }
     return null;
   };
+  
+  if (!article) return null; // Safety check
 
   return (
-    <article 
-      className={`article-card article-card--${variant} ${onClick ? 'clickable' : ''}`}
-      onClick={handleClick}
-    >
-      {imageUrl && (
-        <div className="article-image">
-          <img src={imageUrl} alt={title} />
-          {isPremium && <span className="premium-badge">PREMIUM</span>}
-        </div>
-      )}
-      
+    <article className={`article-card article-card--${variant} ${onClick ? 'clickable' : ''}`}
+      onClick={handleClick}>
       <div className="article-content">
         <h3 className="article-title">{title}</h3>
+        
+        {/* 4. FIX: Image Block - Only render if imageUrl exists AND the variant is "featured" */}
+        {imageUrl && variant === 'featured' && (
+          <div className="article-image">
+            <img src={imageUrl} alt={title || 'Article image'} />
+          </div>
+        )}
         
         {description && variant !== 'compact' && (
           <p className="article-description">{description}</p>
         )}
-        
         <div className="article-meta">
           <div className="article-source-info">
-            <span className="article-source">{source}</span>
-            <span className="article-timestamp">{timestamp}</span>
+            <span className="article-source">{(article as any)?.source?.name}</span> 
           </div>
           {renderStockTicker()}
         </div>
