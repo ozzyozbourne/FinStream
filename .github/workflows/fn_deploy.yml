@@ -2,7 +2,7 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - dev
+      - master
     paths:
       - "frontend"
 jobs:
@@ -33,5 +33,5 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/finstream-frontend:dev
+            ${{ secrets.DOCKERHUB_USERNAME }}/finstream-frontend:prod
              ${{ secrets.DOCKERHUB_USERNAME }}/finstream-frontend:dev-${{ github.run_number }}
