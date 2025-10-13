@@ -1,0 +1,58 @@
+.market-index {
+  padding: 12px;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid #333;
+  transition: all 0.2s ease;
+}
+
+.market-index.clickable {
+  cursor: pointer;
+}
+
+.market-index.clickable:hover {
+  border-color: #00d4aa;
+  background-color: #222;
+}
+
+.index-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.index-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.index-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.index-change-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.index-change {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.index-change.positive {
+  color: #00d4aa;
+}
+
+.index-change.negative {
+  color: #ff4757;
+}
+
+.index-sparkline {
+  margin-left: 8px;
+}
