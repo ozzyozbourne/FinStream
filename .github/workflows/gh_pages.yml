@@ -34,7 +34,7 @@ jobs:
           version: v0.11.1
 
       - name: Build
-        working-directory: ./zine
+        working-directory: ./zig
         run: zine release
 
       - name: Setup Pages
@@ -43,7 +43,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "zine/public"
+          path: "zig/public"
 
       - name: Deploy to GitHub Pages
         id: deployment
