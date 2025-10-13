@@ -1,7 +1,6 @@
 name: Deploy the website to Github Pages
 
 on:
-  # Runs on pushes targeting the default branch
   push:
     branches: ["master"]
 
