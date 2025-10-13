@@ -1,0 +1,114 @@
+.secondary-nav {
+  background-color: #111;
+  border-bottom: 1px solid #333;
+}
+
+.secondary-nav-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 48px;
+}
+
+.secondary-nav-left {
+  flex: 1;
+}
+
+.secondary-nav-list {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.secondary-nav-item {
+  margin: 0;
+}
+
+.secondary-nav-link {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.secondary-nav-link:hover {
+  color: #fff;
+}
+
+.secondary-nav-right {
+  display: flex;
+  align-items: center;
+}
+
+.upgrade-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.upgrade-button svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .secondary-nav-list {
+    gap: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .secondary-nav-container {
+    padding: 0 16px;
+  }
+  
+  .secondary-nav-list {
+    gap: 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .secondary-nav-list::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .secondary-nav-link {
+    font-size: 13px;
+  }
+  
+  .upgrade-button {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+  
+  .upgrade-button svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .secondary-nav-list {
+    gap: 12px;
+  }
+  
+  .secondary-nav-link {
+    font-size: 12px;
+  }
+  
+  .upgrade-button {
+    display: none;
+  }
+}

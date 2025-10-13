@@ -1,0 +1,86 @@
+.latest-news {
+  background-color: #111;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #333;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 16px 0;
+}
+
+.latest-articles {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Override ArticleCard styles for compact layout */
+.latest-news .article-card--compact {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  border-bottom: 1px solid #333;
+  border-radius: 0;
+  padding-bottom: 12px;
+}
+
+.latest-news .article-card--compact:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.latest-news .article-card--compact:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: transparent;
+}
+
+.latest-news .article-card--compact .article-content {
+  padding: 0;
+}
+
+.latest-news .article-card--compact .article-title {
+  font-size: 14px;
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+.latest-news .article-card--compact .article-meta {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0;
+}
+
+.latest-news .article-card--compact .article-source {
+  font-size: 11px;
+  color: #888;
+}
+
+.latest-news .article-card--compact .article-timestamp {
+  font-size: 10px;
+  color: #666;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .latest-news {
+    padding: 16px;
+  }
+  
+  .latest-news .article-card--compact .article-title {
+    font-size: 13px;
+  }
+  
+  .latest-news .article-card--compact .article-source {
+    font-size: 10px;
+  }
+  
+  .latest-news .article-card--compact .article-timestamp {
+    font-size: 9px;
+  }
+}
