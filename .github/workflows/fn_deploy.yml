@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Deploy-DEV
 on:
   push:
     branches:
@@ -34,4 +34,4 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/finstream-frontend:dev
-             ${{ secrets.DOCKERHUB_USERNAME }}/finstream-frontend:dev-${{ github.run_number }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/finstream-frontend:dev-${{ github.run_number }}
