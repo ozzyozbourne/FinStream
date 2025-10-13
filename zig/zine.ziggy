@@ -1,6 +1,7 @@
 Site {
     .title = "Welcome to Zine!",
-    .host_url = "https://example.com",
+    .host_url = "https://ozzyozbourne.github.io",
+    .url_path_prefix = "FinStream",
     .content_dir_path = "content",
     .layouts_dir_path = "layouts",
     .assets_dir_path = "assets",
