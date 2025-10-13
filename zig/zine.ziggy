@@ -1,5 +1,5 @@
 Site {
-    .title = "Welcome to Zine!",
+    .title = "FinStream",
     .host_url = "https://ozzyozbourne.github.io",
     .url_path_prefix = "FinStream",
     .content_dir_path = "content",
