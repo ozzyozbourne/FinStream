@@ -5,6 +5,7 @@ on:
       - qa
     paths:
       - "frontend"
+      - "frontend/**"
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
