@@ -35,4 +35,4 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/finstream-frontend:prod
-             ${{ secrets.DOCKERHUB_USERNAME }}/finstream-frontend:dev-${{ github.run_number }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/finstream-frontend:prod-${{ github.run_number }}
