@@ -18,3 +18,6 @@ export { default as MarketSummary } from './sections/MarketSummary';
 export { default as Portfolio } from './sections/Portfolio';
 export { default as TopGainers } from './sections/TopGainers';
 export { default as LatestNews } from './sections/LatestNews';
+
+
+
