@@ -1,0 +1,86 @@
+/* Import any additional global styles here if needed */
+/* The main styles are now in App.css */
+
+/* Additional utility classes */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.hidden {
+  display: none;
+}
+
+.visible {
+  display: block;
+}
+
+/* Grid utilities */
+.grid {
+  display: grid;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-1 { gap: 4px; }
+.gap-2 { gap: 8px; }
+.gap-3 { gap: 12px; }
+.gap-4 { gap: 16px; }
+.gap-5 { gap: 20px; }
+.gap-6 { gap: 24px; }
+
+/* Color utilities */
+.text-green {
+  color: #00d4aa;
+}
+
+.text-red {
+  color: #ff4757;
+}
+
+.text-gray {
+  color: #888;
+}
+
+.text-white {
+  color: #fff;
+}
+
+.bg-dark {
+  background-color: #111;
+}
+
+.bg-darker {
+  background-color: #0a0a0a;
+}

@@ -1,0 +1,143 @@
+.market-summary {
+  background-color: #111;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #333;
+}
+
+.market-summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+}
+
+.market-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-indicator.closed {
+  background-color: #ff4757;
+}
+
+.status-indicator.open {
+  background-color: #00d4aa;
+}
+
+.status-text {
+  font-size: 12px;
+  color: #888;
+}
+
+.quote-lookup {
+  margin-bottom: 16px;
+}
+
+.quote-search {
+  width: 100%;
+}
+
+.market-tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 16px;
+  background-color: #1a1a1a;
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.market-tab {
+  flex: 1;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.market-tab:hover {
+  color: #fff;
+}
+
+.market-tab--active {
+  background-color: #00d4aa;
+  color: #000;
+}
+
+.market-indices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.market-navigation {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.nav-arrow {
+  background: none;
+  border: 1px solid #333;
+  color: #888;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.nav-arrow:hover {
+  border-color: #00d4aa;
+  color: #00d4aa;
+}
+
+.nav-arrow svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .market-summary {
+    padding: 16px;
+  }
+  
+  .market-indices {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 8px;
+  }
+  
+  .market-summary-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .section-title {
+    font-size: 16px;
+  }
+}

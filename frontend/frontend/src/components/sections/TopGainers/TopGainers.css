@@ -1,0 +1,102 @@
+.top-gainers {
+  background-color: #111;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #333;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 16px 0;
+}
+
+.gainers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gainer-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  border: 1px solid #333;
+  transition: all 0.2s ease;
+}
+
+.gainer-item:hover {
+  border-color: #00d4aa;
+  background-color: #222;
+}
+
+.gainer-rank {
+  width: 24px;
+  height: 24px;
+  background-color: #00d4aa;
+  color: #000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.gainer-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gainer-name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gainer-symbol {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.gainer-company {
+  font-size: 11px;
+  color: #888;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .top-gainers {
+    padding: 16px;
+  }
+  
+  .gainer-item {
+    padding: 10px;
+    gap: 10px;
+  }
+  
+  .gainer-rank {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+  
+  .gainer-symbol {
+    font-size: 13px;
+  }
+  
+  .gainer-company {
+    font-size: 10px;
+  }
+}
