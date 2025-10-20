@@ -14,8 +14,7 @@ COPY . .
 RUN echo "Building with PUBLIC_URL=${PUBLIC_URL}" && \
     PUBLIC_URL=${PUBLIC_URL} npm run build
 
-# Production stage
-FROM nginx:alpine
-COPY --from=build /app/build /usr/share/nginx/html
+# Serve with Express
+COPY server.js .
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["node", "server.js"]
