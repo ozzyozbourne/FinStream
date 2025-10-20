@@ -3,8 +3,8 @@ services:
     image: ozzydoc/finstream-frontend:prod
     container_name: finstream-frontend-prod
     restart: unless-stopped
-    ports:
-      - ${FRONTEND_PROD_PORT}:80
+    # ports:
+    #   - ${FRONTEND_PROD_PORT}:80
     networks:
       - prod
 

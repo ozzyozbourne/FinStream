@@ -93,6 +93,8 @@ services:
     restart: unless-stopped
     volumes:
       - redisinsight-data:/data
+    environment:
+      - RI_PROXY_PATH=/redisinsight
     networks:
       - shared
     depends_on:
