@@ -34,3 +34,5 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/finstream-frontend:prod
+          build-args: |
+            BASE_PATH=/
