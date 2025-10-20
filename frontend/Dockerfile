@@ -10,8 +10,9 @@ COPY package*.json ./
 RUN npm ci
 COPY . .
 
-# This build will use PUBLIC_URL environment variable
-RUN npm run build
+# 👇 ensure the variable is set in the same RUN layer
+RUN echo "Building with PUBLIC_URL=${PUBLIC_URL}" && \
+    PUBLIC_URL=${PUBLIC_URL} npm run build
 
 # Production stage
 FROM nginx:alpine
