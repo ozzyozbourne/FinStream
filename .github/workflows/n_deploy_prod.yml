@@ -1,8 +1,8 @@
-name: Deploy-DEV
+name: Deploy-PROD
 on:
   push:
     branches:
-      - dev
+      - master
     paths:
       - "frontend"
       - "frontend/**"
@@ -33,4 +33,6 @@ jobs:
           file: ./frontend/Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/finstream-frontend:dev
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/finstream-frontend:prod
+          build-args: |
+            BASE_PATH=/
