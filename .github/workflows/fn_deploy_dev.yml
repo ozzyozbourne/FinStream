@@ -35,4 +35,4 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/finstream-frontend:dev
           build-args: |
-            BASE_PATH=/dev
+            BASE_PATH=/
