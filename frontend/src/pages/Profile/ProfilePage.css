@@ -1,0 +1,160 @@
+/* ProfilePage.css */
+
+.profile-page {
+    width: 100%;
+    padding: 24px;
+  }
+  
+  .profile-content {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+    align-items: start;
+  }
+  
+  .main-content-area {
+    min-height: 100vh;
+  }
+  
+  .profile-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  
+  .profile-card {
+    background: #1a1a1a;
+    padding: 24px;
+    border-radius: 10px;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  }
+  
+  .profile-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .profile-field label {
+    font-weight: bold;
+    min-width: 120px;
+  }
+  
+  .profile-field span {
+    flex: 1;
+    text-align: right;
+  }
+  
+  .profile-field input {
+    flex: 1;
+    margin-left: 20px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background-color: #222;
+    color: #fff;
+  }
+  
+  .profile-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+  
+  /* Buttons */
+  .edit-btn, .save-btn, .cancel-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .edit-btn {
+    background-color: #00d4aa;
+    color: #111;
+  }
+  
+  .save-btn {
+    background-color: #28a745;
+    color: #fff;
+  }
+  
+  .cancel-btn {
+    background-color: #ff4757;
+    color: #fff;
+  }
+  
+  /* Right sidebar (optional for additional info) */
+  .right-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: sticky;
+    top: 120px;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 1200px) {
+    .profile-content {
+      grid-template-columns: 1fr 280px;
+      gap: 20px;
+    }
+  }
+  
+  @media (max-width: 1024px) {
+    .profile-content {
+      grid-template-columns: 1fr;
+    }
+    .right-sidebar {
+      position: static;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .profile-content {
+      gap: 20px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .profile-content {
+      gap: 16px;
+    }
+    .profile-field {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .profile-field input {
+      margin-left: 0;
+      width: 100%;
+    }
+  }
+  
+  /* Utilities matching home-page CSS */
+  .text-center {
+    text-align: center;
+  }
+  
+  .text-left {
+    text-align: left;
+  }
+  
+  .text-right {
+    text-align: right;
+  }
+  
+  .gap-1 { gap: 4px; }
+  .gap-2 { gap: 8px; }
+  .gap-3 { gap: 12px; }
+  .gap-4 { gap: 16px; }
+  .gap-5 { gap: 20px; }
+  .gap-6 { gap: 24px; }
+  

@@ -27,7 +27,6 @@ const HomePage: React.FC = () => {
         <div className="right-sidebar">
           <MarketSummary />
           <Portfolio />
-          
         </div>
       </div>
     </div>
