@@ -69,9 +69,71 @@ services:
     networks:
       - shared
 
+  redis:
+    image: redis:latest
+    container_name: my-redis
+    restart: unless-stopped
+    ports:
+      - ${REDIS_PORT}:6379
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --requirepass myStrongPassword
+    environment:
+      - TZ=UTC
+    depends_on:
+      - keycloak
+    networks:
+      - shared
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: redisinsight
+    restart: unless-stopped
+    ports:
+      - "5540:5540"
+    volumes:
+      - redisinsight-data:/data
+    networks:
+      - shared
+    depends_on:
+      - redis
+
+  lgtm:
+    image: docker.io/grafana/otel-lgtm:latest
+    container_name: lgtm
+    restart: unless-stopped
+    ports:
+      - ${GRAFANA_PORT}:3000
+      - ${OTEL_GRPC}:4317
+      - ${OTEL_HTTP}:4318
+    volumes:
+      - grafana_data:/data/grafana
+      - prometheus_data:/data/prometheus
+      - loki_data:/data/loki
+    environment:
+      - GF_PATHS_DATA=/data/grafana
+    env_file:
+      - .env
+    stdin_open: true
+    tty: true
+    networks:
+      - shared
+    depends_on:
+      - redis
+
 volumes:
   postgres_data:
   pgadmin_data:
+  redis-data:
+  redisinsight-data:
+  grafana_data:
+  prometheus_data:
+  loki_data:
 
 networks:
   shared:
