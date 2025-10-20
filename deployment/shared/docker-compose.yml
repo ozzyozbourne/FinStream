@@ -57,9 +57,8 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_HOSTNAME_STRICT: false
       KC_HTTP_ENABLED: true
-      KC_PROXY: edge # ADD THIS
-      # KC_HOSTNAME: https://18.191.203.16 # ADD THIS
-      # KC_HOSTNAME_ADMIN: https://18.191.203.16
+      KC_PROXY_HEADERS: xforwarded # ADD THIS (v2 way to handle proxy)
+      KC_HOSTNAME: https://18.191.203.16
     command:
       - start-dev
       - --features=hostname:v2
