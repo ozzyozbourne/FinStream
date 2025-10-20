@@ -65,7 +65,8 @@ services:
     ports:
       - ${KEYCLOAK_PORT}:8080
     depends_on:
-      - pgadmin
+      postgres:
+        condition: service_healthy
     networks:
       - shared
 
@@ -77,15 +78,15 @@ services:
       - ${REDIS_PORT}:6379
     volumes:
       - redis-data:/data
-    command: redis-server --appendonly yes --requirepass myStrongPassword
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    env_file:
+      - .env
     environment:
       - TZ=UTC
-    depends_on:
-      - keycloak
     networks:
       - shared
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -95,7 +96,7 @@ services:
     container_name: redisinsight
     restart: unless-stopped
     ports:
-      - "5540:5540"
+      - ${REDIS_INSIGHT_PORT}:5540
     volumes:
       - redisinsight-data:/data
     networks:
@@ -119,12 +120,23 @@ services:
       - GF_PATHS_DATA=/data/grafana
     env_file:
       - .env
-    stdin_open: true
-    tty: true
     networks:
       - shared
-    depends_on:
-      - redis
+
+  nginx:
+    image: nginx:latest
+    container_name: reverse-proxy
+    restart: unless-stopped
+    ports:
+      - ${NGINX_HTTP_PORT}:80
+      - ${NGINX_HTTPS_PORT}:443
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - dev
+      - qa
+      - prod
+      - shared
 
 volumes:
   postgres_data:
@@ -137,4 +149,10 @@ volumes:
 
 networks:
   shared:
+    external: true
+  dev:
+    external: true
+  qa:
+    external: true
+  prod:
     external: true
