@@ -58,7 +58,7 @@ services:
       KC_HOSTNAME_STRICT: false
       KC_HTTP_ENABLED: true
       KC_PROXY_HEADERS: xforwarded # ADD THIS (v2 way to handle proxy)
-      KC_HOSTNAME: https://18.191.203.16
+      KC_HOSTNAME: https://3.136.184.49
     command:
       - start-dev
       - --features=hostname:v2
@@ -113,7 +113,7 @@ services:
       - loki_data:/data/loki
     environment:
       - GF_PATHS_DATA=/data/grafana
-      - GF_SERVER_ROOT_URL=https://18.191.203.16/grafana # ADD THIS
+      - GF_SERVER_ROOT_URL=https://3.136.184.49/grafana # ADD THIS
       - GF_SERVER_SERVE_FROM_SUB_PATH=true # ADD THIS
     env_file:
       - .env
