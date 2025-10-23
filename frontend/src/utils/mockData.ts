@@ -178,6 +178,20 @@ export const mockTopGainers: Stock[] = [
     price: 65.62,
     change: 8.45,
     changePercent: 14.78
+  },
+   {
+    symbol: 'WOMENS',
+    name: 'Mens Wearhouse',
+    price: 65.62,
+    change: 8.45,
+    changePercent: 14.78
+  },
+   {
+    symbol: 'MENS',
+    name: 'Mens Wearhouse',
+    price: 65.62,
+    change: 8.45,
+    changePercent: 14.78
   }
 ];
 

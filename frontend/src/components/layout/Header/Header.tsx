@@ -2,18 +2,40 @@ import React from 'react';
 import SearchBar from '../../ui/SearchBar';
 import Button from '../../ui/Button';
 import './Header.css';
+import { keycloakService } from '../../../utils/keycloak';
+
+import {useState, useEffect} from 'react';
+
 
 const Header: React.FC = () => {
+
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userName, setUserName] = useState('');
   const handleSearch = (query: string) => {
     console.log('Search query:', query);
     // TODO: Implement search functionality
   };
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const authenticated = await keycloakService.init();
+      setIsAuthenticated(authenticated);
+      if (authenticated) {
+        setUserName(keycloakService.getUserName());
+      }
+    };
+    initializeAuth();
+  }, []);
 
   const handleSignIn = () => {
-    console.log('Sign in clicked');
-    // TODO: Implement sign in functionality
+    keycloakService.login(); // no await, Keycloak will handle redirect
   };
 
+  const handleSignOut = () => {
+    console.log("🚪 Logging out user...");
+    setIsAuthenticated(false);
+    setUserName('');
+    keycloakService.logout(); // This will redirect to Keycloak logout
+  };
   return (
     <header className="header">
       <div className="header-container">
@@ -49,9 +71,19 @@ const Header: React.FC = () => {
             </svg>
             <span className="mail-text">Mail</span>
           </button>
-          <Button variant="outline" size="small" onClick={handleSignIn}>
-            Sign in
-          </Button>
+          {/* Conditional rendering based on authentication status */}
+          {isAuthenticated ? (
+            <div className="user-info">
+              <span className="user-name">Welcome, {userName}</span>
+              <Button variant="outline" size="small" onClick={handleSignOut}>
+                Sign out
+              </Button>
+            </div>
+          ) : (
+            <Button variant="outline" size="small" onClick={handleSignIn}>
+              Sign in
+            </Button>
+          )}
         </div>
       </div>
     </header>
