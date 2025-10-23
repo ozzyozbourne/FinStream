@@ -1,5 +1,4 @@
-# Build stage
-FROM node:18-alpine AS build
+FROM node:20-alpine AS build
 WORKDIR /app
 
 # Accept BASE_PATH as build argument (default is root "/")
