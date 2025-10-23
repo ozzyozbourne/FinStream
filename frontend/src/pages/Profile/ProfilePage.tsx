@@ -13,7 +13,7 @@ const ProfilePage = () => {
 
   const [isEditing, setIsEditing] = useState(false);
 
-  const handleChange = (e: any) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
