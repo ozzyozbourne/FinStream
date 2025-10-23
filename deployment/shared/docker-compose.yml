@@ -57,11 +57,13 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_HOSTNAME_STRICT: false
       KC_HTTP_ENABLED: true
-      KC_PROXY_HEADERS: xforwarded # ADD THIS (v2 way to handle proxy)
+      KC_PROXY_HEADERS: xforwarded
       KC_HOSTNAME: https://3.136.184.49
+      KC_TRACING_ENABLED: true
+      KC_TRACING_ENDPOINT: http://lgtm:${OTEL_GRPC}
     command:
       - start-dev
-      - --features=hostname:v2
+      - --features=hostname:v2,opentelemetry:v1
     depends_on:
       postgres:
         condition: service_healthy
