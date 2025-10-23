@@ -61,10 +61,435 @@
   height: 14px;
 }
 
+/* Payment Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.payment-modal {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  max-width: 1200px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.payment-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px;
+  border-bottom: 1px solid #333;
+}
+
+.payment-modal-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.modal-close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  transition: color 0.2s;
+  border-radius: 4px;
+}
+
+.modal-close-button:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.payment-modal-content {
+  padding: 32px;
+}
+
+.pricing-plans {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.pricing-card {
+  background: #222;
+  border: 2px solid #333;
+  border-radius: 12px;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.pricing-card:hover {
+  border-color: #4a90e2;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(74, 144, 226, 0.25);
+}
+
+.pricing-card.popular {
+  border-color: #4a90e2;
+  border-width: 3px;
+  background: #252525;
+}
+
+.popular-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+  color: white;
+  padding: 6px 20px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+}
+
+.plan-name {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  text-align: center;
+  color: #fff;
+}
+
+.plan-price {
+  text-align: center;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #333;
+}
+
+.price {
+  font-size: 48px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.period {
+  font-size: 16px;
+  color: #999;
+  margin-left: 4px;
+}
+
+.plan-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 32px 0;
+  flex-grow: 1;
+}
+
+.plan-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  color: #ccc;
+  font-size: 14px;
+}
+
+.plan-features li svg {
+  color: #4ade80;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.select-plan-button {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Payment Form Modal */
+.payment-form-modal {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  max-width: 1000px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.3s ease;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  transition: all 0.2s;
+  border-radius: 4px;
+}
+
+.back-button:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.payment-form-content {
+  padding: 32px;
+}
+
+.payment-form-layout {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 32px;
+}
+
+.payment-form-left {
+  flex: 1;
+}
+
+.form-section {
+  margin-bottom: 32px;
+}
+
+.form-section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 20px 0;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ccc;
+  margin-bottom: 8px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 16px;
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.form-group input::placeholder {
+  color: #666;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.demo-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(74, 144, 226, 0.1);
+  border: 1px solid rgba(74, 144, 226, 0.3);
+  border-radius: 8px;
+  color: #4a90e2;
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+
+.demo-notice svg {
+  flex-shrink: 0;
+}
+
+.submit-payment-button {
+  width: 100%;
+  justify-content: center;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Order Summary */
+.payment-form-right {
+  position: sticky;
+  top: 32px;
+  height: fit-content;
+}
+
+.order-summary {
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.order-summary h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 20px 0;
+}
+
+.summary-plan {
+  padding: 20px;
+  background: #2a2a2a;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.summary-plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.summary-plan-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.summary-badge {
+  background: #4a90e2;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.summary-plan-price {
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.summary-period {
+  font-size: 16px;
+  color: #999;
+  font-weight: 400;
+}
+
+.summary-features h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ccc;
+  margin: 0 0 12px 0;
+}
+
+.summary-features ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.summary-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  color: #999;
+  font-size: 13px;
+}
+
+.summary-features li svg {
+  color: #4ade80;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.summary-divider {
+  height: 1px;
+  background: #333;
+  margin: 20px 0;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.summary-total-price {
+  font-size: 24px;
+  color: #4a90e2;
+}
+
+.summary-note {
+  font-size: 12px;
+  color: #999;
+  line-height: 1.5;
+}
+
 /* Responsive design */
 @media (max-width: 1200px) {
   .secondary-nav-list {
     gap: 24px;
+  }
+  
+  .pricing-plans {
+    gap: 20px;
   }
 }
 
@@ -97,6 +522,58 @@
     width: 12px;
     height: 12px;
   }
+  
+  .payment-modal-header {
+    padding: 20px 24px;
+  }
+  
+  .payment-modal-header h2 {
+    font-size: 20px;
+  }
+  
+  .payment-modal-content {
+    padding: 24px;
+  }
+  
+  .pricing-plans {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .pricing-card {
+    padding: 24px 20px;
+  }
+  
+  .plan-name {
+    font-size: 20px;
+  }
+  
+  .price {
+    font-size: 40px;
+  }
+  
+  .plan-features li {
+    font-size: 13px;
+    padding: 10px 0;
+  }
+
+  /* Payment Form Responsive */
+  .payment-form-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-form-right {
+    position: static;
+    order: -1;
+  }
+
+  .payment-form-content {
+    padding: 24px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 480px) {
@@ -110,5 +587,50 @@
   
   .upgrade-button {
     display: none;
+  }
+  
+  .modal-overlay {
+    padding: 10px;
+  }
+  
+  .payment-modal-header {
+    padding: 16px 20px;
+  }
+  
+  .payment-modal-content {
+    padding: 20px;
+  }
+  
+  .pricing-card {
+    padding: 20px 16px;
+  }
+  
+  .plan-name {
+    font-size: 18px;
+  }
+  
+  .price {
+    font-size: 36px;
+  }
+  
+  .period {
+    font-size: 14px;
+  }
+
+  /* Payment Form Mobile */
+  .payment-form-content {
+    padding: 20px;
+  }
+
+  .order-summary {
+    padding: 20px;
+  }
+
+  .summary-plan {
+    padding: 16px;
+  }
+
+  .summary-plan-price {
+    font-size: 28px;
   }
 }
