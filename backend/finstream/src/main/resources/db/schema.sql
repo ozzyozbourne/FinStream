@@ -17,7 +17,6 @@ COMMENT ON COLUMN users.subscribed IS 'Whether the user has an active subscripti
 COMMENT ON COLUMN users.created_at IS 'Timestamp when the record was created';
 COMMENT ON COLUMN users.updated_at IS 'Timestamp when the record was last updated';
 
--- Create a trigger to automatically update the updated_at column
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
