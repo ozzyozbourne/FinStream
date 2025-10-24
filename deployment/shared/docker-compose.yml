@@ -15,7 +15,8 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./pg_hba.conf:/etc/postgresql/pg_hba.conf # Add this
       - ./postgresql.conf:/etc/postgresql/postgresql.conf
-      - /home/ec2-user/ssl-pg:/var/lib/postgresql/ssl
+      - /home/ec2-user/ssl_pg/server.crt:/var/lib/postgresql/ssl/server.crt:ro
+      - /home/ec2-user/ssl_pg/server.key:/var/lib/postgresql/ssl/server.key:ro
     command:
       - postgres
       - -c
