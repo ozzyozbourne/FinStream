@@ -42,6 +42,9 @@
 ## Java
 ##############################
 *.quarkus/
+backend/finstream/.project
+backend/finstream/.settings/
+backend/finstream/.classpath
 
 ##############################
 ## React/Node
