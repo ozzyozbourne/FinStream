@@ -3,6 +3,7 @@ package finstream.resources;
 import finstream.dto.SubscriptionRequest;
 import finstream.entities.User;
 import finstream.repositories.UserRepository;
+import io.quarkus.oidc.Tenant;
 import io.quarkus.security.Authenticated;
 import io.smallrye.mutiny.Uni;
 import jakarta.ws.rs.*;
@@ -13,7 +14,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 @Path("/api/users")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-class UserResource {
+public class UserResource {
 
     private final JsonWebToken jwt;
     private final UserRepository userRepository;
@@ -23,8 +24,7 @@ class UserResource {
         this.userRepository = userRepository;
     }
 
-    @POST
-    @Path("/subscription") @Authenticated
+    @POST @Path("/subscription") @Authenticated @Tenant("external")
     public Uni<Response> saveOrUpdateSubscription(final SubscriptionRequest request) {
         final var keycloakUserId = jwt.getSubject();
         final String username = jwt.getClaim("preferred_username");
@@ -40,13 +40,12 @@ class UserResource {
                 .onItem().transform(user -> Response.ok(user).build());
     }
 
-    @GET
-    @Path("/all") @Authenticated
+    @GET @Path("/all") @Authenticated @Tenant("external")
     public Uni<Response> getAllUsers() {
         return userRepository.listAll().onItem().transform(users -> Response.ok(users).build());
     }
 
-    @GET @Path("/me") @Authenticated
+    @GET @Path("/me") @Authenticated @Tenant("external")
     public Uni<Response> getCurrentUser(){
         return userRepository.findByKeycloakUserId(jwt.getSubject())
                 .onItem().ifNull().failWith(new WebApplicationException("User not Found", Response.Status.NOT_FOUND))
