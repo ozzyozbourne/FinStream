@@ -9,8 +9,7 @@ import java.time.OffsetDateTime;
 @Table(name = "event_sequences")
 public class EventSequence {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true, length = 10)
