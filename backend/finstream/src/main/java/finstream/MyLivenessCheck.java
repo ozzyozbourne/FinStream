@@ -12,5 +12,4 @@ public class MyLivenessCheck implements HealthCheck {
         return HealthCheckResponse.up("alive");
     }
 
-
 }
