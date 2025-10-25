@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import SearchBar from '../../ui/SearchBar';
 import Button from '../../ui/Button';
 import './Header.css';
@@ -11,9 +12,15 @@ const Header: React.FC = () => {
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userName, setUserName] = useState('');
+  const navigate = useNavigate();
+  
   const handleSearch = (query: string) => {
     console.log('Search query:', query);
     // TODO: Implement search functionality
+  };
+
+  const handleLogoClick = () => {
+    navigate('/');
   };
   useEffect(() => {
     const initializeAuth = async () => {
@@ -41,7 +48,7 @@ const Header: React.FC = () => {
       <div className="header-container">
         {/* Logo and Search */}
         <div className="header-left">
-          <div className="logo">
+          <div className="logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
             <span className="logo-text">finStream</span>
             <span className="logo-subtitle">finance</span>
           </div>
