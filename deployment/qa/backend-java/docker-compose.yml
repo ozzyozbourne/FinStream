@@ -1,0 +1,16 @@
+services:
+  backend-qa-java:
+    image: ozzydoc/finstream-backend-java:qa
+    container_name: finstream-backend-qa-java
+    restart: unless-stopped
+    # ports:
+    #   - ${BACKEND_QA_PORT}:80
+    networks:
+      - qa
+      - shared
+
+networks:
+  qa:
+    external: true
+  shared:
+    external: true
