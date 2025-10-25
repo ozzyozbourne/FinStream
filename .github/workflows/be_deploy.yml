@@ -58,4 +58,4 @@ jobs:
           platforms: linux/amd64
           push: true
           build-args: ${{ steps.env.outputs.build_args }}
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/finstream-backend:${{ steps.env.outputs.environment }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/finstream-backend-java:${{ steps.env.outputs.environment }}
