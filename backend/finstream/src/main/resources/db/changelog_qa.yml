@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: qa
+      comment: Create users table
+      changes:
+        - sqlFile:
+            path: db/schema.sql
+            splitStatements: true
+            stripComments: true
+      rollback:
+        - sql:
+            sql: DROP TABLE IF EXISTS users CASCADE;
+
+  - changeSet:
+      id: 2
+      author: qa
+      comment: Add indexes to users table for performance
+      changes:
+        - sqlFile:
+            path: db/indexes.sql
+            splitStatements: true
+            stripComments: true
+      rollback:
+        - sql:
+            sql: |
+              DROP INDEX IF EXISTS idx_users_email;
+              DROP INDEX IF EXISTS idx_users_subscribed_created_at;

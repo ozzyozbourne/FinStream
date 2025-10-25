@@ -1,0 +1,16 @@
+services:
+  backend-dev-java:
+    image: ozzydoc/finstream-backend-java:dev
+    container_name: finstream-backend-dev-java
+    restart: unless-stopped
+    # ports:
+    #   - ${BACKEND_DEV_PORT}:80
+    networks:
+      - dev
+      - shared
+
+networks:
+  dev:
+    external: true
+  shared:
+    external: true
