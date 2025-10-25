@@ -54,7 +54,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./backend
-          file: ./backend/Dockerfile
+          file: ./backend/finstream/src/main/docker/Dockerfile.jvm
           platforms: linux/amd64
           push: true
           build-args: ${{ steps.env.outputs.build_args }}
