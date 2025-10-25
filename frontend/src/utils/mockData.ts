@@ -198,6 +198,7 @@ export const mockTopGainers: Stock[] = [
 // Mock Navigation Items
 export const mockNavItems = [
   { id: 'my-portfolio', label: 'My Portfolio', href: '/portfolio' },
+  { id: 'dashboard', label: 'Custom Dashboard', href: '/dashboard' },
   { id: 'news', label: 'News', href: '/news' },
   { id: 'markets', label: 'Markets', href: '/markets' },
   { id: 'research', label: 'Research', href: '/research' },

@@ -28,6 +28,12 @@
   align-items: baseline;
   gap: 4px;
   flex-shrink: 0;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.logo:hover {
+  opacity: 0.8;
 }
 
 .logo-text {

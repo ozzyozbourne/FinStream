@@ -5,7 +5,7 @@ interface ButtonProps {
   children: React.ReactNode;
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
   size?: 'small' | 'medium' | 'large';
-  onClick?: () => void;
+  onClick?: (e?: React.MouseEvent) => void;
   disabled?: boolean;
   className?: string;
   type?: 'button' | 'submit' | 'reset';
@@ -24,7 +24,7 @@ const Button: React.FC<ButtonProps> = ({
     <button
       type={type}
       className={`btn btn--${variant} btn--${size} ${className}`}
-      onClick={onClick}
+      onClick={(e) => onClick?.(e)}
       disabled={disabled}
     >
       {children}
