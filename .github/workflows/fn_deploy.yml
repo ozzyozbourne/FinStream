@@ -1,18 +1,29 @@
-name: Deploy-DEV
+name: Deploy Frontend
 on:
   push:
     branches:
       - dev
+      - master
+      - qa
     paths:
       - "frontend"
       - "frontend/**"
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set environment variables
+        id: env
+        run: |
+          if [[ "${{ github.ref_name }}" == "master" ]]; then
+            echo "environment=prod" >> $GITHUB_OUTPUT
+          else
+            echo "environment=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -34,5 +45,5 @@ jobs:
           platforms: linux/amd64
           push: true
           build-args: |
-            BASE_PATH=/dev
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/finstream-frontend:dev
+            BASE_PATH=/${{ steps.env.outputs.environment }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/finstream-frontend:${{ steps.env.outputs.environment }}
