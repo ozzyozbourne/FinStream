@@ -24,7 +24,5 @@ databaseChangeLog:
       rollback:
         - sql:
             sql: |
-              DROP INDEX IF EXISTS idx_users_keycloak_user_id;
               DROP INDEX IF EXISTS idx_users_email;
-              DROP INDEX IF EXISTS idx_users_subscribed;
               DROP INDEX IF EXISTS idx_users_subscribed_created_at;
