@@ -35,7 +35,7 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        working-directory: ./backend
+        working-directory: ./backend/finstream
         run: ./mvnw clean package
 
       - name: Set up QEMU
