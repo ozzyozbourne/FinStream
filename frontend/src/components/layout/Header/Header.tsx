@@ -6,7 +6,6 @@ import { keycloakService } from '../../../utils/keycloak';
 
 import {useState, useEffect} from 'react';
 
-
 const Header: React.FC = () => {
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -30,12 +29,13 @@ const Header: React.FC = () => {
     keycloakService.login(); // no await, Keycloak will handle redirect
   };
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
     console.log("🚪 Logging out user...");
     setIsAuthenticated(false);
     setUserName('');
-    keycloakService.logout(); // This will redirect to Keycloak logout
+    keycloakService.logout();
   };
+
   return (
     <header className="header">
       <div className="header-container">
@@ -53,8 +53,6 @@ const Header: React.FC = () => {
             />
           </div>
         </div>
-
-
 
         {/* User Actions */}
         <div className="header-actions">

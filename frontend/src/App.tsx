@@ -5,10 +5,12 @@ import HomePage from './pages/HomePage';
 import ProfilePage from './pages/Profile/ProfilePage';
 import './App.css';
 
+
 function App() {
+  
   return (
     <Router>
-    <MainLayout>
+     <MainLayout>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/profile" element={<ProfilePage />} />
