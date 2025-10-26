@@ -13,19 +13,14 @@ const ProfilePage = () => {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
-
   const realm = 'Finstream_External';
 
   useEffect(() => {
     console.log('🎯 useEffect is running!');
     const fetchProfile = async () => {
-      const isAuth = await keycloakService.init();
-      console.log('🔐 Authentication result:', isAuth);
-      if (!isAuth) {
-        keycloakService.login()
-        setLoading(false);
-        return;
-      }
+      console.log('📞 fetchProfile function called!');
+      const isAuth =  keycloakService.isAuthenticated();
+      console.log(isAuth)
       const token = keycloakService.getToken();
       if (!token) {
         console.log('❌ No token available, stopping...');
