@@ -11,6 +11,7 @@ interface MainLayoutProps {
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
     <div className="main-layout">
+      <Header />
       <SecondaryNav />
       <main className="main-content">
         <div className="content-container">
