@@ -7,13 +7,15 @@ import './App.css';
 
 
 function App() {
-  
-  return (
+  return ( 
     <Router>
      <MainLayout>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile" 
+        element={
+            <ProfilePage />
+        } />
       </Routes>
     </MainLayout>
   </Router>

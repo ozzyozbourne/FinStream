@@ -1,10 +1,11 @@
-// ProfilePage.jsx
+// ProfilePage.tsx
 import { useState, useEffect } from 'react';
-import { keycloakService } from '../../utils/keycloak';
+import { useKeycloak } from '@react-keycloak/web';
 import './ProfilePage.css';
+import axios from 'axios';
 
 const ProfilePage = () => {
-  console.log('🚀 ProfilePage component is rendering!')
+  const { keycloak, initialized } = useKeycloak();
   const [profile, setProfile] = useState({
     name: '',
     email: '',
@@ -13,72 +14,108 @@ const ProfilePage = () => {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
+  
   const realm = 'Finstream_External';
 
+  // Load profile on mount
   useEffect(() => {
-    console.log('🎯 useEffect is running!');
     const fetchProfile = async () => {
-      console.log('📞 fetchProfile function called!');
-      const isAuth =  keycloakService.isAuthenticated();
-      console.log(isAuth)
-      const token = keycloakService.getToken();
-      if (!token) {
-        console.log('❌ No token available, stopping...');
+      if (!keycloak.authenticated || !keycloak.token) {
         setLoading(false);
         return;
       }
+
       try {
-        console.log('🌐 Making API request...');
-        const response = await fetch(
-          `http://localhost:8080/realms/${realm}/protocol/openid-connect/userinfo`,
+        const response = await axios.get(
+          `http://localhost:8080/realms/${realm}/account`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${keycloak.token}` }
           }
         );
-        console.log(response)
-        console.log("touch")
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json();
-        console.log('User info:', data)
-        console.log("touch")
 
-        // Map Keycloak response
+        const data = response.data;
         setProfile({
-          name: data.name || '',
+          name: `${data.firstName || ''} ${data.lastName || ''}`.trim() || data.username || '',
           email: data.email || '',
-          phone_number: data.phonenumber || '',
-          address: data.address || '',
+          phone_number: data.attributes?.phone_number?.[0] || '',
+          address: data.attributes?.address?.[0] || '',
         });
-
-        setLoading(false);
-      } catch (err) {
-       console.log('hi')
-        console.error('Failed to fetch profile:', err);
+      } catch (error) {
+        console.error('Failed to fetch profile:', error);
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchProfile();
-  }, []);
+    if (initialized) {
+      fetchProfile();
+    }
+  }, [keycloak, initialized]);
 
+  // Update profile in Keycloak
+  const editProfile = async () => {
+    if (!keycloak.authenticated || !keycloak.token) {
+      throw new Error('User not authenticated');
+    }
+
+    const requestBody = {
+      username: keycloak.tokenParsed?.preferred_username || '',
+      firstName: profile.name.split(' ')[0] || '',
+      lastName: profile.name.split(' ').slice(1).join(' ') || '',
+      email: profile.email,
+      attributes: {
+        phone_number: [profile.phone_number],
+        address: [profile.address]
+      }
+    };
+
+    const response = await axios.post(
+      `http://localhost:8080/realms/${realm}/account`,
+      requestBody,
+      {
+        headers: {
+          Authorization: `Bearer ${keycloak.token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    return response.data;
+  };
+
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleEditToggle = () => setIsEditing(!isEditing);
-
-  const handleSave = async () => {
-    console.log('Updated profile (local only):', profile);
-    setIsEditing(false);
+  // Toggle edit mode
+  const handleEdit = () => {
+    setIsEditing(!isEditing);
   };
 
-  if (loading) return <p>Loading profile...</p>;
+  // Save changes
+  const handleSave = async () => {
+    try {
+      await editProfile();
+      alert('Profile updated successfully!');
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      alert('Failed to update profile. Please try again.');
+    }
+  };
 
+  if (!initialized || loading) return <p>Loading profile...</p>;
+
+  if (!keycloak.authenticated) {
+    return (
+      <div className="profile-page">
+        <h1>Profile Management</h1>
+        <p>Please log in to view your profile.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="profile-page">
@@ -101,15 +138,16 @@ const ProfilePage = () => {
             <span>{profile.email}</span>
           )}
         </div>
+
         <div className="profile-field">
           <label>Phone:</label>
           {isEditing ? (
             <input type="tel" name="phone_number" value={profile.phone_number} onChange={handleChange} />
           ) : (
-            <span>{profile.phone_number}</span> 
+            <span>{profile.phone_number}</span>
           )}
         </div>
-     
+
         <div className="profile-field">
           <label>Address:</label>
           {isEditing ? (
@@ -123,10 +161,10 @@ const ProfilePage = () => {
           {isEditing ? (
             <>
               <button className="save-btn" onClick={handleSave}>Save</button>
-              <button className="cancel-btn" onClick={handleEditToggle}>Cancel</button>
+              <button className="cancel-btn" onClick={handleEdit}>Cancel</button>
             </>
           ) : (
-            <button className="edit-btn" onClick={handleEditToggle}>Edit Profile</button>
+            <button className="edit-btn" onClick={handleEdit}>Edit Profile</button>
           )}
         </div>
       </div>

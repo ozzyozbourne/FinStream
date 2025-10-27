@@ -26,8 +26,6 @@ class KeycloakService {
     try {
       const authenticated = await this.keycloak.init({
         onLoad: 'check-sso',
-        // Remove the silentCheckSsoRedirectUri or create the file
-        // silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
         checkLoginIframe: false,
       });
       
@@ -35,6 +33,8 @@ class KeycloakService {
       if (authenticated && this.keycloak.token) {
         localStorage.setItem('kc_token', this.keycloak.token);
         console.log(this.keycloak.token)
+        console.log(this.keycloak.idToken)
+    
         console.log('✅ Token stored successfully');
       } else {
         // Clear any stale tokens if not authenticated
