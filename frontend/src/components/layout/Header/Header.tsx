@@ -1,67 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SearchBar from '../../ui/SearchBar';
 import Button from '../../ui/Button';
+import { useKeycloak } from '@react-keycloak/web';
 import './Header.css';
-import { keycloakService } from '../../../utils/keycloak';
-
-import {useState, useEffect} from 'react';
-
 
 const Header: React.FC = () => {
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userName, setUserName] = useState('');
-  const navigate = useNavigate();
-  
-  const handleSearch = (query: string) => {
-    console.log('Search query:', query);
-    // TODO: Implement search functionality
-  };
-
-  const handleLogoClick = () => {
-    navigate('/');
-  };
-  useEffect(() => {
-    const initializeAuth = async () => {
-      const authenticated = await keycloakService.init();
-      setIsAuthenticated(authenticated);
-      if (authenticated) {
-        setUserName(keycloakService.getUserName());
-      }
-    };
-    initializeAuth();
-  }, []);
-
-  const handleSignIn = () => {
-    keycloakService.login(); // no await, Keycloak will handle redirect
-  };
-
-  const handleSignOut = () => {
-    console.log("🚪 Logging out user...");
-    setIsAuthenticated(false);
-    setUserName('');
-    keycloakService.logout(); // This will redirect to Keycloak logout
-  };
+  const { keycloak } = useKeycloak();
   return (
     <header className="header">
       <div className="header-container">
         {/* Logo and Search */}
         <div className="header-left">
-          <div className="logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
-            <span className="logo-text">finStream</span>
-            <span className="logo-subtitle">finance</span>
-          </div>
-          <div className="header-search">
-            <SearchBar
-              placeholder="Search for news, tickers or companies"
-              onSearch={handleSearch}
-              className="header-search-bar"
-            />
+          <div className="logo">
+            <span className="logo-text">FinStream</span>
+            <span className="logo-subtitle">Finance</span>
           </div>
         </div>
-
-
 
         {/* User Actions */}
         <div className="header-actions">
@@ -78,18 +34,25 @@ const Header: React.FC = () => {
             </svg>
             <span className="mail-text">Mail</span>
           </button>
-          {/* Conditional rendering based on authentication status */}
-          {isAuthenticated ? (
-            <div className="user-info">
-              <span className="user-name">Welcome, {userName}</span>
-              <Button variant="outline" size="small" onClick={handleSignOut}>
-                Sign out
-              </Button>
-            </div>
-          ) : (
-            <Button variant="outline" size="small" onClick={handleSignIn}>
-              Sign in
-            </Button>
+          
+          {!keycloak.authenticated && (
+            <button
+              type="button"
+              className="text-blue-800"
+              onClick={() => keycloak.login({ redirectUri: window.location.origin + '/profile' })}
+            >
+              Login
+            </button>
+          )}
+
+          {!!keycloak.authenticated && (
+            <button
+              type="button"
+              className="text-blue-800"
+              onClick={() => keycloak.logout({ redirectUri: window.location.origin})}
+            >
+              Logout ({keycloak.tokenParsed?.preferred_username})
+            </button>
           )}
         </div>
       </div>
