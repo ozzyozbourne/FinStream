@@ -17,6 +17,13 @@ const Header: React.FC = () => {
             <span className="logo-text">FinStream</span>
             <span className="logo-subtitle">Finance</span>
           </div>
+          <div className="header-search">
+            <SearchBar
+              placeholder="Search for news, tickers or companies"
+              onSearch={(e) => console.log(e)}
+              className="header-search-bar"
+            />
+          </div>
         </div>
 
         {/* User Actions */}
