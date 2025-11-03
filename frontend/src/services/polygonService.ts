@@ -385,42 +385,57 @@ class PolygonService {
     }
   }
 
-  // Get market indices (simplified for free tier)
+  // Get market indices (using ETFs for free tier compatibility)
   async getMarketIndices(): Promise<any[]> {
     try {
-      // Only get 1 main index to stay within rate limits
-      const index = 'I:SPX';
+      // Use ETFs that track major indices (works with free tier)
+      const etfs = [
+        { symbol: 'SPY', name: 'S&P 500 ETF' },
+        { symbol: 'DIA', name: 'Dow Jones ETF' },
+        { symbol: 'QQQ', name: 'Nasdaq-100 ETF' }
+      ];
       
-      const url = `https://api.polygon.io/v2/aggs/ticker/${index}/range/1/day/${new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}/${new Date().toISOString().split('T')[0]}?apikey=${POLYGON_API_KEY}`;
-      const data = await this.rateLimitedRequest(url);
+      const results = [];
+      
+      for (const etf of etfs) {
+        try {
+          const url = `https://api.polygon.io/v2/aggs/ticker/${etf.symbol}/range/1/day/${new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}/${new Date().toISOString().split('T')[0]}?apikey=${POLYGON_API_KEY}`;
+          const data = await this.rateLimitedRequest(url);
 
-      if (data.status === 'OK' && data.results && data.results.length >= 2) {
-        const current = data.results[data.results.length - 1];
-        const previous = data.results[data.results.length - 2];
-        
-        const change = current.c - previous.c;
-        const changePercent = (change / previous.c) * 100;
+          if (data.status === 'OK' && data.results && data.results.length >= 2) {
+            const current = data.results[data.results.length - 1];
+            const previous = data.results[data.results.length - 2];
+            
+            const change = current.c - previous.c;
+            const changePercent = (change / previous.c) * 100;
 
-        return [{
-          id: index,
-          name: this.getIndexName(index),
-          value: current.c,
-          change: change,
-          changePercent: changePercent,
-          sparklineData: data.results.map((r: any) => r.c)
-        }];
+            results.push({
+              id: etf.symbol,
+              name: etf.name,
+              value: current.c,
+              change: change,
+              changePercent: changePercent,
+              sparklineData: data.results.map((r: any) => r.c)
+            });
+          }
+        } catch (error) {
+          console.error(`Error fetching ${etf.symbol}:`, error);
+        }
       }
 
-      return [];
+      return results;
     } catch (error) {
       console.error('Error fetching market indices:', error);
       return [];
     }
   }
 
-  // Helper method to get index names
+  // Helper method to get index names (kept for compatibility)
   private getIndexName(symbol: string): string {
     const indexNames: { [key: string]: string } = {
+      'SPY': 'S&P 500 ETF',
+      'DIA': 'Dow Jones ETF',
+      'QQQ': 'Nasdaq-100 ETF',
       'I:SPX': 'S&P 500',
       'I:DJI': 'Dow 30',
       'I:IXIC': 'Nasdaq',
