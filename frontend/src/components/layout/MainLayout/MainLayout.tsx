@@ -1,7 +1,8 @@
 import React from 'react';
 import Header from '../Header';
-import SecondaryNav from '../SecondaryNav';
+
 import './MainLayout.css';
+import SecondaryNav from '../SecondaryNav/SecondaryNav';
 
 interface MainLayoutProps {
   children: React.ReactNode;

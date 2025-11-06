@@ -13,13 +13,13 @@ import WatchPage from './pages/Watch';
 import PortfolioPage from './pages/Portfolio';
 import './App.css';
 
+
 function App() {
-  return (
+  return ( 
     <Router>
-    <MainLayout>
+     <MainLayout>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/dashboard" element={<CustomDashboard />} />
         <Route path="/news" element={<NewsPage />} />
         <Route path="/markets" element={<MarketsPage />} />
@@ -28,6 +28,10 @@ function App() {
         <Route path="/videos" element={<VideosPage />} />
         <Route path="/watch" element={<WatchPage />} />
         <Route path="/portfolio" element={<PortfolioPage />} />
+        <Route path="/profile" 
+        element={
+            <ProfilePage />
+        } />
       </Routes>
     </MainLayout>
   </Router>
