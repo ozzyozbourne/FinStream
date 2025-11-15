@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { polygonService } from '../../services/polygonService';
+import { stockDataService } from '../../services/stockDataService';
 import { Stock, MarketIndex } from '../../types';
 import SearchBar from '../../components/ui/SearchBar';
 import StockTicker from '../../components/ui/StockTicker';
 import MarketIndexComponent from '../../components/ui/MarketIndex';
 import Button from '../../components/ui/Button';
+import { ChartModal } from '../../components/ui/ChartModal/ChartModal';
 import './CustomDashboard.css';
 
 interface SavedStock extends Stock {
@@ -162,6 +165,7 @@ const checkMarketStatus = (): { isOpen: boolean; status: string; nextOpen?: stri
 };
 
 const CustomDashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [savedStocks, setSavedStocks] = useState<SavedStock[]>([]);
   const [watchlistStocks, setWatchlistStocks] = useState<WatchlistStock[]>([]);
   const [watchlistTitle, setWatchlistTitle] = useState<string>('Watchlist');
@@ -179,6 +183,9 @@ const CustomDashboard: React.FC = () => {
   const [marketStatus, setMarketStatus] = useState<string>('');
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const searchContainerRef = React.useRef<HTMLDivElement>(null);
+  const [realtimeData, setRealtimeData] = useState<any>(null);
+  const [showChart, setShowChart] = useState(false);
+  const [chartSymbol, setChartSymbol] = useState('AAPL');
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -597,6 +604,7 @@ const CustomDashboard: React.FC = () => {
           </div>
         )}
       </div>
+      {showChart && <ChartModal symbol={chartSymbol} onClose={() => setShowChart(false)} />}
 
       {/* Live Market Ticker */}
       <div className="market-ticker">
@@ -756,6 +764,19 @@ const CustomDashboard: React.FC = () => {
                       stock={stock}
                       onRemove={handleRemoveStock}
                       viewMode={viewMode}
+                      onViewChart={(symbol) => {
+                        setChartSymbol(symbol);
+                        setShowChart(true);
+                      }}
+                      onViewRealtime={async (symbol) => {
+                        try {
+                          const data = await stockDataService.getEODData(symbol);
+                          alert(`Latest data for ${symbol}:\nPrice: $${data.data[0]?.close}\nDate: ${data.data[0]?.date}`);
+                        } catch (error) {
+                          alert('Error fetching real-time data');
+                        }
+                      }}
+                      onViewHistorical={(symbol) => navigate(`/historical-data?symbol=${symbol}`)}
                     />
                   ))}
                 </div>
@@ -909,7 +930,10 @@ const SortableStockItem: React.FC<{
   stock: SavedStock;
   onRemove: (stockId: string) => void;
   viewMode: 'list' | 'grid';
-}> = ({ stock, onRemove, viewMode }) => {
+  onViewChart: (symbol: string) => void;
+  onViewRealtime: (symbol: string) => void;
+  onViewHistorical: (symbol: string) => void;
+}> = ({ stock, onRemove, viewMode, onViewChart, onViewRealtime, onViewHistorical }) => {
   const {
     attributes,
     listeners,
@@ -930,11 +954,9 @@ const SortableStockItem: React.FC<{
       <div
         ref={setNodeRef}
         style={style}
-        {...attributes}
-        {...listeners}
         className={`saved-stock-item grid-item ${isDragging ? 'dragging' : ''}`}
       >
-        <div className="drag-handle">⋮⋮</div>
+        <div {...attributes} {...listeners} className="drag-handle">⋮⋮</div>
         <div className="stock-info">
           <div className="stock-details">
             <span className="stock-symbol">{stock.symbol}</span>
@@ -946,6 +968,11 @@ const SortableStockItem: React.FC<{
               {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)} ({stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%)
             </span>
           </div>
+        </div>
+        <div className="stock-actions">
+          <Button variant="primary" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onViewRealtime(stock.symbol); }}>Real-Time</Button>
+          <Button variant="outline" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onViewHistorical(stock.symbol); }}>Historical</Button>
+          <Button variant="outline" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onViewChart(stock.symbol); }}>Chart</Button>
         </div>
         <Button
           variant="outline"
@@ -966,11 +993,9 @@ const SortableStockItem: React.FC<{
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
       className={`saved-stock-item list-item ${isDragging ? 'dragging' : ''}`}
     >
-      <div className="drag-handle">⋮⋮</div>
+      <div {...attributes} {...listeners} className="drag-handle">⋮⋮</div>
       <div className="stock-info">
         <div className="stock-details">
           <span className="stock-symbol">{stock.symbol}</span>
@@ -986,6 +1011,11 @@ const SortableStockItem: React.FC<{
           showChange={true}
           className="compact"
         />
+      </div>
+      <div className="stock-actions">
+        <Button variant="primary" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onViewRealtime(stock.symbol); }}>Real-Time</Button>
+        <Button variant="outline" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onViewHistorical(stock.symbol); }}>Historical</Button>
+        <Button variant="outline" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onViewChart(stock.symbol); }}>Chart</Button>
       </div>
       <Button
         variant="outline"

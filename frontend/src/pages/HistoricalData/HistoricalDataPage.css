@@ -1,0 +1,84 @@
+.historical-data-page {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #000;
+  min-height: 100vh;
+  color: #fff;
+}
+
+.historical-data-page h1 {
+  margin-bottom: 2rem;
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.symbol-input {
+  padding: 0.75rem 1rem;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+  min-width: 200px;
+}
+
+.data-table {
+  overflow-x: auto;
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.data-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #333;
+}
+
+.data-table th {
+  color: #00d4aa;
+  font-weight: 600;
+}
+
+.data-table tr:hover {
+  background: #2a2a2a;
+}
+
+.error-message {
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid #ff6b6b;
+  border-radius: 8px;
+  padding: 1.5rem;
+  color: #ff6b6b;
+  text-align: center;
+}
+
+.error-message p {
+  margin: 0.5rem 0;
+}
+
+.error-message .hint {
+  color: #a0a0a0;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+
+.showing-message {
+  text-align: center;
+  color: #a0a0a0;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+

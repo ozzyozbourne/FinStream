@@ -11,6 +11,7 @@ import PersonalFinancePage from './pages/PersonalFinance';
 import VideosPage from './pages/Videos';
 import WatchPage from './pages/Watch';
 import PortfolioPage from './pages/Portfolio';
+import { HistoricalDataPage } from './pages/HistoricalData/HistoricalDataPage';
 import './App.css';
 
 
@@ -21,6 +22,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/dashboard" element={<CustomDashboard />} />
+        <Route path="/historical-data" element={<HistoricalDataPage />} />
         <Route path="/news" element={<NewsPage />} />
         <Route path="/markets" element={<MarketsPage />} />
         <Route path="/research" element={<ResearchPage />} />

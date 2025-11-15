@@ -1,0 +1,64 @@
+.chart-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.chart-modal-content {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 1000px;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.chart-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #333;
+}
+
+.chart-modal-header h2 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.5rem;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.close-btn:hover {
+  color: #00d4aa;
+}
+
+.chart-container {
+  padding: 2rem;
+  height: 500px;
+}
+
+.loading, .error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #a0a0a0;
+  font-size: 1.1rem;
+}
+
