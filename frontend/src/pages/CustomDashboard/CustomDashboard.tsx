@@ -15,8 +15,15 @@ interface SavedStock extends Stock {
   isSaved: boolean;
 }
 
-// Local storage key for saved stocks
+interface WatchlistStock extends Stock {
+  id: string;
+  addedAt: number;
+}
+
+// Local storage keys
 const SAVED_STOCKS_KEY = 'finStream_savedStocks';
+const WATCHLIST_KEY = 'finStream_watchlist';
+const WATCHLIST_TITLE_KEY = 'finStream_watchlistTitle';
 
 // Helper functions for localStorage
 const saveStocksToStorage = (stocks: SavedStock[]) => {
@@ -40,6 +47,49 @@ const loadStocksFromStorage = (): SavedStock[] => {
     console.error('Error loading stocks from localStorage:', error);
   }
   return [];
+};
+
+const saveWatchlistToStorage = (stocks: WatchlistStock[]) => {
+  try {
+    localStorage.setItem(WATCHLIST_KEY, JSON.stringify(stocks));
+    console.log('Saved watchlist to localStorage:', stocks.length);
+  } catch (error) {
+    console.error('Error saving watchlist to localStorage:', error);
+  }
+};
+
+const loadWatchlistFromStorage = (): WatchlistStock[] => {
+  try {
+    const saved = localStorage.getItem(WATCHLIST_KEY);
+    if (saved) {
+      const stocks = JSON.parse(saved);
+      console.log('Loaded watchlist from localStorage:', stocks.length);
+      return stocks;
+    }
+  } catch (error) {
+    console.error('Error loading watchlist from localStorage:', error);
+  }
+  return [];
+};
+
+const saveWatchlistTitleToStorage = (title: string) => {
+  try {
+    localStorage.setItem(WATCHLIST_TITLE_KEY, title);
+  } catch (error) {
+    console.error('Error saving watchlist title to localStorage:', error);
+  }
+};
+
+const loadWatchlistTitleFromStorage = (): string => {
+  try {
+    const saved = localStorage.getItem(WATCHLIST_TITLE_KEY);
+    if (saved) {
+      return saved;
+    }
+  } catch (error) {
+    console.error('Error loading watchlist title from localStorage:', error);
+  }
+  return 'Watchlist';
 };
 
 // Market status helper functions
@@ -113,6 +163,9 @@ const checkMarketStatus = (): { isOpen: boolean; status: string; nextOpen?: stri
 
 const CustomDashboard: React.FC = () => {
   const [savedStocks, setSavedStocks] = useState<SavedStock[]>([]);
+  const [watchlistStocks, setWatchlistStocks] = useState<WatchlistStock[]>([]);
+  const [watchlistTitle, setWatchlistTitle] = useState<string>('Watchlist');
+  const [isEditingWatchlistTitle, setIsEditingWatchlistTitle] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Stock[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -125,6 +178,7 @@ const CustomDashboard: React.FC = () => {
   const [isMarketOpen, setIsMarketOpen] = useState<boolean | null>(null);
   const [marketStatus, setMarketStatus] = useState<string>('');
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const searchContainerRef = React.useRef<HTMLDivElement>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -161,6 +215,24 @@ const CustomDashboard: React.FC = () => {
 
     return () => clearInterval(interval);
   }, [isMarketOpen, marketIndices.length]);
+
+  // Close search dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+        setSearchQuery('');
+        setSearchResults([]);
+      }
+    };
+
+    if (searchQuery) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [searchQuery]);
 
   // Function to load market data
   const loadMarketData = async () => {
@@ -200,6 +272,15 @@ const CustomDashboard: React.FC = () => {
         // Load saved stocks from localStorage first
         const savedStocksFromStorage = loadStocksFromStorage();
         setSavedStocks(savedStocksFromStorage);
+        
+        // Load watchlist from localStorage
+        const watchlistFromStorage = loadWatchlistFromStorage();
+        setWatchlistStocks(watchlistFromStorage);
+        
+        // Load watchlist title from localStorage
+        const savedTitle = loadWatchlistTitleFromStorage();
+        setWatchlistTitle(savedTitle);
+        
         setMarketIndices([]);
         
         // Check market status first
@@ -223,6 +304,15 @@ const CustomDashboard: React.FC = () => {
             
             // Update saved stocks
             setSavedStocks(prevStocks => 
+              prevStocks.map(stock => 
+                stock.symbol === symbol 
+                  ? { ...stock, price, change, changePercent }
+                  : stock
+              )
+            );
+            
+            // Update watchlist stocks
+            setWatchlistStocks(prevStocks => 
               prevStocks.map(stock => 
                 stock.symbol === symbol 
                   ? { ...stock, price, change, changePercent }
@@ -292,6 +382,12 @@ const CustomDashboard: React.FC = () => {
               polygonService.subscribeToStock(stock.symbol);
             });
             console.log(`Loaded ${savedStocksFromStorage.length} saved stocks from localStorage`);
+            
+            // Subscribe to real-time updates for watchlist stocks
+            watchlistFromStorage.forEach(stock => {
+              polygonService.subscribeToStock(stock.symbol);
+            });
+            console.log(`Loaded ${watchlistFromStorage.length} watchlist stocks from localStorage`);
           }
         } catch (err) {
           console.error('Stock data loading failed:', err);
@@ -337,50 +433,51 @@ const CustomDashboard: React.FC = () => {
 
         console.log("stocks searched......", stocks);
         
+        // Show results immediately
         setSearchResults(stocks);
         
-        // Load price data in background for better performance
-        setTimeout(async () => {
-          console.log('Loading price data in background...');
-          const updatedStocks = await Promise.all(
-            stocks.map(async (stock) => {
-              try {
-                const aggregates = await polygonService.getStockAggregates(stock.symbol, 'day', 2, true); // Use fast request
+        // Load price data for each stock
+        console.log('Loading price data...');
+        const updatedStocks = await Promise.all(
+          stocks.map(async (stock) => {
+            try {
+              const aggregates = await polygonService.getStockAggregates(stock.symbol, 'day', 2, true);
+              
+              console.log(`Aggregates for ${stock.symbol}:`, aggregates);
+              
+              if (aggregates && aggregates.length >= 2) {
+                const current = aggregates[aggregates.length - 1];
+                const previous = aggregates[aggregates.length - 2];
                 
-                if (aggregates && aggregates.length >= 2) {
-                  const current = aggregates[aggregates.length - 1];
-                  const previous = aggregates[aggregates.length - 2];
-                  
-                  const change = current.c - previous.c;
-                  const changePercent = (change / previous.c) * 100;
+                const change = current.c - previous.c;
+                const changePercent = (change / previous.c) * 100;
 
-                  return {
-                    ...stock,
-                    price: current.c,
-                    change: change,
-                    changePercent: changePercent
-                  };
-                } else if (aggregates && aggregates.length >= 1) {
-                  const current = aggregates[aggregates.length - 1];
-                  return {
-                    ...stock,
-                    price: current.c,
-                    change: 0,
-                    changePercent: 0
-                  };
-                }
-                
-                return stock; // Keep original if no data
-              } catch (error) {
-                console.error(`Error fetching price for ${stock.symbol}:`, error);
-                return stock; // Keep original on error
+                return {
+                  ...stock,
+                  price: current.c,
+                  change: change,
+                  changePercent: changePercent
+                };
+              } else if (aggregates && aggregates.length >= 1) {
+                const current = aggregates[aggregates.length - 1];
+                return {
+                  ...stock,
+                  price: current.c,
+                  change: 0,
+                  changePercent: 0
+                };
               }
-            })
-          );
-          
-          console.log('Updated stocks with price data:', updatedStocks);
-          setSearchResults(updatedStocks);
-        }, 100); // Small delay to let UI render first
+              
+              return stock; // Keep original if no data
+            } catch (error) {
+              console.error(`Error fetching price for ${stock.symbol}:`, error);
+              return stock; // Keep original on error
+            }
+          })
+        );
+        
+        console.log('Updated stocks with price data:', updatedStocks);
+        setSearchResults(updatedStocks);
       } catch (err) {
         console.error('Error searching stocks:', err);
         setError('Failed to search stocks. Please try again.');
@@ -425,6 +522,45 @@ const CustomDashboard: React.FC = () => {
       saveStocksToStorage(updatedStocks);
       return updatedStocks;
     });
+  };
+
+  const handleAddToWatchlist = (stock: Stock) => {
+    const newWatchlistStock: WatchlistStock = {
+      ...stock,
+      id: `watchlist-${stock.symbol}-${Date.now()}`,
+      addedAt: Date.now()
+    };
+    
+    setWatchlistStocks(prev => {
+      const updatedStocks = [...prev, newWatchlistStock];
+      saveWatchlistToStorage(updatedStocks);
+      return updatedStocks;
+    });
+    
+    // Subscribe to real-time updates for the new stock
+    polygonService.subscribeToStock(stock.symbol);
+    
+    setSearchQuery('');
+    setSearchResults([]);
+  };
+
+  const handleRemoveFromWatchlist = (stockId: string) => {
+    const stockToRemove = watchlistStocks.find(stock => stock.id === stockId);
+    if (stockToRemove) {
+      // Unsubscribe from real-time updates
+      polygonService.unsubscribeFromStock(stockToRemove.symbol);
+    }
+    
+    setWatchlistStocks(prev => {
+      const updatedStocks = prev.filter(stock => stock.id !== stockId);
+      saveWatchlistToStorage(updatedStocks);
+      return updatedStocks;
+    });
+  };
+
+  const handleWatchlistTitleChange = (newTitle: string) => {
+    setWatchlistTitle(newTitle);
+    saveWatchlistTitleToStorage(newTitle);
   };
 
   const handleDragStart = () => {
@@ -505,7 +641,7 @@ const CustomDashboard: React.FC = () => {
             <p className="section-subtitle">Search and add stocks to your dashboard</p>
           </div>
           
-          <div className="search-container">
+          <div className="search-container" ref={searchContainerRef}>
             <SearchBar
               placeholder="Search for stocks by symbol or company name..."
               onSearch={handleSearch}
@@ -533,10 +669,16 @@ const CustomDashboard: React.FC = () => {
                               <span className="result-name">{stock.name}</span>
                             </div>
                             <div className="result-price">
-                              <span className="price">${stock.price.toFixed(2)}</span>
-                              <span className={`change ${stock.change >= 0 ? 'positive' : 'negative'}`}>
-                                {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)} ({stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%)
-                              </span>
+                              {stock.price > 0 ? (
+                                <>
+                                  <span className="price">${stock.price.toFixed(2)}</span>
+                                  <span className={`change ${stock.change >= 0 ? 'positive' : 'negative'}`}>
+                                    {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)} ({stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%)
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="price loading">Loading price...</span>
+                              )}
                             </div>
                           </div>
                           <Button
@@ -546,6 +688,14 @@ const CustomDashboard: React.FC = () => {
                             className="add-button"
                           >
                             Add
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="small"
+                            onClick={() => handleAddToWatchlist(stock)}
+                            className="add-button"
+                          >
+                            Watch
                           </Button>
                         </div>
                       ))}
@@ -614,6 +764,86 @@ const CustomDashboard: React.FC = () => {
           ) : (
             <div className="empty-state">
               <p>No saved stocks yet. Search and add stocks to get started!</p>
+            </div>
+          )}
+        </div>
+
+        {/* Watchlist Section */}
+        <div className="saved-stocks-section">
+          <div className="section-header">
+            {isEditingWatchlistTitle ? (
+              <input
+                type="text"
+                value={watchlistTitle}
+                onChange={(e) => setWatchlistTitle(e.target.value)}
+                onBlur={() => {
+                  setIsEditingWatchlistTitle(false);
+                  saveWatchlistTitleToStorage(watchlistTitle);
+                }}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    setIsEditingWatchlistTitle(false);
+                    saveWatchlistTitleToStorage(watchlistTitle);
+                  }
+                }}
+                autoFocus
+                className="watchlist-title-input"
+                style={{
+                  fontSize: '1.25rem',
+                  fontWeight: '600',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  padding: '4px 8px',
+                  outline: 'none'
+                }}
+              />
+            ) : (
+              <h3 
+                className="section-title"
+                onClick={() => setIsEditingWatchlistTitle(true)}
+                style={{ cursor: 'pointer' }}
+                title="Click to edit title"
+              >
+                {watchlistTitle} ({watchlistStocks.length})
+                {/* <span style={{ fontSize: '0.75rem', marginLeft: '8px', opacity: 0.6 }}>✏️</span> */}
+              </h3>
+            )}
+          </div>
+          
+          {watchlistStocks.length > 0 ? (
+            <div className="saved-stocks-container list">
+              {watchlistStocks.map((stock) => (
+                <div key={stock.id} className="saved-stock-item list-item">
+                  <div className="stock-info">
+                    <div className="stock-details">
+                      <span className="stock-symbol">{stock.symbol}</span>
+                      <span className="stock-name">{stock.name}</span>
+                    </div>
+                    <StockTicker
+                      ticker={{
+                        symbol: stock.symbol,
+                        price: stock.price,
+                        change: stock.change,
+                        changePercent: stock.changePercent
+                      }}
+                      showChange={true}
+                      className="compact"
+                    />
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="small"
+                    onClick={() => handleRemoveFromWatchlist(stock.id)}
+                    className="remove-button"
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-state">
+              <p>No stocks in watchlist yet. Search and add stocks to watch!</p>
             </div>
           )}
         </div>

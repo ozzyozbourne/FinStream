@@ -6,14 +6,23 @@ import { useKeycloak } from '@react-keycloak/web';
 import './Header.css';
 
 const Header: React.FC = () => {
-
+  const navigate = useNavigate();
   const { keycloak } = useKeycloak();
+
+  const handleLogoClick = () => {
+    navigate('/');
+  };
+
   return (
     <header className="header">
       <div className="header-container">
         {/* Logo and Search */}
         <div className="header-left">
-          <div className="logo">
+          <div 
+            className="logo" 
+            onClick={handleLogoClick}
+            style={{ cursor: 'pointer' }}
+          >
             <span className="logo-text">FinStream</span>
             <span className="logo-subtitle">Finance</span>
           </div>

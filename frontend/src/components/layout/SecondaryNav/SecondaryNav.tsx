@@ -21,8 +21,8 @@ const SecondaryNav: React.FC = () => {
       price: '$9',
       period: '/month',
       features: [
-        'Up to 10 cats',
-        'Basic health tracking',
+        'Up to 10 dashboards',
+        'Basic tracking',
         'Email support',
         'Mobile app access'
       ]
@@ -33,11 +33,10 @@ const SecondaryNav: React.FC = () => {
       price: '$19',
       period: '/month',
       features: [
-        'Unlimited cats',
-        'Advanced health tracking',
-        'Priority support',
+        'Unlimited dashboards',
+        'Advanced tracking',
+        'Limited Flat files downloads',
         'Mobile app access',
-        'Veterinary consultation',
         'Custom reports'
       ],
       popular: true
@@ -50,11 +49,11 @@ const SecondaryNav: React.FC = () => {
       features: [
         'Everything in Premium',
         'Multi-user access',
-        '24/7 phone support',
         'API access',
         'Advanced analytics',
         'Custom integrations',
-        'Dedicated account manager'
+        'Dedicated account manager',
+        'Unlimited Flat files downloads'
       ]
     }
   ];
