@@ -4,7 +4,6 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { polygonService } from '../../services/polygonService';
-import { stockDataService } from '../../services/stockDataService';
 import { Stock, MarketIndex } from '../../types';
 import SearchBar from '../../components/ui/SearchBar';
 import StockTicker from '../../components/ui/StockTicker';
@@ -369,19 +368,6 @@ const CustomDashboard: React.FC = () => {
               console.log(`Real stock data loaded: ${realStocks.length} stocks`);
             } else {
               console.log('No popular stocks returned from API');
-              // Test with minimal data to see if the issue is with data structure
-              const testStock: SavedStock = {
-                symbol: 'TEST',
-                name: 'Test Stock',
-                price: 100.00,
-                change: 1.50,
-                changePercent: 1.52,
-                id: 'test-1',
-                isSaved: true
-              };
-              console.log('Setting test stock data:', testStock);
-              setSavedStocks([testStock]);
-              saveStocksToStorage([testStock]);
             }
           } else {
             // Subscribe to real-time updates for existing saved stocks
@@ -768,14 +754,7 @@ const CustomDashboard: React.FC = () => {
                         setChartSymbol(symbol);
                         setShowChart(true);
                       }}
-                      onViewRealtime={async (symbol) => {
-                        try {
-                          const data = await stockDataService.getEODData(symbol);
-                          alert(`Latest data for ${symbol}:\nPrice: $${data.data[0]?.close}\nDate: ${data.data[0]?.date}`);
-                        } catch (error) {
-                          alert('Error fetching real-time data');
-                        }
-                      }}
+                      onViewRealtime={(symbol) => navigate('/research')}
                       onViewHistorical={(symbol) => navigate(`/historical-data?symbol=${symbol}`)}
                     />
                   ))}
