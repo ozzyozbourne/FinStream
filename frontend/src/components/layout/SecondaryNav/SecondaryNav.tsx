@@ -1,20 +1,28 @@
-import React from 'react';
-import { mockNavItems } from '../../../utils/mockData';
+import React, { useState, useEffect, useCallback } from 'react';
 import Button from '../../ui/Button';
+import { useKeycloak } from '@react-keycloak/web';
 import './SecondaryNav.css';
-import { useState } from 'react';
+import axios from 'axios';
+
+type PlanType = {
+  id: string;
+  name: string;
+  price: string;
+  period: string;
+  features: string[];
+  popular?: boolean;
+};
 
 const SecondaryNav: React.FC = () => {
+  const { keycloak } = useKeycloak();
+  const realm = 'Finstream_External';
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<typeof plans[0] | null>(null);
-
-  const handleUpgrade = () => {
-    setShowPaymentModal(true);
-    setShowPaymentForm(false);
-  };
-
-  const plans = [
+  const [selectedPlan, setSelectedPlan] = useState<PlanType | null>(null);
+  const [currentSubscription, setCurrentSubscription] = useState<string | null>(null);
+  
+  // PLANS DATA
+  const plans: PlanType[] = [
     {
       id: 'basic',
       name: 'Basic',
@@ -32,6 +40,7 @@ const SecondaryNav: React.FC = () => {
       name: 'Premium',
       price: '$19',
       period: '/month',
+      popular: true,
       features: [
         'Unlimited cats',
         'Advanced health tracking',
@@ -39,8 +48,7 @@ const SecondaryNav: React.FC = () => {
         'Mobile app access',
         'Veterinary consultation',
         'Custom reports'
-      ],
-      popular: true
+      ]
     },
     {
       id: 'advance',
@@ -58,19 +66,54 @@ const SecondaryNav: React.FC = () => {
       ]
     }
   ];
+  
+  // NAV ITEMS
+  const NavItems = [
+    { id: 'my-profile', label: 'Profile', href: '/profile' },
+    { id: 'my-portfolio', label: 'Portfolio', href: '/portfolio' },
+    { id: 'dashboard', label: 'Custom Dashboard', href: '/dashboard' },
+    { id: 'markets', label: 'Markets', href: '/markets' },
+    { id: 'research', label: 'Live Market Data', href: '/research' },
+    { id: 'personal-finance', label: 'Personal Finance', href: '/personal-finance' },
+  ];
 
-  const handleSelectPlan = (plan: typeof plans[0]) => {
+  // FETCH CURRENT SUBSCRIPTION
+  const fetchCurrentSubscription = useCallback(async () => {
+    if (!keycloak.authenticated || !keycloak.token) {
+      setCurrentSubscription(null);
+      return;
+    }
+    try {
+      const profileResponse = await axios.get(
+        `http://localhost:8080/realms/${realm}/account`,
+        {
+          headers: {
+            Authorization: `Bearer ${keycloak.token}`,
+          },
+        }
+      );
+      const subscription = profileResponse.data?.attributes?.subscription?.[0] || null;
+      setCurrentSubscription(subscription);
+    } catch (error) {
+      console.error('Failed to fetch subscription:', error);
+      setCurrentSubscription(null);
+    }
+  }, [keycloak.authenticated, keycloak.token, realm]);
+  
+  // LOAD SUBSCRIPTION ON AUTH CHANGE
+  useEffect(() => {
+    fetchCurrentSubscription();
+  }, [fetchCurrentSubscription]);
+
+  const handleUpgrade = () => {
+    setShowPaymentModal(true);
+    setShowPaymentForm(false);
+  };
+  
+  const handleSelectPlan = (plan: PlanType) => {
     setSelectedPlan(plan);
     setShowPaymentForm(true);
     setShowPaymentModal(false);
-  };
-
-  const handlePaymentSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Payment submitted for plan:', selectedPlan?.name);
-    alert('Demo: Payment processed successfully! (This is a fake payment form for demonstration purposes)');
-    setShowPaymentForm(false);
-    setSelectedPlan(null);
   };
 
   const handleBackToPlans = () => {
@@ -78,13 +121,78 @@ const SecondaryNav: React.FC = () => {
     setShowPaymentModal(true);
   };
 
+  // UPDATE SUBSCRIPTION IN KEYCLOAK
+  const updatePlan = async (subscription: string, planId: string) => {
+    if (!keycloak.authenticated || !keycloak.token) {
+      throw new Error('User not authenticated');
+    }
+    try {
+      const token = keycloak.token;
+      const profileResponse = await axios.get(
+        `http://localhost:8080/realms/${realm}/account`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const profile = profileResponse.data;
+      const updatedProfile = {
+        username: profile.username || keycloak.tokenParsed?.preferred_username || '',
+        firstName: profile.firstName || '',
+        lastName: profile.lastName || '',
+        email: profile.email || '',
+        attributes: {
+          phone_number: profile.attributes?.phone_number?.[0] ? [profile.attributes.phone_number[0]] : [''],
+          address: profile.attributes?.address?.[0] ? [profile.attributes.address[0]] : [''],
+          [subscription]: [planId],
+        },
+      };
+      const updateResponse = await axios.post(
+        `http://localhost:8080/realms/${realm}/account`,
+        updatedProfile,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      console.log('Subscription updated successfully:', updateResponse.data);
+      return updateResponse.data;
+    } catch (error: any) {
+      console.error('Failed to update subscription:', error);
+      throw new Error(error.message || 'Unknown error');
+    }
+  };
+  
+  // PAYMENT FORM SUBMIT
+  const handlePaymentSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedPlan) return;
+    try {
+      await updatePlan('subscription', selectedPlan.id);
+      setCurrentSubscription(selectedPlan.id);
+      alert(`Subscription updated to ${selectedPlan.name} (${selectedPlan.id})`);
+      setShowPaymentForm(false);
+      setSelectedPlan(null);
+    } catch (err) {
+      console.error('Failed to update subscription:', err);
+      alert('Failed to update subscription. Please try again.');
+    }
+  };
+  
   return (
     <>
       <nav className="secondary-nav">
         <div className="secondary-nav-container">
           <div className="secondary-nav-left">
             <ul className="secondary-nav-list">
-              {mockNavItems.map((item) => (
+              {NavItems.filter(item => {
+                // Show Profile only if user is authenticated
+                if (item.id === 'my-profile') {
+                  return keycloak.authenticated;
+                }
+                return true;
+              }).map((item) => (
                 <li key={item.id} className="secondary-nav-item">
                   <a href={item.href} className="secondary-nav-link">
                     {item.label}
@@ -93,26 +201,33 @@ const SecondaryNav: React.FC = () => {
               ))}
             </ul>
           </div>
-          
+
           <div className="secondary-nav-right">
-            <Button 
-              variant="primary" 
-              size="small" 
-              onClick={handleUpgrade}
-              className="upgrade-button"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <circle cx="12" cy="16" r="1"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-              Upgrade to Premium
-            </Button>
+            {keycloak.authenticated && (
+              <>
+                {currentSubscription && currentSubscription !== 'free' ? (
+                  <span
+                    className="current-plan-text"
+                    style={{ color: '#22c55e', fontWeight: 600 }}
+                  >
+                    {plans.find((p) => p.id === currentSubscription)?.name || currentSubscription} Plan
+                  </span>
+                ) : (
+                  <Button variant="primary" size="small" className="upgrade-button" onClick={handleUpgrade}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                      <circle cx="12" cy="16" r="1" />
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg> Upgrade to Premium
+                  </Button>
+                )}
+              </>
+            )}
           </div>
         </div>
       </nav>
 
-      {/* Plans Modal */}
+      {/* PLANS MODAL */}
       {showPaymentModal && (
         <div className="modal-overlay" onClick={() => setShowPaymentModal(false)}>
           <div className="payment-modal" onClick={(e) => e.stopPropagation()}>
@@ -133,18 +248,15 @@ const SecondaryNav: React.FC = () => {
             <div className="payment-modal-content">
               <div className="pricing-plans">
                 {plans.map((plan) => (
-                  <div 
-                    key={plan.id} 
-                    className={`pricing-card ${plan.popular ? 'popular' : ''}`}
-                  >
-                    {plan.popular && (
-                      <div className="popular-badge">Most Popular</div>
-                    )}
+                  <div key={plan.id} className={`pricing-card ${plan.popular ? 'popular' : ''}`}>
+                    {plan.popular && <div className="popular-badge">Most Popular</div>}
+
                     <h3 className="plan-name">{plan.name}</h3>
                     <div className="plan-price">
                       <span className="price">{plan.price}</span>
                       <span className="period">{plan.period}</span>
                     </div>
+
                     <ul className="plan-features">
                       {plan.features.map((feature, index) => (
                         <li key={index}>
@@ -155,6 +267,7 @@ const SecondaryNav: React.FC = () => {
                         </li>
                       ))}
                     </ul>
+
                     <Button
                       variant={plan.popular ? 'primary' : 'secondary'}
                       onClick={() => handleSelectPlan(plan)}
@@ -215,7 +328,6 @@ const SecondaryNav: React.FC = () => {
                           required
                         />
                       </div>
-
                       <div className="form-row">
                         <div className="form-group">
                           <label htmlFor="expiry">Expiry Date</label>
@@ -252,7 +364,6 @@ const SecondaryNav: React.FC = () => {
                           required
                         />
                       </div>
-
                       <div className="form-group">
                         <label htmlFor="email">Email</label>
                         <input
@@ -262,7 +373,6 @@ const SecondaryNav: React.FC = () => {
                           required
                         />
                       </div>
-
                       <div className="form-group">
                         <label htmlFor="address">Address</label>
                         <input
@@ -272,7 +382,6 @@ const SecondaryNav: React.FC = () => {
                           required
                         />
                       </div>
-
                       <div className="form-row">
                         <div className="form-group">
                           <label htmlFor="city">City</label>

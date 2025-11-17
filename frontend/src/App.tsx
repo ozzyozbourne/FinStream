@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useKeycloak } from '@react-keycloak/web';
 import MainLayout from './components/layout/MainLayout';
 import HomePage from './pages/HomePage';
 import ProfilePage from './pages/Profile/ProfilePage';
@@ -14,7 +15,22 @@ import PortfolioPage from './pages/Portfolio';
 import LiveMarketsPage from "./pages/LiveMarkets";
 
 import './App.css';
+// Protected Route Component (inline)
+const ProtectedRoute = ({ children }) => {
+  const { keycloak, initialized } = useKeycloak();
 
+  if (!initialized) {
+    return <div>Loading...</div>;
+  }
+
+  if (!keycloak.authenticated) {
+    // Redirect to Keycloak login
+    keycloak.login({ redirectUri: window.location.origin + window.location.pathname });
+    return <div>Redirecting to login...</div>;
+  }
+
+  return children;
+};
 
 function App() {
   return ( 
@@ -22,23 +38,51 @@ function App() {
      <MainLayout>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/dashboard" element={<CustomDashboard />} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <CustomDashboard />
+          </ProtectedRoute>
+        } />
         <Route path="/live-markets" element={<LiveMarketsPage />} />
-        <Route path="/news" element={<NewsPage />} />
+        <Route path="/news" element={
+          <ProtectedRoute>
+            <NewsPage />
+          </ProtectedRoute>
+        } />
         <Route path="/markets" element={<MarketsPage />} />
-        <Route path="/research" element={<ResearchPage />} />
-        <Route path="/personal-finance" element={<PersonalFinancePage />} />
-        <Route path="/videos" element={<VideosPage />} />
-        <Route path="/watch" element={<WatchPage />} />
-        <Route path="/portfolio" element={<PortfolioPage />} />
-        <Route path="/profile" 
-        element={
+        <Route path="/research" element={
+          <ProtectedRoute>
+            <ResearchPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/personal-finance" element={
+          <ProtectedRoute>
+            <PersonalFinancePage />
+          </ProtectedRoute>
+        } />
+        <Route path="/videos" element={
+          <ProtectedRoute>
+            <VideosPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/watch" element={
+          <ProtectedRoute>
+            <WatchPage />
+          </ProtectedRoute>
+        } />
+         <Route path="/portfolio" element={
+          <ProtectedRoute>
+          <PortfolioPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/profile" element={
+          <ProtectedRoute>
             <ProfilePage />
+          </ProtectedRoute>
         } />
       </Routes>
     </MainLayout>
   </Router>
   );
 }
-
 export default App;
