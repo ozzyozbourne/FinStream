@@ -1,0 +1,68 @@
+.live-chart-container {
+  background: rgba(20, 20, 20, 0.7);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 255, 149, 0.08);
+  padding: 18px 22px 25px;
+  width: 100%;
+  transition: 0.25s ease;
+  box-shadow: 0 0 20px rgba(0, 255, 149, 0.08);
+}
+
+.live-chart-container:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 35px rgba(0, 255, 149, 0.15);
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.chart-symbol {
+  color: #00ffca;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.chart-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chart-price {
+  background: linear-gradient(135deg, #00ff95, #00cca4);
+  color: black;
+  padding: 5px 14px;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 18px;
+  box-shadow: 0 0 12px rgba(0, 255, 149, 0.3);
+}
+
+.remove-btn {
+  background: rgba(255, 80, 80, 0.15);
+  border: 1px solid rgba(255, 80, 80, 0.35);
+  color: #ff5c5c;
+  padding: 4px 9px;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.remove-btn:hover {
+  background: rgba(255, 80, 80, 0.3);
+  border-color: rgba(255, 80, 80, 0.6);
+  transform: scale(1.15);
+}
+
+.live-chart-canvas {
+  width: 100%;
+  height: 260px;
+  display: block;
+  border-radius: 12px;
+}
