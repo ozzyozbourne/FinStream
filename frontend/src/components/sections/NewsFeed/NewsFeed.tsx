@@ -8,8 +8,7 @@ const NewsFeed: React.FC = () => {
   useEffect(() => {
     const fetchNews = async () => {
       const API_KEY = "b196a8de07bb439cb7fcb9099563779d";
-      const url = `https://newsapi.org/v2/everything?q=bitcoin&apiKey=${API_KEY}`
-      
+     const url = `https://newsapi.org/v2/everything?q=finance&language=en&sortBy=publishedAt&apiKey=${API_KEY}`;      
       try {
         const response = await fetch(url);
         const data = await response.json();
