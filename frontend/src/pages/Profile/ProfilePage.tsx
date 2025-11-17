@@ -11,7 +11,7 @@ const ProfilePage = () => {
     email: '',
     phone_number: '',
     address: '',
-  });
+    subscription: " " });
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   
@@ -39,6 +39,7 @@ const ProfilePage = () => {
           email: data.email || '',
           phone_number: data.attributes?.phone_number?.[0] || '',
           address: data.attributes?.address?.[0] || '',
+          subscription: data.attributes?.subscription?.[0] || '',
         });
       } catch (error) {
         console.error('Failed to fetch profile:', error);
@@ -155,6 +156,10 @@ const ProfilePage = () => {
           ) : (
             <span>{profile.address}</span>
           )}
+        </div>
+           <div className="profile-field">
+          <label>Subscription:</label>
+            <span>{profile.subscription}</span>
         </div>
 
         <div className="profile-actions">

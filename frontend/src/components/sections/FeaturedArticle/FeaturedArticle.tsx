@@ -4,28 +4,36 @@ import "./FeaturedArticle.css";
 
 const FeaturedArticle: React.FC = () => {
   const [featured, setFeatured] = useState<any>(null);
-  
+
   useEffect(() => {
     const fetchNews = async () => {
       const API_KEY = "b196a8de07bb439cb7fcb9099563779d";
-      const url = `https://newsapi.org/v2/everything?q=bitcoin&apiKey=${API_KEY}`
-      
-      // CLEANUP: Removed unused image and proxy variables (imageUrl, proxyBase, proxiedUrl)
-      
+
+      // Correct endpoint for articles
+      const url = `https://newsapi.org/v2/top-headlines?category=business&language=en&apiKey=${API_KEY}`;
+
       try {
         const response = await fetch(url);
         const data = await response.json();
-         if (data.status === "ok" && Array.isArray(data.articles)) {
-            const articles = data.articles;
-            if (articles.length > 0) {
-                setFeatured(articles[0]); 
-            }        
-            console.log("Fetched featured article:", articles[0]);
+
+        if (data.status === "ok" && Array.isArray(data.articles)) {
+          // Pick the *first* article with a valid image
+          const validArticle = data.articles.find(
+            (a: any) => a.urlToImage && a.title
+          );
+
+          if (validArticle) {
+            setFeatured(validArticle);
+          } else {
+            console.error("No suitable featured article found");
+          }
+
+          console.log("Fetched featured article:", validArticle);
         } else {
-            console.error("API status not 'ok' or no articles found:", data);
+          console.error("Invalid API response:", data);
         }
-      } catch (err) {
-        console.error("Error fetching featured article:", err);
+      } catch (error) {
+        console.error("Error fetching featured article:", error);
       }
     };
 
@@ -33,17 +41,18 @@ const FeaturedArticle: React.FC = () => {
   }, []);
 
   if (!featured) {
-      return <div className="featured-article-loading">Loading featured article...</div>;
+    return <div className="featured-article-loading">Loading featured article...</div>;
   }
 
   return (
     <div className="featured-article">
       <ArticleCard
         article={featured}
-        variant="featured" // This is what triggers the image in ArticleCard.tsx
-        onClick={() => featured?.url && window.open(featured.url, "_blank")}
+        variant="featured"
+        onClick={() => window.open(featured.url, "_blank")}
       />
     </div>
   );
 };
+
 export default FeaturedArticle;

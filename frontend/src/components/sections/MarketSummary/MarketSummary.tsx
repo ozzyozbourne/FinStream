@@ -7,7 +7,7 @@ import './MarketSummary.css';
 const MarketSummary: React.FC = () => {
   const handleQuoteSearch = (query: string) => {
     console.log('Quote search:', query);
-    // TODO: Implement quote search functionality
+    // INDEX INDEX AAKASH WILL SEND. 
   };
 
   const handleIndexClick = (indexId: string) => {
@@ -21,7 +21,7 @@ const MarketSummary: React.FC = () => {
         <h2 className="section-title">Market Summary</h2>
         <div className="market-status">
           <span className="status-indicator closed"></span>
-          <span className="status-text">U.S. markets closed.</span>
+          <span className="status-text">Markets closed.</span>
         </div>
       </div>
 
@@ -31,13 +31,6 @@ const MarketSummary: React.FC = () => {
           onSearch={handleQuoteSearch}
           className="quote-search"
         />
-      </div>
-
-      <div className="market-tabs">
-        <button className="market-tab market-tab--active">US</button>
-        <button className="market-tab">Europe</button>
-        <button className="market-tab">Asia</button>
-        <button className="market-tab">Cryptocurrencies</button>
       </div>
 
       <div className="market-indices">

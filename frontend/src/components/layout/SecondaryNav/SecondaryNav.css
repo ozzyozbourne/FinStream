@@ -634,3 +634,19 @@
     font-size: 28px;
   }
 }
+
+.current-plan-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4ade80;
+  padding: 8px 12px;
+}
+
+.current-plan-text svg {
+  width: 14px;
+  height: 14px;
+  color: #4ade80;
+}
