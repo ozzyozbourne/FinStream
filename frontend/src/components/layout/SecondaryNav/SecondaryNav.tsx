@@ -73,7 +73,8 @@ const SecondaryNav: React.FC = () => {
     { id: 'my-portfolio', label: 'Portfolio', href: '/portfolio' },
     { id: 'dashboard', label: 'Custom Dashboard', href: '/dashboard' },
     { id: 'markets', label: 'Markets', href: '/markets' },
-    { id: 'personal-finance', label: 'Personal Finance', href: '/personal-finance' }
+    { id: 'research', label: 'Live Market Data', href: '/research' },
+    { id: 'personal-finance', label: 'Personal Finance', href: '/personal-finance' },
   ];
 
   // FETCH CURRENT SUBSCRIPTION
