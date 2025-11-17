@@ -1,0 +1,2 @@
+export { HistoricalDataPage } from './HistoricalDataPage';
+

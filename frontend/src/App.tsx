@@ -12,7 +12,9 @@ import PersonalFinancePage from './pages/PersonalFinance';
 import VideosPage from './pages/Videos';
 import WatchPage from './pages/Watch';
 import PortfolioPage from './pages/Portfolio';
+import { HistoricalDataPage } from './pages/HistoricalData/HistoricalDataPage';
 import LiveMarketsPage from "./pages/LiveMarkets";
+import './App.css';
 
 import './App.css';
 // Protected Route Component (inline)
@@ -43,6 +45,7 @@ function App() {
             <CustomDashboard />
           </ProtectedRoute>
         } />
+        <Route path="/historical-data" element={<HistoricalDataPage />} />
         <Route path="/live-markets" element={<LiveMarketsPage />} />
         <Route path="/news" element={
           <ProtectedRoute>

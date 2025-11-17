@@ -1,0 +1,148 @@
+.chart-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.chart-modal-content {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  width: 95%;
+  max-width: 1400px;
+  max-height: 95vh;
+  overflow: hidden;
+}
+
+.chart-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #333;
+  background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
+}
+
+.chart-modal-header h2 {
+  margin: 0 0 0.5rem 0;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.price-info {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+}
+
+.current-price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.price-change {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.price-change.positive {
+  color: #00d4aa;
+}
+
+.price-change.negative {
+  color: #ff6b6b;
+}
+
+.date-range {
+  margin: 0;
+  color: #a0a0a0;
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.chart-stats {
+  display: flex;
+  gap: 2rem;
+  padding: 1rem 1.5rem;
+  background: #0f0f0f;
+  border-bottom: 1px solid #333;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stat-item.legend {
+  flex-direction: row;
+  gap: 1rem;
+  margin-left: auto;
+  align-items: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #a0a0a0;
+}
+
+.legend-color {
+  width: 20px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 1rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.close-btn:hover {
+  color: #00d4aa;
+}
+
+.chart-container {
+  padding: 1.5rem;
+  height: 600px;
+  background: #0f0f0f;
+}
+
+.loading, .error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #a0a0a0;
+  font-size: 1.1rem;
+}
+

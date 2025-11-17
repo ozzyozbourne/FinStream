@@ -21,7 +21,7 @@
 .dashboard-subtitle {
   font-size: 1.1rem;
   color: #a0a0a0;
-  margin: 0;
+  margin: 0 0 1rem 0;
 }
 
 .realtime-indicator {
@@ -545,7 +545,17 @@
 }
 
 .saved-stock-item.grid-item .remove-button {
-  margin-top: auto;
+  margin-top: 0.5rem;
+}
+
+.stock-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.saved-stock-item.grid-item .stock-actions {
+  margin-top: 1rem;
 }
 
 .remove-button {
