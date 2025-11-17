@@ -7,6 +7,8 @@ import SearchBar from '../../components/ui/SearchBar';
 import Button from '../../components/ui/Button';
 import './MarketsPage.css';
 
+
+
 interface MarketData {
   symbol: string;
   name: string;
