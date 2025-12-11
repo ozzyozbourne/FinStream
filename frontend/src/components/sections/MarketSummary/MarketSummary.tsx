@@ -9,9 +9,46 @@ const WS_URL = 'ws://localhost:3001';
 
 const MarketSummary: React.FC = () => {
   const [indices, setIndices] = useState<MarketIndexType[]>(mockMarketIndices);
-  const [marketStatus, setMarketStatus] = useState<string>('U.S. markets open'); // Assuming open for demo
+  const [marketStatus, setMarketStatus] = useState<string>('Checking market status...');
+  const [isMarketOpen, setIsMarketOpen] = useState<boolean>(false);
   const ws = useRef<WebSocket | null>(null);
 
+  useEffect(() => {
+    const checkMarketStatus = () => {
+      const now = new Date();
+
+      // Convert to New York time (EST/EDT)
+      const nyTime = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
+      const day = nyTime.getDay(); // 0 is Sunday, 6 is Saturday
+      const hour = nyTime.getHours();
+      const minute = nyTime.getMinutes();
+
+      // Market hours: Monday (1) to Friday (5), 9:30 AM to 4:00 PM (16:00)
+      const isWeekday = day >= 1 && day <= 5;
+      const isTradingHours = (hour > 9 || (hour === 9 && minute >= 30)) && hour < 16;
+
+      if (isWeekday && isTradingHours) {
+        setMarketStatus('U.S. markets open');
+        setIsMarketOpen(true);
+      } else {
+        setMarketStatus('U.S. markets closed');
+        setIsMarketOpen(false);
+      }
+    };
+
+    checkMarketStatus(); // Check immediately
+    const interval = setInterval(checkMarketStatus, 60000); // Update every minute
+
+    ws.current = new WebSocket(WS_URL);
+
+    return () => {
+      clearInterval(interval);
+      ws.current?.close();
+    }
+  }, []);
+
+  // ... (rest of websocket logic remains in separate effect or needs merging if in same effect)
+  // Re-organizing effects to be cleaner
   useEffect(() => {
     ws.current = new WebSocket(WS_URL);
 
@@ -34,15 +71,9 @@ const MarketSummary: React.FC = () => {
               setIndices(prevIndices => prevIndices.map(index => {
                 if (index.id === trade.internalId) {
                   const currentPrice = trade.p;
-                  // Calculate simplistic change based on previous value (in real app, use open price)
-                  // For this feeling of 'live', we just update the value.
-                  // To update change/changePercent properly involves knowing the day's open.
-                  // We will simulate it by just updating the value and slightly nudging the change.
-
                   return {
                     ...index,
                     value: currentPrice,
-                    // Keeping change roughly consistent for demo without full open price context
                   };
                 }
                 return index;
@@ -76,7 +107,7 @@ const MarketSummary: React.FC = () => {
       <div className="market-summary-header">
         <h2 className="section-title">Market Summary</h2>
         <div className="market-status">
-          <span className="status-indicator open"></span>
+          <span className={`status-indicator ${isMarketOpen ? 'open' : 'closed'}`}></span>
           <span className="status-text">{marketStatus}</span>
         </div>
       </div>

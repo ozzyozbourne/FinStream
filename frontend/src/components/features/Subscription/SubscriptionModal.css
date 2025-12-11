@@ -1,0 +1,446 @@
+/* SubscriptionModal.css */
+/* Reuse the existing styles from SecondaryNav.css but scoped or extracted */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+    padding: 20px;
+}
+
+.payment-modal {
+    background-color: #111;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border: 1px solid #333;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.3s ease;
+}
+
+.payment-form-modal {
+    background-color: #111;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 1000px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border: 1px solid #333;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.payment-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 32px;
+    border-bottom: 1px solid #222;
+}
+
+.payment-modal-header h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.modal-close-button {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close-button:hover {
+    background-color: #222;
+    color: #fff;
+}
+
+.payment-modal-content {
+    padding: 32px;
+}
+
+/* Pricing Plans */
+.pricing-plans {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+}
+
+.pricing-card {
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.pricing-card:hover {
+    transform: translateY(-5px);
+    border-color: #444;
+}
+
+.pricing-card.popular {
+    border-color: #00d4aa;
+    background-color: rgba(0, 212, 170, 0.05);
+}
+
+.popular-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #00d4aa;
+    color: #000;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.plan-name {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #fff;
+}
+
+.plan-price {
+    margin-bottom: 24px;
+    display: flex;
+    align-items: baseline;
+}
+
+.price {
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.period {
+    color: #888;
+    margin-left: 4px;
+}
+
+.plan-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px 0;
+    flex-grow: 1;
+}
+
+.plan-features li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ccc;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.plan-features li svg {
+    color: #00d4aa;
+    flex-shrink: 0;
+}
+
+.select-plan-button {
+    width: 100%;
+}
+
+/* Payment Form Layout */
+.payment-form-layout {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 32px;
+}
+
+.payment-form-left {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.form-section-title {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #fff;
+    border-bottom: 1px solid #222;
+    padding-bottom: 12px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #aaa;
+    font-size: 14px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 16px;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #00d4aa;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.demo-notice {
+    background-color: rgba(255, 179, 0, 0.1);
+    border: 1px solid rgba(255, 179, 0, 0.3);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: #ffb300;
+    font-size: 14px;
+}
+
+.submit-payment-button {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+}
+
+/* Order Summary */
+.order-summary {
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid #333;
+}
+
+.order-summary h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+.summary-plan {
+    margin-bottom: 20px;
+}
+
+.summary-plan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.summary-plan-name {
+    font-weight: 600;
+    color: #fff;
+}
+
+.summary-badge {
+    background-color: #00d4aa;
+    color: #000;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.summary-plan-price {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.summary-features {
+    margin-bottom: 20px;
+}
+
+.summary-features h4 {
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: #ccc;
+}
+
+.summary-divider {
+    height: 1px;
+    background-color: #333;
+    margin: 20px 0;
+}
+
+.summary-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.summary-total-price {
+    color: #00d4aa;
+}
+
+.summary-note {
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+}
+
+.back-button {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.back-button:hover {
+    background-color: #222;
+    color: #fff;
+}
+
+@media (max-width: 768px) {
+    .payment-form-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .order-summary {
+        order: -1;
+    }
+}
+
+/* Success Modal Styles - Minimal */
+.success-modal {
+    max-width: 400px !important;
+    padding: 0;
+    text-align: center;
+    background-color: #111;
+    border: 1px solid #333;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.success-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 32px;
+}
+
+.success-icon-large {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 2px solid #00d4aa;
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(0, 212, 170, 0.1);
+    color: #00d4aa;
+    animation: scaleIn 0.4s ease-out;
+}
+
+.success-content h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 0 0 12px 0;
+}
+
+.success-content p {
+    color: #ccc;
+    font-size: 1rem;
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.success-content strong {
+    color: #00d4aa;
+    font-weight: 600;
+}
+
+.success-subtext {
+    font-size: 0.85rem !important;
+    color: #666 !important;
+    margin-bottom: 32px !important;
+}
+
+.success-ok-btn {
+    width: 100%;
+    padding: 12px 0;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 8px;
+    box-shadow: none;
+    transition: background-color 0.2s;
+    margin-top: 8px;
+}
+
+.success-ok-btn:hover {
+    background-color: #00b38f;
+    transform: none;
+    box-shadow: none;
+}
+
+@keyframes scaleIn {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
