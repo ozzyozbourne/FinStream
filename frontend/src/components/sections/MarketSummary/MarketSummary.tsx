@@ -78,8 +78,6 @@ const MarketSummary: React.FC = () => {
         <div className="market-status">
           <span className="status-indicator open"></span>
           <span className="status-text">{marketStatus}</span>
-          <span className="status-indicator closed"></span>
-          <span className="status-text">Markets closed.</span>
         </div>
       </div>
 
