@@ -13,6 +13,98 @@ const server = app.listen(3001, () => {
   console.log("🚀 Finnhub Live Proxy running on ws://localhost:3001");
 });
 
+// --- Yahoo Finance Proxy Endpoints ---
+
+// 1. Search Stock
+app.get("/api/yahoo/search", async (req, res) => {
+  const query = req.query.q;
+  if (!query) return res.status(400).json({ error: "Query parameter 'q' required" });
+
+  try {
+    const url = `https://query1.finance.yahoo.com/v1/finance/search?q=${query}&quotesCount=5&newsCount=0`;
+    const response = await axios.get(url, {
+        headers: {
+            'User-Agent': 'Mozilla/5.0' // Yahoo often blocks requests without a User-Agent
+        }
+    });
+    res.json(response.data);
+  } catch (error) {
+    console.error("Yahoo Search Error:", error.message);
+    res.status(500).json({ error: "Failed to fetch search results" });
+  }
+});
+
+// 2. Get Quote (Current Price)
+app.get("/api/yahoo/quote", async (req, res) => {
+  const symbol = req.query.symbol;
+  if (!symbol) return res.status(400).json({ error: "Query parameter 'symbol' required" });
+
+  try {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1m&range=1d`;
+    const response = await axios.get(url, {
+        headers: {
+            'User-Agent': 'Mozilla/5.0'
+        }
+    });
+    
+    const result = response.data.chart.result[0];
+    const quote = {
+        symbol: result.meta.symbol,
+        price: result.meta.regularMarketPrice,
+        currency: result.meta.currency,
+        previousClose: result.meta.chartPreviousClose,
+        timestamp: Date.now()
+    };
+
+    res.json(quote);
+  } catch (error) {
+    console.error(`Yahoo Quote Error for ${symbol}:`, error.message);
+    res.status(500).json({ error: "Failed to fetch quote" });
+  }
+});
+
+// 3. Get Historical Data (Candles)
+app.get("/api/yahoo/history", async (req, res) => {
+    const symbol = req.query.symbol;
+    const range = req.query.range || '1mo'; // 1d, 5d, 1mo, 3mo, 6mo, 1y, 5y, max
+    const interval = req.query.interval || '1d'; // 1m, 5m, 15m, 1d, 1wk, 1mo
+
+    if (!symbol) return res.status(400).json({ error: "Query parameter 'symbol' required" });
+
+    try {
+        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=${interval}&range=${range}`;
+        const response = await axios.get(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0'
+            }
+        });
+        
+        const result = response.data.chart.result[0];
+        if (!result) {
+             return res.status(404).json({ error: "No data found" });
+        }
+
+        const timestamps = result.timestamp || [];
+        const quotes = result.indicators.quote[0];
+        
+        const history = timestamps.map((ts, index) => ({
+            timestamp: ts,
+            date: new Date(ts * 1000).toISOString(),
+            close: quotes.close[index],
+            open: quotes.open[index],
+            high: quotes.high[index],
+            low: quotes.low[index],
+            volume: quotes.volume[index]
+        })).filter(h => h.close !== null); // Filter out empty trading intervals
+
+        res.json(history);
+
+    } catch (error) {
+        console.error(`Yahoo History Error for ${symbol}:`, error.message);
+        res.status(500).json({ error: "Failed to fetch history" });
+    }
+});
+
 // Local WebSocket server for frontend
 const wss = new WebSocket.Server({ server });
 

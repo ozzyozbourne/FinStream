@@ -5,8 +5,16 @@ import "./ResearchPage.css";
 const defaultSymbols = ["AAPL", "TSLA", "MSFT", "NVDA", "GOOGL", "AMZN"];
 
 const ResearchPage = () => {
-  const [symbols, setSymbols] = useState<string[]>(defaultSymbols);
+  const [symbols, setSymbols] = useState<string[]>(() => {
+    const saved = localStorage.getItem("research_symbols");
+    return saved ? JSON.parse(saved) : defaultSymbols;
+  });
   const [search, setSearch] = useState("");
+
+  // Save to localStorage whenever symbols change
+  React.useEffect(() => {
+    localStorage.setItem("research_symbols", JSON.stringify(symbols));
+  }, [symbols]);
 
   const handleAddSymbol = (e: React.FormEvent) => {
     e.preventDefault();

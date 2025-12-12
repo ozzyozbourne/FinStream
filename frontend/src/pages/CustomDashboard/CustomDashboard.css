@@ -51,123 +51,19 @@
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.5;
     transform: scale(1.2);
   }
+
   100% {
     opacity: 1;
     transform: scale(1);
   }
 }
 
-/* Live Market Ticker */
-.market-ticker {
-  background: #1a1a1a;
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 2rem;
-  overflow: hidden;
-}
 
-.ticker-content {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  flex-wrap: wrap;
-}
-
-.ticker-label {
-  font-weight: 600;
-  color: #00d4aa;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.ticker-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: #2a2a2a;
-  border-radius: 6px;
-  border: 1px solid #444;
-}
-
-.ticker-name {
-  font-weight: 600;
-  color: #ffffff;
-  font-size: 0.9rem;
-}
-
-.ticker-value {
-  font-weight: 700;
-  color: #ffffff;
-  font-size: 1rem;
-}
-
-.ticker-change {
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-
-.ticker-change.positive {
-  color: #00d4aa;
-}
-
-.ticker-change.negative {
-  color: #ff6b6b;
-}
-
-.ticker-loading {
-  color: #a0a0a0;
-  font-style: italic;
-}
-
-.market-closed {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 1rem;
-  background: rgba(255, 107, 107, 0.1);
-  border: 1px solid #ff6b6b;
-  border-radius: 8px;
-  color: #ff6b6b;
-}
-
-.market-status {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-
-.status-icon {
-  font-size: 1.1rem;
-}
-
-.status-text {
-  color: #ff6b6b;
-}
-
-.market-hours {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  color: #a0a0a0;
-}
-
-.hours-label {
-  font-weight: 500;
-}
-
-.hours-text {
-  color: #e0e0e0;
-}
 
 .dashboard-content {
   display: grid;
@@ -723,8 +619,13 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-state p,
@@ -742,85 +643,85 @@
   .custom-dashboard {
     padding: 1rem;
   }
-  
+
   .dashboard-title {
     font-size: 2rem;
   }
-  
+
   .section-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
-  
+
   .section-title {
     font-size: 1.25rem;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .view-controls {
     align-self: stretch;
     justify-content: center;
   }
-  
+
   .saved-stocks-container.grid {
     grid-template-columns: 1fr;
   }
-  
+
   .search-result-item,
   .saved-stock-item {
     flex-direction: column;
     align-items: stretch;
     gap: 0.75rem;
   }
-  
+
   .result-info,
   .stock-info {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .market-indices-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .market-closed {
     padding: 0.75rem;
   }
-  
+
   .market-status {
     font-size: 0.9rem;
   }
-  
+
   .market-hours {
     font-size: 0.8rem;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.25rem;
   }
-  
+
   .last-updated {
     font-size: 0.8rem;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.25rem;
   }
-  
+
   .market-closed-overview {
     padding: 2rem 1rem;
   }
-  
+
   .market-closed-overview h4 {
     font-size: 1.1rem;
   }
-  
+
   .market-closed-overview p {
     font-size: 0.9rem;
   }
-  
+
   .trading-hours {
     font-size: 0.8rem;
     padding: 0.75rem;
@@ -832,6 +733,7 @@
   from {
     transform: scale(1);
   }
+
   to {
     transform: scale(1.02);
   }
