@@ -1,68 +1,153 @@
 .live-chart-container {
-  background: rgba(20, 20, 20, 0.7);
+  background: rgba(14, 16, 20, 0.95);
   backdrop-filter: blur(12px);
   border-radius: 16px;
-  border: 1px solid rgba(0, 255, 149, 0.08);
-  padding: 18px 22px 25px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  /* More subtle border */
+  padding: 20px 24px 20px;
   width: 100%;
   transition: 0.25s ease;
-  box-shadow: 0 0 20px rgba(0, 255, 149, 0.08);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
 }
 
 .live-chart-container:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 0 35px rgba(0, 255, 149, 0.15);
+  transform: translateY(-2px);
+  border-color: rgba(0, 255, 191, 0.2);
+  box-shadow: 0 8px 30px rgba(0, 255, 191, 0.05);
 }
 
 .chart-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 14px;
+  margin-bottom: 20px;
+  align-items: flex-start;
 }
 
-.chart-symbol {
-  color: #00ffca;
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.chart-actions {
+.header-left {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 10px;
 }
 
-.chart-price {
-  background: linear-gradient(135deg, #00ff95, #00cca4);
-  color: black;
-  padding: 5px 14px;
-  font-size: 15px;
+.chart-symbol {
+  color: #fff;
+  font-size: 24px;
   font-weight: 700;
-  border-radius: 18px;
-  box-shadow: 0 0 12px rgba(0, 255, 149, 0.3);
+  letter-spacing: -0.5px;
+}
+
+.live-badge {
+  background: rgba(0, 255, 191, 0.1);
+  color: #00ffbf;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 255, 191, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.header-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.stat-group {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.current-price {
+  font-size: 24px;
+  font-weight: 600;
+  font-family: 'Roboto Mono', monospace;
+  color: #fff;
+}
+
+.current-price.pos {
+  color: #00ffbf;
+}
+
+.current-price.neg {
+  color: #ff5050;
+}
+
+.change-pill {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 2px 0;
+}
+
+.change-pill.pos {
+  color: #00ffbf;
+}
+
+.change-pill.neg {
+  color: #ff5050;
+}
+
+.stat-row {
+  display: flex;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.stat-item {
+  display: flex;
+  gap: 6px;
+  font-size: 11px;
+  color: #888;
+}
+
+.stat-item .value {
+  color: #ccc;
+  font-family: 'Roboto Mono', monospace;
 }
 
 .remove-btn {
-  background: rgba(255, 80, 80, 0.15);
-  border: 1px solid rgba(255, 80, 80, 0.35);
-  color: #ff5c5c;
-  padding: 4px 9px;
-  border-radius: 50%;
-  font-size: 13px;
-  font-weight: bold;
+  background: transparent;
+  border: none;
+  color: #444;
+  padding: 4px;
+  font-size: 14px;
   cursor: pointer;
-  transition: 0.25s ease;
+  transition: 0.2s;
+  margin-left: 10px;
 }
 
 .remove-btn:hover {
-  background: rgba(255, 80, 80, 0.3);
-  border-color: rgba(255, 80, 80, 0.6);
-  transform: scale(1.15);
+  color: #ff5050;
+  transform: scale(1.1);
 }
 
-.live-chart-canvas {
+.chart-wrapper {
+  height: 250px;
   width: 100%;
-  height: 260px;
-  display: block;
-  border-radius: 12px;
+}
+
+.loading-state {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #444;
+  font-size: 13px;
+  font-style: italic;
 }

@@ -1,197 +1,254 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+    TimeScale,
+    Filler,
+    ScriptableContext,
+} from "chart.js";
+import { Chart } from "react-chartjs-2";
+import "chartjs-adapter-date-fns";
 import { connectLiveFinnhub } from "../../../services/finnhubLive";
 import "./LiveChart.css";
 
+// Register ChartJS components
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+    TimeScale,
+    Filler
+);
+
 interface Props {
-  symbol: string;
-  onRemove?: (symbol: string) => void;
+    symbol: string;
+    onRemove?: (symbol: string) => void;
+}
+
+interface DataPoint {
+    x: number; // timestamp
+    y: number; // price
+    v: number; // volume
 }
 
 const LiveChart: React.FC<Props> = ({ symbol, onRemove }) => {
-  const [dataPoints, setDataPoints] = useState<
-    { price: number; time: number }[]
-  >([]);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [data, setData] = useState<DataPoint[]>([]);
+    const [stats, setStats] = useState({ high: 0, low: Infinity, vol: 0 });
 
-  //
-  // 🔌 Connect to Finnhub WebSocket
-  //
-  useEffect(() => {
-    const ws = connectLiveFinnhub(symbol, (trade) => {
-      if (trade.s === symbol) {
-        setDataPoints((prev) => [
-          ...prev.slice(-250),
-          { price: trade.p, time: trade.t },
-        ]);
-      }
-    });
+    // Connect to WebSocket
+    useEffect(() => {
+        const ws = connectLiveFinnhub(symbol, (trade) => {
+            if (trade.s === symbol) {
+                const price = trade.p;
+                const vol = trade.v || 0;
+                const time = trade.t;
 
-    return () => ws.close();
-  }, [symbol]);
+                setData((prev) => {
+                    const newData = [...prev, { x: time, y: price, v: vol }];
+                    // Keep last 100 points to avoid memory issues/clutter
+                    return newData.slice(-100);
+                });
 
-  //
-  // 🎨 Draw Chart (WITH AXIS)
-  //
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || dataPoints.length < 2) return;
+                setStats((prev) => ({
+                    high: Math.max(prev.high, price),
+                    low: Math.min(prev.low, price),
+                    vol: prev.vol + vol,
+                }));
+            }
+        });
 
-    // Auto-resize canvas width to fill card
-    const parent = canvas.parentElement as HTMLElement | null;
-    if (parent) {
-      canvas.width = parent.clientWidth;
-      canvas.height = 300;
-    }
+        return () => ws.close();
+    }, [symbol]);
 
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    // Chart Configuration
+    const chartData = useMemo(() => {
+        return {
+            datasets: [
+                {
+                    type: "line" as const,
+                    label: "Price",
+                    data: data.map((d) => ({ x: d.x, y: d.y })),
+                    borderColor: "#00ffbf",
+                    borderWidth: 2,
+                    backgroundColor: "transparent",
+                    fill: false,
+                    pointRadius: 0,
+                    pointHoverRadius: 4,
+                    tension: 0.4,
+                    yAxisID: "y",
+                },
+                {
+                    type: "bar" as const,
+                    label: "Volume",
+                    data: data.map((d) => ({ x: d.x, y: d.v })),
+                    backgroundColor: "rgba(255, 255, 255, 0.15)",
+                    borderColor: "transparent",
+                    barThickness: 4,
+                    yAxisID: "y1",
+                },
+            ],
+        };
+    }, [data]);
 
-    const width = canvas.width;
-    const height = canvas.height;
+    const options = useMemo(
+        () => ({
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+                duration: 0, // Disable animation for performance with live updates
+            },
+            interaction: {
+                mode: "index" as const,
+                intersect: false,
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                tooltip: {
+                    enabled: true,
+                    mode: "index" as const,
+                    intersect: false,
+                    backgroundColor: "rgba(0, 0, 0, 0.8)",
+                    titleColor: "#fff",
+                    bodyColor: "#ccc",
+                    borderColor: "rgba(255, 255, 255, 0.1)",
+                    borderWidth: 1,
+                },
+            },
+            scales: {
+                x: {
+                    type: "time" as const,
+                    time: {
+                        unit: "second" as const,
+                        displayFormats: {
+                            second: "h:mm:ss a",
+                        },
+                    },
+                    grid: {
+                        display: false,
+                    },
+                    ticks: {
+                        color: "#666",
+                        font: {
+                            size: 10,
+                        },
+                        maxTicksLimit: 6,
+                    },
+                },
+                y: {
+                    type: "linear" as const,
+                    display: true,
+                    position: "right" as const,
+                    beginAtZero: false, // Allow auto-scaling to zoom in on price action
+                    grid: {
+                        color: "rgba(255, 255, 255, 0.05)",
+                    },
+                    ticks: {
+                        color: "#00ffbf",
+                        font: {
+                            size: 11,
+                            family: "'Roboto Mono', monospace",
+                        },
+                        callback: (value: any) => value.toFixed(2), // Format price ticks
+                    },
+                },
+                y1: {
+                    type: "linear" as const,
+                    display: true, // Show volume axis
+                    position: "left" as const,
+                    grid: {
+                        display: false,
+                    },
+                    ticks: {
+                        color: "#666",
+                        font: {
+                            size: 10,
+                        },
+                        maxTicksLimit: 5,
+                        callback: (value: any) => (value / 1000).toFixed(0) + "K", // Format volume K
+                    },
+                    min: 0,
+                    max: Math.max(...data.map((d) => d.v)) * 4 || 100, // Keep volume bars in bottom 1/4
+                },
+            },
+        }),
+        [data]
+    );
 
-    ctx.clearRect(0, 0, width, height);
+    const currentPrice = data.length > 0 ? data[data.length - 1].y : 0;
+    // Calculate change if we have at least 2 points, otherwise 0
+    const startPrice = data.length > 0 ? data[0].y : 0;
+    const change = currentPrice - startPrice;
+    const changePercent = startPrice ? (change / startPrice) * 100 : 0;
+    const isPositive = change >= 0;
 
-    // Extract arrays
-    const prices = dataPoints.map((d) => d.price);
-    const times = dataPoints.map((d) => d.time);
+    return (
+        <div className="live-chart-container">
+            <div className="chart-header">
+                <div className="header-left">
+                    <span className="chart-symbol">{symbol}</span>
+                    <span className="live-badge">LIVE</span>
+                </div>
 
-    const max = Math.max(...prices);
-    const min = Math.min(...prices);
-    const latest = prices[prices.length - 1];
+                <div className="header-stats">
+                    <div className="stat-group">
+                        <span className={`current-price ${isPositive ? 'pos' : 'neg'}`}>
+                            ${currentPrice.toFixed(2)}
+                        </span>
+                        <span className={`change-pill ${isPositive ? 'pos' : 'neg'}`}>
+                            {isPositive ? '+' : ''}{change.toFixed(2)} ({changePercent.toFixed(2)}%)
+                        </span>
+                    </div>
 
-    //
-    // --- CHART MARGINS (for axis labels)
-    //
-    const leftMargin = 60;
-    const bottomMargin = 30;
-    const topMargin = 20;
-    const chartW = width - leftMargin - 10;
-    const chartH = height - bottomMargin - topMargin;
+                    <div className="stat-row">
+                        <div className="stat-item">
+                            <span className="label">H:</span>
+                            <span className="value">{stats.high !== -Infinity ? stats.high.toFixed(2) : '--'}</span>
+                        </div>
+                        <div className="stat-item">
+                            <span className="label">L:</span>
+                            <span className="value">{stats.low !== Infinity ? stats.low.toFixed(2) : '--'}</span>
+                        </div>
+                        <div className="stat-item">
+                            <span className="label">Vol:</span>
+                            <span className="value">{(stats.vol / 1000).toFixed(1)}K</span>
+                        </div>
+                    </div>
+                </div>
 
-    //
-    // --- BACKGROUND ---
-    //
-    const bg = ctx.createLinearGradient(0, 0, 0, height);
-    bg.addColorStop(0, "#0e0e0e");
-    bg.addColorStop(1, "#1a1a1a");
-    ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, width, height);
+                {onRemove && (
+                    <button
+                        className="remove-btn"
+                        onClick={() => onRemove(symbol)}
+                        title="Remove"
+                    >
+                        ✕
+                    </button>
+                )}
+            </div>
 
-    //
-    // --- Y-AXIS PRICE LABELS + GRID ---
-    //
-    ctx.fillStyle = "#00ffbf";
-    ctx.font = "13px Arial";
-    ctx.textAlign = "right";
-
-    const yTicks = 5;
-    for (let i = 0; i <= yTicks; i++) {
-      const t = i / yTicks;
-      const value = max - (max - min) * t;
-      const y = topMargin + chartH * t;
-
-      // Price label
-      ctx.fillText(value.toFixed(2), leftMargin - 8, y + 4);
-
-      // Grid line
-      ctx.strokeStyle = "rgba(255,255,255,0.08)";
-      ctx.beginPath();
-      ctx.moveTo(leftMargin, y);
-      ctx.lineTo(width - 10, y);
-      ctx.stroke();
-    }
-
-    //
-    // --- X-AXIS TIME LABELS ---
-    //
-    ctx.textAlign = "center";
-    const xSteps = 4;
-    const stepIndex = Math.floor(dataPoints.length / xSteps);
-
-    for (let i = 0; i <= xSteps; i++) {
-      const index = i * stepIndex;
-      if (index >= dataPoints.length) continue;
-
-      const time = new Date(times[index]);
-      const label = time.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-
-      const x = leftMargin + (chartW * (index / (dataPoints.length - 1)));
-
-      ctx.fillText(label, x, height - 10);
-    }
-
-    //
-    // --- Chart Line Gradient ---
-    //
-    const grad = ctx.createLinearGradient(leftMargin, 0, width, 0);
-    grad.addColorStop(0, "#00ffbf");
-    grad.addColorStop(1, "#00b49c");
-
-    ctx.strokeStyle = grad;
-    ctx.lineWidth = 2.4;
-    ctx.beginPath();
-
-    //
-    // --- SMOOTH CURVED LINE ---
-    //
-    for (let i = 0; i < dataPoints.length; i++) {
-      const price = prices[i];
-
-      const x = leftMargin + (chartW * (i / (dataPoints.length - 1)));
-      const y =
-        topMargin + ((max - price) / (max - min || 1)) * chartH;
-
-      if (i === 0) ctx.moveTo(x, y);
-      else {
-        const prevX =
-          leftMargin + (chartW * ((i - 1) / (dataPoints.length - 1)));
-        const prevY =
-          topMargin +
-          ((max - prices[i - 1]) / (max - min || 1)) * chartH;
-
-        const midX = (prevX + x) / 2;
-        const midY = (prevY + y) / 2;
-
-        ctx.quadraticCurveTo(prevX, prevY, midX, midY);
-      }
-    }
-
-    ctx.stroke();
-  }, [dataPoints]);
-
-  //
-  // --- COMPONENT RENDER ---
-  //
-  return (
-    <div className="live-chart-container">
-      <div className="chart-header">
-        <span className="chart-symbol">{symbol} Live</span>
-
-        <div className="chart-actions">
-          <span className="chart-price">
-            {dataPoints.length > 0
-              ? dataPoints[dataPoints.length - 1].price.toFixed(2)
-              : "--"}
-          </span>
-
-          {onRemove && (
-            <button
-              className="remove-btn"
-              onClick={() => onRemove(symbol)}
-              title="Remove"
-            >
-              ✕
-            </button>
-          )}
+            <div className="chart-wrapper">
+                {data.length > 1 ? (
+                    <Chart type="bar" data={chartData} options={options} />
+                ) : (
+                    <div className="loading-state">Waiting for data...</div>
+                )}
+            </div>
         </div>
-      </div>
-
-      <canvas ref={canvasRef} className="live-chart-canvas" />
-    </div>
-  );
+    );
 };
 
 export default LiveChart;
