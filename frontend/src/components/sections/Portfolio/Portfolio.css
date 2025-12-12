@@ -6,11 +6,36 @@
   margin-bottom: 20px;
 }
 
+.portfolio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
 .section-title {
   font-size: 16px;
   font-weight: 600;
   color: #fff;
-  margin: 0 0 16px 0;
+  margin: 0;
+}
+
+.portfolio-arrow-btn {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.portfolio-arrow-btn:hover {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .portfolio-content {
@@ -21,6 +46,7 @@
   text-align: center;
 }
 
+/* Auth Message */
 .portfolio-message p {
   color: #ccc;
   font-size: 14px;
@@ -32,17 +58,57 @@
   max-width: 120px;
 }
 
+/* Mini View */
+.portfolio-mini-view {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.portfolio-mini-stats {
+  text-align: left;
+}
+
+.portfolio-mini-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.portfolio-mini-gain {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.portfolio-mini-gain.positive {
+  color: #00d4aa;
+}
+
+.portfolio-mini-gain.negative {
+  color: #ff4757;
+}
+
+.portfolio-mini-chart {
+  height: 60px;
+  /* Mini chart height */
+  width: 100%;
+  position: relative;
+  /* Add a slight negative margin to pull it closer if needed */
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .portfolio {
     padding: 16px;
     margin-bottom: 16px;
   }
-  
+
   .portfolio-content {
     gap: 12px;
   }
-  
+
   .portfolio-message p {
     font-size: 13px;
   }

@@ -15,6 +15,7 @@ import PortfolioPage from './pages/Portfolio';
 import { HistoricalDataPage } from './pages/HistoricalData/HistoricalDataPage';
 import LiveMarketsPage from "./pages/LiveMarkets";
 import { SubscriptionProvider } from './context/SubscriptionContext';
+import { PortfolioProvider } from './context/PortfolioContext';
 import SubscriptionModal from './components/features/Subscription/SubscriptionModal';
 import './App.css';
 
@@ -38,57 +39,59 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 function App() {
   return (
     <SubscriptionProvider>
-      <Router>
-        <MainLayout>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <CustomDashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/historical-data" element={<HistoricalDataPage />} />
-            <Route path="/live-markets" element={<LiveMarketsPage />} />
-            <Route path="/news" element={
-              <ProtectedRoute>
-                <NewsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/markets" element={<MarketsPage />} />
-            <Route path="/research" element={
-              <ProtectedRoute>
-                <ResearchPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/personal-finance" element={
-              <ProtectedRoute>
-                <PersonalFinancePage />
-              </ProtectedRoute>
-            } />
-            <Route path="/videos" element={
-              <ProtectedRoute>
-                <VideosPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/watch" element={
-              <ProtectedRoute>
-                <WatchPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/portfolio" element={
-              <ProtectedRoute>
-                <PortfolioPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/profile" element={
-              <ProtectedRoute>
-                <ProfilePage />
-              </ProtectedRoute>
-            } />
-          </Routes>
-        </MainLayout>
-        <SubscriptionModal />
-      </Router>
+      <PortfolioProvider>
+        <Router>
+          <MainLayout>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <CustomDashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/historical-data" element={<HistoricalDataPage />} />
+              <Route path="/live-markets" element={<LiveMarketsPage />} />
+              <Route path="/news" element={
+                <ProtectedRoute>
+                  <NewsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/markets" element={<MarketsPage />} />
+              <Route path="/research" element={
+                <ProtectedRoute>
+                  <ResearchPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/personal-finance" element={
+                <ProtectedRoute>
+                  <PersonalFinancePage />
+                </ProtectedRoute>
+              } />
+              <Route path="/videos" element={
+                <ProtectedRoute>
+                  <VideosPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/watch" element={
+                <ProtectedRoute>
+                  <WatchPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/portfolio" element={
+                <ProtectedRoute>
+                  <PortfolioPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              } />
+            </Routes>
+          </MainLayout>
+          <SubscriptionModal />
+        </Router>
+      </PortfolioProvider>
     </SubscriptionProvider>
   );
 }

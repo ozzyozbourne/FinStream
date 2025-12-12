@@ -56,8 +56,13 @@ const LiveChart: React.FC<Props> = ({ symbol, onRemove }) => {
                 const time = trade.t;
 
                 setData((prev) => {
+                    // Filter out any potential duplicates or invalid timestamps first if needed
                     const newData = [...prev, { x: time, y: price, v: vol }];
-                    // Keep last 100 points to avoid memory issues/clutter
+
+                    // Sort by timestamp to ensure line draws left-to-right correctly
+                    newData.sort((a, b) => a.x - b.x);
+
+                    // Keep last 100 points
                     return newData.slice(-100);
                 });
 
@@ -86,7 +91,7 @@ const LiveChart: React.FC<Props> = ({ symbol, onRemove }) => {
                     fill: false,
                     pointRadius: 0,
                     pointHoverRadius: 4,
-                    tension: 0.4,
+                    tension: 0.05, // Sturdier lines
                     yAxisID: "y",
                 },
                 {

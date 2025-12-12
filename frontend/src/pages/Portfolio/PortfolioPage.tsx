@@ -1,140 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { polygonService } from '../../services/polygonService';
+import { usePortfolio } from '../../context/PortfolioContext';
+import { yahooFinanceService, YahooSearchResult } from '../../services/yahooFinance';
 import Button from '../../components/ui/Button';
-import SparklineChart from '../../components/ui/SparklineChart';
+import PortfolioChart from './PortfolioChart';
 import './PortfolioPage.css';
 
-interface PortfolioItem {
-  symbol: string;
-  name: string;
-  shares: number;
-  avgPrice: number;
-  currentPrice: number;
-  marketValue: number;
-  gainLoss: number;
-  gainLossPercent: number;
-  dayChange: number;
-  dayChangePercent: number;
-  sparklineData: number[];
-}
-
-interface PortfolioSummary {
-  totalValue: number;
-  totalCost: number;
-  totalGainLoss: number;
-  totalGainLossPercent: number;
-  dayChange: number;
-  dayChangePercent: number;
-}
-
 const PortfolioPage: React.FC = () => {
-  const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
-  const [summary, setSummary] = useState<PortfolioSummary | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedView, setSelectedView] = useState<'overview' | 'holdings' | 'performance'>('overview');
+  const {
+    holdings,
+    totalValue,
+    totalCost,
+    totalGain,
+    totalGainPercent,
+    addHolding,
+    removeHolding,
+    refreshPrices,
+    chartData,
+    isLoading: isPortfolioLoading
+  } = usePortfolio();
 
-  useEffect(() => {
-    loadPortfolio();
-  }, []);
+  // Local state for UI
+  const [isChartLoading, setIsChartLoading] = useState(false);
 
-  const loadPortfolio = async () => {
-    try {
-      setIsLoading(true);
-      
-      // Mock portfolio data
-      const mockPortfolio: PortfolioItem[] = [
-        {
-          symbol: 'AAPL',
-          name: 'Apple Inc.',
-          shares: 50,
-          avgPrice: 175.00,
-          currentPrice: 189.45,
-          marketValue: 9472.50,
-          gainLoss: 722.50,
-          gainLossPercent: 8.26,
-          dayChange: 117.00,
-          dayChangePercent: 1.25,
-          sparklineData: Array.from({ length: 30 }, () => Math.random() * 20 + 170)
-        },
-        {
-          symbol: 'MSFT',
-          name: 'Microsoft Corporation',
-          shares: 25,
-          avgPrice: 350.00,
-          currentPrice: 378.90,
-          marketValue: 9472.50,
-          gainLoss: 722.50,
-          gainLossPercent: 8.26,
-          dayChange: -30.75,
-          dayChangePercent: -0.32,
-          sparklineData: Array.from({ length: 30 }, () => Math.random() * 20 + 360)
-        },
-        {
-          symbol: 'GOOGL',
-          name: 'Alphabet Inc.',
-          shares: 20,
-          avgPrice: 140.00,
-          currentPrice: 145.67,
-          marketValue: 2913.40,
-          gainLoss: 113.40,
-          gainLossPercent: 4.05,
-          dayChange: 69.00,
-          dayChangePercent: 2.42,
-          sparklineData: Array.from({ length: 30 }, () => Math.random() * 15 + 135)
-        },
-        {
-          symbol: 'TSLA',
-          name: 'Tesla Inc.',
-          shares: 10,
-          avgPrice: 250.00,
-          currentPrice: 267.45,
-          marketValue: 2674.50,
-          gainLoss: 174.50,
-          gainLossPercent: 6.98,
-          dayChange: 189.00,
-          dayChangePercent: 7.60,
-          sparklineData: Array.from({ length: 30 }, () => Math.random() * 30 + 240)
-        },
-        {
-          symbol: 'NVDA',
-          name: 'NVIDIA Corporation',
-          shares: 5,
-          avgPrice: 450.00,
-          currentPrice: 485.67,
-          marketValue: 2428.35,
-          gainLoss: 178.35,
-          gainLossPercent: 7.93,
-          dayChange: 226.15,
-          dayChangePercent: 10.28,
-          sparklineData: Array.from({ length: 30 }, () => Math.random() * 40 + 440)
-        }
-      ];
-
-      setPortfolio(mockPortfolio);
-
-      // Calculate portfolio summary
-      const totalValue = mockPortfolio.reduce((sum, item) => sum + item.marketValue, 0);
-      const totalCost = mockPortfolio.reduce((sum, item) => sum + (item.shares * item.avgPrice), 0);
-      const totalGainLoss = totalValue - totalCost;
-      const totalGainLossPercent = (totalGainLoss / totalCost) * 100;
-      const dayChange = mockPortfolio.reduce((sum, item) => sum + item.dayChange, 0);
-      const dayChangePercent = (dayChange / (totalValue - dayChange)) * 100;
-
-      setSummary({
-        totalValue,
-        totalCost,
-        totalGainLoss,
-        totalGainLossPercent,
-        dayChange,
-        dayChangePercent
-      });
-
-    } catch (error) {
-      console.error('Error loading portfolio:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<YahooSearchResult[]>([]);
+  const [selectedStock, setSelectedStock] = useState<YahooSearchResult | null>(null);
+  const [sharesInput, setSharesInput] = useState<string>('');
+  const [isSearching, setIsSearching] = useState(false);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -148,180 +42,298 @@ const PortfolioPage: React.FC = () => {
     return `${percent >= 0 ? '+' : ''}${percent.toFixed(2)}%`;
   };
 
-  const renderOverview = () => (
-    <div className="overview-section">
-      <div className="summary-cards">
-        <div className="summary-card">
-          <h3>Total Portfolio Value</h3>
-          <div className="summary-value">{formatCurrency(summary?.totalValue || 0)}</div>
-          <div className={`summary-change ${(summary?.dayChange || 0) >= 0 ? 'positive' : 'negative'}`}>
-            {formatCurrency(summary?.dayChange || 0)} ({formatPercent(summary?.dayChangePercent || 0)})
-          </div>
-        </div>
 
-        <div className="summary-card">
-          <h3>Total Gain/Loss</h3>
-          <div className={`summary-value ${(summary?.totalGainLoss || 0) >= 0 ? 'positive' : 'negative'}`}>
-            {formatCurrency(summary?.totalGainLoss || 0)}
-          </div>
-          <div className={`summary-change ${(summary?.totalGainLoss || 0) >= 0 ? 'positive' : 'negative'}`}>
-            {formatPercent(summary?.totalGainLossPercent || 0)}
-          </div>
-        </div>
+  // --- Handlers ---
 
-        <div className="summary-card">
-          <h3>Total Cost Basis</h3>
-          <div className="summary-value">{formatCurrency(summary?.totalCost || 0)}</div>
-          <div className="summary-change">Original Investment</div>
-        </div>
-      </div>
+  const handleSearch = async (query: string) => {
+    setSearchQuery(query);
+    if (query.length > 1) {
+      setIsSearching(true);
+      const results = await yahooFinanceService.searchStocks(query);
+      setSearchResults(results);
+      setIsSearching(false);
+    } else {
+      setSearchResults([]);
+    }
+  };
 
-      <div className="portfolio-chart">
-        <h3>Portfolio Performance (30 Days)</h3>
-        <div className="chart-container">
-          <SparklineChart data={Array.from({ length: 30 }, () => Math.random() * 1000 + 25000)} />
-        </div>
-      </div>
-    </div>
-  );
+  const handleSelectStock = (stock: YahooSearchResult) => {
+    setSelectedStock(stock);
+    setSearchQuery(stock.symbol); // Show symbol in input
+    setSearchResults([]); // Hide dropdown
+  };
 
-  const renderHoldings = () => (
-    <div className="holdings-section">
-      <div className="holdings-header">
-        <h3>Your Holdings</h3>
-        <Button variant="outline" size="small">
-          Add Position
-        </Button>
-      </div>
-      
-      <div className="holdings-table">
-        <div className="table-header">
-          <div className="col-symbol">Symbol</div>
-          <div className="col-shares">Shares</div>
-          <div className="col-price">Avg Price</div>
-          <div className="col-current">Current</div>
-          <div className="col-value">Market Value</div>
-          <div className="col-gain">Gain/Loss</div>
-          <div className="col-chart">Chart</div>
-        </div>
-        
-        {portfolio.map((item, index) => (
-          <div key={item.symbol} className="table-row">
-            <div className="col-symbol">
-              <div className="symbol-info">
-                <span className="symbol">{item.symbol}</span>
-                <span className="name">{item.name}</span>
-              </div>
-            </div>
-            <div className="col-shares">{item.shares}</div>
-            <div className="col-price">{formatCurrency(item.avgPrice)}</div>
-            <div className="col-current">
-              <div className="current-price">{formatCurrency(item.currentPrice)}</div>
-              <div className={`day-change ${item.dayChange >= 0 ? 'positive' : 'negative'}`}>
-                {formatCurrency(item.dayChange)} ({formatPercent(item.dayChangePercent)})
-              </div>
-            </div>
-            <div className="col-value">{formatCurrency(item.marketValue)}</div>
-            <div className="col-gain">
-              <div className={`gain-loss ${item.gainLoss >= 0 ? 'positive' : 'negative'}`}>
-                {formatCurrency(item.gainLoss)}
-              </div>
-              <div className={`gain-percent ${item.gainLoss >= 0 ? 'positive' : 'negative'}`}>
-                {formatPercent(item.gainLossPercent)}
-              </div>
-            </div>
-            <div className="col-chart">
-              <div className="mini-chart">
-                <SparklineChart data={item.sparklineData} />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+  const handleAddPosition = async () => {
+    if (!selectedStock || !sharesInput) return;
 
-  const renderPerformance = () => (
-    <div className="performance-section">
-      <h3>Performance Analysis</h3>
-      <div className="performance-grid">
-        <div className="performance-card">
-          <h4>Best Performer</h4>
-          <div className="performer-info">
-            <span className="symbol">NVDA</span>
-            <span className="performance positive">+10.28%</span>
-          </div>
-        </div>
-        
-        <div className="performance-card">
-          <h4>Worst Performer</h4>
-          <div className="performer-info">
-            <span className="symbol">MSFT</span>
-            <span className="performance negative">-0.32%</span>
-          </div>
-        </div>
-        
-        <div className="performance-card">
-          <h4>Largest Position</h4>
-          <div className="performer-info">
-            <span className="symbol">AAPL</span>
-            <span className="value">{formatCurrency(9472.50)}</span>
-          </div>
-        </div>
-        
-        <div className="performance-card">
-          <h4>Portfolio Beta</h4>
-          <div className="performer-info">
-            <span className="beta">1.15</span>
-            <span className="description">Moderate Risk</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    const shares = parseFloat(sharesInput);
+    if (isNaN(shares) || shares <= 0) return;
+
+    // Fetch current price
+    let priceAtBuy = 0;
+    try {
+      const quote = await yahooFinanceService.getStockQuote(selectedStock.symbol);
+      priceAtBuy = quote ? quote.price : 0;
+    } catch {
+      // fallback
+    }
+
+    await addHolding(
+      selectedStock.symbol,
+      selectedStock.shortname || selectedStock.longname || selectedStock.symbol,
+      shares,
+      priceAtBuy
+    );
+
+    setIsModalOpen(false);
+    setSelectedStock(null);
+    setSearchQuery('');
+    setSharesInput('');
+  };
+
+  const handleRemovePosition = (symbol: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm(`Are you sure you want to remove ${symbol} from your portfolio?`)) {
+      removeHolding(symbol);
+    }
+  }
+
+  // --- Performance Logic for Highlights ---
+  const bestPerformer = [...holdings].sort((a, b) => {
+    const gainA = (a.currPrice - a.avgPrice) / a.avgPrice;
+    const gainB = (b.currPrice - b.avgPrice) / b.avgPrice;
+    return gainB - gainA;
+  })[0];
+
+  const worstPerformer = [...holdings].sort((a, b) => {
+    const gainA = (a.currPrice - a.avgPrice) / a.avgPrice;
+    const gainB = (b.currPrice - b.avgPrice) / b.avgPrice;
+    return gainA - gainB; // Ascending
+  })[0];
+
+  const largestPosition = [...holdings].sort((a, b) => {
+    return (b.currPrice * b.shares) - (a.currPrice * a.shares);
+  })[0];
+
 
   return (
     <div className="portfolio-page">
       <div className="portfolio-header">
-        <h1 className="portfolio-title">My Portfolio</h1>
-        <p className="portfolio-subtitle">Track your investments and performance</p>
+        <div>
+          <h1 className="portfolio-title">My Portfolio</h1>
+          <p className="portfolio-subtitle">Track your investments and performance</p>
+        </div>
       </div>
 
-      <div className="portfolio-nav">
-        <button
-          className={`nav-btn ${selectedView === 'overview' ? 'active' : ''}`}
-          onClick={() => setSelectedView('overview')}
-        >
-          Overview
-        </button>
-        <button
-          className={`nav-btn ${selectedView === 'holdings' ? 'active' : ''}`}
-          onClick={() => setSelectedView('holdings')}
-        >
-          Holdings
-        </button>
-        <button
-          className={`nav-btn ${selectedView === 'performance' ? 'active' : ''}`}
-          onClick={() => setSelectedView('performance')}
-        >
-          Performance
-        </button>
-      </div>
+      <div className="portfolio-dashboard">
 
-      <div className="portfolio-content">
-        {isLoading ? (
-          <div className="loading-state">
-            <div className="loading-spinner"></div>
-            <p>Loading portfolio...</p>
+        {/* TOP ROW: Summary KPIs */}
+        <section className="dashboard-summary">
+          <div className="summary-card">
+            <h3>Total Portfolio Value</h3>
+            <div className="summary-value">{formatCurrency(totalValue)}</div>
+            <div className={`summary-change ${totalGain >= 0 ? 'positive' : 'negative'}`}>
+              {formatCurrency(totalGain)} ({formatPercent(totalGainPercent)})
+            </div>
           </div>
-        ) : (
-          <>
-            {selectedView === 'overview' && renderOverview()}
-            {selectedView === 'holdings' && renderHoldings()}
-            {selectedView === 'performance' && renderPerformance()}
-          </>
-        )}
+
+          <div className="summary-card">
+            <h3>Total Gain/Loss</h3>
+            <div className={`summary-value ${totalGain >= 0 ? 'positive' : 'negative'}`}>
+              {formatCurrency(totalGain)}
+            </div>
+            <div className={`summary-change ${totalGain >= 0 ? 'positive' : 'negative'}`}>
+              {formatPercent(totalGainPercent)}
+            </div>
+          </div>
+
+          <div className="summary-card">
+            <h3>Total Cost Basis</h3>
+            <div className="summary-value">{formatCurrency(totalCost)}</div>
+            <div className="summary-change">Original Investment</div>
+          </div>
+        </section>
+
+        {/* MIDDLE ROW: Chart & Highlights */}
+        <section className="dashboard-mid-section">
+          <div className="portfolio-chart-container">
+            <h3>Portfolio Performance (Last 30 Days)</h3>
+            <div className="chart-wrapper">
+              <PortfolioChart data={chartData} isLoading={isChartLoading} />
+            </div>
+          </div>
+
+          <div className="portfolio-highlights">
+            <h3>Highlights</h3>
+            <div className="highlights-grid">
+              <div className="highlight-card">
+                <span className="label">Best Performer</span>
+                {bestPerformer ? (
+                  <div className="highlight-content">
+                    <span className="symbol">{bestPerformer.symbol}</span>
+                    <span className="value positive">
+                      {formatPercent(((bestPerformer.currPrice - bestPerformer.avgPrice) / bestPerformer.avgPrice) * 100)}
+                    </span>
+                  </div>
+                ) : <span className="empty-val">-</span>}
+              </div>
+
+              <div className="highlight-card">
+                <span className="label">Worst Performer</span>
+                {worstPerformer ? (
+                  <div className="highlight-content">
+                    <span className="symbol">{worstPerformer.symbol}</span>
+                    <span className="value negative">
+                      {formatPercent(((worstPerformer.currPrice - worstPerformer.avgPrice) / worstPerformer.avgPrice) * 100)}
+                    </span>
+                  </div>
+                ) : <span className="empty-val">-</span>}
+              </div>
+
+              <div className="highlight-card">
+                <span className="label">Largest Position</span>
+                {largestPosition ? (
+                  <div className="highlight-content">
+                    <span className="symbol">{largestPosition.symbol}</span>
+                    <span className="value">
+                      {formatCurrency(largestPosition.currPrice * largestPosition.shares)}
+                    </span>
+                  </div>
+                ) : <span className="empty-val">-</span>}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* BOTTOM ROW: Holdings Table */}
+        <section className="dashboard-holdings">
+          <div className="holdings-header">
+            <h3>Holdings</h3>
+            <div className="header-actions">
+              {isPortfolioLoading && <span className="updating-indicator">Updating...</span>}
+              <Button onClick={() => refreshPrices()} variant="outline" size="small" className="refresh-btn">
+                ↻
+              </Button>
+              <Button onClick={() => setIsModalOpen(true)} size="small">
+                + Add
+              </Button>
+            </div>
+          </div>
+
+          <div className="holdings-table-container">
+            <div className="holdings-table">
+              <div className="table-header">
+                <div className="col-symbol">Symbol</div>
+                <div className="col-shares">Shares</div>
+                <div className="col-price">Avg Price</div>
+                <div className="col-current">Current</div>
+                <div className="col-value">Value</div>
+                <div className="col-gain">Gain/Loss</div>
+                <div className="col-actions">Actions</div>
+              </div>
+
+              {holdings.length === 0 ? (
+                <div className="empty-table-row">No holdings found.</div>
+              ) : (
+                holdings.map((item) => {
+                  const marketValue = item.shares * item.currPrice;
+                  const gainABC = marketValue - (item.shares * item.avgPrice);
+                  const gainPercent = item.avgPrice > 0 ? (gainABC / (item.shares * item.avgPrice)) * 100 : 0;
+
+                  return (
+                    <div key={item.symbol} className="table-row">
+                      <div className="col-symbol">
+                        <div className="symbol-info">
+                          <span className="symbol">{item.symbol}</span>
+                          <span className="name">{item.name}</span>
+                        </div>
+                      </div>
+                      <div className="col-shares">{item.shares}</div>
+                      <div className="col-price">{formatCurrency(item.avgPrice)}</div>
+                      <div className="col-current">
+                        <div className="current-price">{formatCurrency(item.currPrice)}</div>
+                      </div>
+                      <div className="col-value">{formatCurrency(marketValue)}</div>
+                      <div className="col-gain">
+                        <div className={`gain-loss ${gainABC >= 0 ? 'positive' : 'negative'}`}>
+                          {formatCurrency(gainABC)}
+                        </div>
+                        <div className={`gain-percent ${gainABC >= 0 ? 'positive' : 'negative'}`}>
+                          {formatPercent(gainPercent)}
+                        </div>
+                      </div>
+                      <div className="col-actions">
+                        <button className="remove-btn" onClick={(e) => handleRemovePosition(item.symbol, e)}>×</button>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        </section>
+
       </div>
+
+      {/* --- Add Position Modal (Same as before) --- */}
+      {isModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h2>Add New Position</h2>
+              <button className="close-btn" onClick={() => setIsModalOpen(false)}>×</button>
+            </div>
+            <div className="modal-body">
+
+              <div className="form-group">
+                <label>Stock Symbol</label>
+                <input
+                  type="text"
+                  placeholder="Search (e.g. AAPL)"
+                  value={searchQuery}
+                  onChange={(e) => handleSearch(e.target.value)}
+                />
+                {searchResults.length > 0 && (
+                  <div className="search-dropdown-pf">
+                    {searchResults.map(result => (
+                      <div key={result.symbol} className="search-item" onClick={() => handleSelectStock(result)}>
+                        <span className="item-symbol">{result.symbol}</span>
+                        <span className="item-name">{result.shortname || result.longname}</span>
+                        <span className="item-exch">{result.exchange}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label>Shares</label>
+                <input
+                  type="number"
+                  placeholder="0"
+                  value={sharesInput}
+                  onChange={(e) => setSharesInput(e.target.value)}
+                />
+              </div>
+
+              {selectedStock && (
+                <div className="selected-preview">
+                  <p>Adding: <strong>{selectedStock.symbol}</strong></p>
+                </div>
+              )}
+
+              <Button
+                className="full-width-btn"
+                disabled={!selectedStock || !sharesInput}
+                onClick={handleAddPosition}
+              >
+                Add to Portfolio
+              </Button>
+
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

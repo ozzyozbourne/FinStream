@@ -578,40 +578,7 @@ const CustomDashboard: React.FC = () => {
       </div>
       {showChart && <ChartModal symbol={chartSymbol} onClose={() => setShowChart(false)} />}
 
-      {/* Live Market Ticker */}
-      <div className="market-ticker">
-        <div className="ticker-content">
-          <span className="ticker-label">Live Market:</span>
-          {isMarketOpen === null ? (
-            <div className="ticker-loading">Checking market status...</div>
-          ) : isMarketOpen ? (
-            marketIndices.length > 0 ? (
-              marketIndices.map((index) => (
-                <div key={index.id} className="ticker-item">
-                  <span className="ticker-name">{index.name}</span>
-                  <span className="ticker-value">${index.value.toFixed(2)}</span>
-                  <span className={`ticker-change ${index.change >= 0 ? 'positive' : 'negative'}`}>
-                    {index.change >= 0 ? '+' : ''}{index.change.toFixed(2)} ({index.changePercent >= 0 ? '+' : ''}{index.changePercent.toFixed(2)}%)
-                  </span>
-                </div>
-              ))
-            ) : (
-              <div className="ticker-loading">Loading market data...</div>
-            )
-          ) : (
-            <div className="market-closed">
-              <div className="market-status">
-                <span className="status-icon">🔒</span>
-                <span className="status-text">{marketStatus}</span>
-              </div>
-              <div className="market-hours">
-                <span className="hours-label">Market Hours:</span>
-                <span className="hours-text">9:30 AM - 4:00 PM EST (Mon-Fri)</span>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+
 
       <div className="dashboard-content">
         {/* Search Section */}
