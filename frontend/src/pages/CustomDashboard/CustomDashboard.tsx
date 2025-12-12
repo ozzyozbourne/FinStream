@@ -112,11 +112,11 @@ const checkMarketStatus = (): { isOpen: boolean; status: string; nextOpen?: stri
     return {
       isOpen: false,
       status: 'Market Closed - Weekend',
-      nextOpen: nextMonday.toLocaleString('en-US', { 
-        weekday: 'long', 
-        month: 'short', 
-        day: 'numeric', 
-        hour: 'numeric', 
+      nextOpen: nextMonday.toLocaleString('en-US', {
+        weekday: 'long',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
         minute: '2-digit',
         timeZoneName: 'short'
       })
@@ -138,8 +138,8 @@ const checkMarketStatus = (): { isOpen: boolean; status: string; nextOpen?: stri
     return {
       isOpen: false,
       status: 'Market Closed - Pre-Market',
-      nextOpen: nextOpen.toLocaleString('en-US', { 
-        hour: 'numeric', 
+      nextOpen: nextOpen.toLocaleString('en-US', {
+        hour: 'numeric',
         minute: '2-digit',
         timeZoneName: 'short'
       })
@@ -151,11 +151,11 @@ const checkMarketStatus = (): { isOpen: boolean; status: string; nextOpen?: stri
     return {
       isOpen: false,
       status: 'Market Closed - After Hours',
-      nextOpen: nextOpen.toLocaleString('en-US', { 
-        weekday: 'long', 
-        month: 'short', 
-        day: 'numeric', 
-        hour: 'numeric', 
+      nextOpen: nextOpen.toLocaleString('en-US', {
+        weekday: 'long',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
         minute: '2-digit',
         timeZoneName: 'short'
       })
@@ -200,7 +200,7 @@ const CustomDashboard: React.FC = () => {
       const wasOpen = isMarketOpen;
       setIsMarketOpen(marketInfo.isOpen);
       setMarketStatus(marketInfo.status);
-      
+
       // If market just opened, load market data
       if (marketInfo.isOpen && !wasOpen && marketIndices.length === 0) {
         console.log('Market just opened, loading market data...');
@@ -245,12 +245,12 @@ const CustomDashboard: React.FC = () => {
     try {
       setIsLoadingIndices(true);
       setError(null);
-      
+
       console.log('Loading market data...');
-      
+
       const indices = await polygonService.getMarketIndices();
       console.log('Market indices result:', indices);
-      
+
       if (indices && indices.length > 0) {
         setMarketIndices(indices);
         setLastUpdated(new Date());
@@ -258,7 +258,7 @@ const CustomDashboard: React.FC = () => {
       } else {
         console.log('No market indices returned from API');
       }
-      
+
       setIsLoadingIndices(false);
     } catch (err) {
       console.error('Market data loading failed:', err);
@@ -267,33 +267,75 @@ const CustomDashboard: React.FC = () => {
     }
   };
 
+
+  // Rename existing handleSearch to avoid conflict if I don't remove it... 
+  // actually I'm replacing the whole block, so I can just define the helper outside or inside component.
+  // Better to define inside component to access state if needed, or outside if pure.
+
+  // Helper to fetch prices for a list of stocks
+  const fetchStockPrices = async (stocksToUpdate: Stock[]): Promise<Stock[]> => {
+    console.log('Fetching prices for:', stocksToUpdate.length, 'stocks');
+    return Promise.all(
+      stocksToUpdate.map(async (stock) => {
+        try {
+          // Fetch previous close or real-time trade
+          const aggregates = await polygonService.getStockAggregates(stock.symbol, 'day', 2, true);
+
+          if (aggregates && aggregates.length >= 1) {
+            const current = aggregates[aggregates.length - 1];
+            // If we have 2 points, calculate change
+            let change = 0;
+            let changePercent = 0;
+
+            if (aggregates.length >= 2) {
+              const previous = aggregates[aggregates.length - 2];
+              change = current.c - previous.c;
+              changePercent = (change / previous.c) * 100;
+            }
+
+            return {
+              ...stock,
+              price: current.c,
+              change: change,
+              changePercent: changePercent
+            };
+          }
+          return stock;
+        } catch (error) {
+          console.error(`Error fetching price for ${stock.symbol}:`, error);
+          return stock;
+        }
+      })
+    );
+  };
+
   // Initialize with popular stocks and market indices
   useEffect(() => {
     const initializeData = async () => {
       try {
         setError(null);
-        
+
         console.log('Initializing dashboard data...');
-        
+
         // Load saved stocks from localStorage first
         const savedStocksFromStorage = loadStocksFromStorage();
-        setSavedStocks(savedStocksFromStorage);
-        
+        let initialSavedStocks = [...savedStocksFromStorage];
+
         // Load watchlist from localStorage
         const watchlistFromStorage = loadWatchlistFromStorage();
-        setWatchlistStocks(watchlistFromStorage);
-        
+        let initialWatchlistStocks = [...watchlistFromStorage];
+
         // Load watchlist title from localStorage
         const savedTitle = loadWatchlistTitleFromStorage();
         setWatchlistTitle(savedTitle);
-        
+
         setMarketIndices([]);
-        
+
         // Check market status first
         const marketInfo = checkMarketStatus();
         setIsMarketOpen(marketInfo.isOpen);
         setMarketStatus(marketInfo.status);
-        
+
         // Only load market data if market is open
         if (marketInfo.isOpen) {
           await loadMarketData();
@@ -301,31 +343,63 @@ const CustomDashboard: React.FC = () => {
           setIsLoadingIndices(false);
           console.log('Market is closed, skipping market data loading');
         }
-        
-        // Connect to real-time WebSocket with error handling
+
+        // Load popular stocks if no saved stocks exist
+        if (initialSavedStocks.length === 0) {
+          const popularStocks = await polygonService.getPopularStocks();
+          if (popularStocks && popularStocks.length > 0) {
+            initialSavedStocks = popularStocks.map((stock, index) => ({
+              ...stock,
+              id: `real-${stock.symbol}-${index}`,
+              isSaved: true
+            }));
+            // Save seemingly empty stocks first so we have something
+            setSavedStocks(initialSavedStocks);
+            saveStocksToStorage(initialSavedStocks);
+          }
+        } else {
+          setSavedStocks(initialSavedStocks);
+        }
+
+        setWatchlistStocks(initialWatchlistStocks);
+
+        // NOW: Fetch prices for EVERYTHING (Saved + Watchlist)
+        // This ensures even if market is closed, we see the last close price
+        const updatedSavedStocks = await fetchStockPrices(initialSavedStocks);
+        setSavedStocks(updatedSavedStocks as SavedStock[]);
+        saveStocksToStorage(updatedSavedStocks as SavedStock[]);
+
+        const updatedWatchlistStocks = await fetchStockPrices(initialWatchlistStocks);
+        setWatchlistStocks(updatedWatchlistStocks as WatchlistStock[]);
+        saveWatchlistToStorage(updatedWatchlistStocks as WatchlistStock[]);
+
+        // Connect to real-time WebSocket
         try {
           polygonService.connectWebSocket((symbol: string, price: number, change: number, changePercent: number) => {
-            console.log(`Real-time update: ${symbol} = $${price} (${change >= 0 ? '+' : ''}${changePercent.toFixed(2)}%)`);
+            // ... existing websocket handler logic ... 
+            // reusing logic by calling the state setters directly below is cleaner but I'll paste the block to be safe
+            // I'll just use the exact existing logic for the callback
+            console.log(`Real-time update: ${symbol} = $${price}`);
             setIsRealtimeConnected(true);
-            
+
             // Update saved stocks
-            setSavedStocks(prevStocks => 
-              prevStocks.map(stock => 
-                stock.symbol === symbol 
+            setSavedStocks(prevStocks =>
+              prevStocks.map(stock =>
+                stock.symbol === symbol
                   ? { ...stock, price, change, changePercent }
                   : stock
               )
             );
-            
+
             // Update watchlist stocks
-            setWatchlistStocks(prevStocks => 
-              prevStocks.map(stock => 
-                stock.symbol === symbol 
+            setWatchlistStocks(prevStocks =>
+              prevStocks.map(stock =>
+                stock.symbol === symbol
                   ? { ...stock, price, change, changePercent }
                   : stock
               )
             );
-            
+
             // Update market ticker
             setMarketIndices(prevIndices =>
               prevIndices.map(index =>
@@ -335,67 +409,25 @@ const CustomDashboard: React.FC = () => {
               )
             );
           });
+
+          // Subscribe to everything
+          [...updatedSavedStocks, ...updatedWatchlistStocks].forEach(stock => {
+            polygonService.subscribeToStock(stock.symbol);
+          });
+
         } catch (error) {
-          console.log('WebSocket connection failed, continuing without real-time updates:', error);
+          console.log('WebSocket connection failed:', error);
         }
-        
-        // Load real stock data
-        try {
-          console.log('Loading real stock data...');
-          
-          const popularStocks = await polygonService.getPopularStocks();
-          console.log('Popular stocks result:', popularStocks);
-          console.log('Popular stocks length:', popularStocks ? popularStocks.length : 'null');
-          
-          // Only load popular stocks if no saved stocks exist
-          if (savedStocksFromStorage.length === 0) {
-            if (popularStocks && popularStocks.length > 0) {
-              const realStocks: SavedStock[] = popularStocks.map((stock, index) => ({
-                ...stock,
-                id: `real-${stock.symbol}-${index}`,
-                isSaved: true
-              }));
-              console.log('Setting real stock data:', realStocks);
-              console.log('Real stocks length:', realStocks.length);
-              setSavedStocks(realStocks);
-              saveStocksToStorage(realStocks);
-              
-              // Subscribe to real-time updates for new stocks
-              realStocks.forEach(stock => {
-                polygonService.subscribeToStock(stock.symbol);
-              });
-              
-              console.log(`Real stock data loaded: ${realStocks.length} stocks`);
-            } else {
-              console.log('No popular stocks returned from API');
-            }
-          } else {
-            // Subscribe to real-time updates for existing saved stocks
-            savedStocksFromStorage.forEach(stock => {
-              polygonService.subscribeToStock(stock.symbol);
-            });
-            console.log(`Loaded ${savedStocksFromStorage.length} saved stocks from localStorage`);
-            
-            // Subscribe to real-time updates for watchlist stocks
-            watchlistFromStorage.forEach(stock => {
-              polygonService.subscribeToStock(stock.symbol);
-            });
-            console.log(`Loaded ${watchlistFromStorage.length} watchlist stocks from localStorage`);
-          }
-        } catch (err) {
-          console.error('Stock data loading failed:', err);
-          setError('Failed to load stock data. Please check your API key and internet connection.');
-        }
-        
+
       } catch (err) {
         console.error('Error initializing data:', err);
-        setError('Failed to load market data. Please check your API key.');
+        setError('Failed to load market data.');
         setIsLoadingIndices(false);
       }
     };
 
     initializeData();
-    
+
     // Cleanup WebSocket on component unmount
     return () => {
       polygonService.disconnectWebSocket();
@@ -407,73 +439,27 @@ const CustomDashboard: React.FC = () => {
     if (query.trim().length > 0) {
       setIsSearching(true);
       setError(null);
-      
+
       try {
-        console.log('start searching api call...............................................')
-        // Search for stocks using Polygon.io API
         const searchResults = await polygonService.searchStocks(query);
 
-        console.log("searchResults from api call......**************************************", searchResults);
-        
-        // Convert API results to our Stock format - show immediately with basic info
         const stocks: Stock[] = searchResults.map((result) => ({
           symbol: result.ticker,
           name: result.name || result.ticker,
-          price: 0, // Will be updated with real data
+          price: 0,
           change: 0,
           changePercent: 0
         }));
 
-        console.log("stocks searched......", stocks);
-        
-        // Show results immediately
         setSearchResults(stocks);
-        
-        // Load price data for each stock
-        console.log('Loading price data...');
-        const updatedStocks = await Promise.all(
-          stocks.map(async (stock) => {
-            try {
-              const aggregates = await polygonService.getStockAggregates(stock.symbol, 'day', 2, true);
-              
-              console.log(`Aggregates for ${stock.symbol}:`, aggregates);
-              
-              if (aggregates && aggregates.length >= 2) {
-                const current = aggregates[aggregates.length - 1];
-                const previous = aggregates[aggregates.length - 2];
-                
-                const change = current.c - previous.c;
-                const changePercent = (change / previous.c) * 100;
 
-                return {
-                  ...stock,
-                  price: current.c,
-                  change: change,
-                  changePercent: changePercent
-                };
-              } else if (aggregates && aggregates.length >= 1) {
-                const current = aggregates[aggregates.length - 1];
-                return {
-                  ...stock,
-                  price: current.c,
-                  change: 0,
-                  changePercent: 0
-                };
-              }
-              
-              return stock; // Keep original if no data
-            } catch (error) {
-              console.error(`Error fetching price for ${stock.symbol}:`, error);
-              return stock; // Keep original on error
-            }
-          })
-        );
-        
-        console.log('Updated stocks with price data:', updatedStocks);
+        // Use helper to fetch prices
+        const updatedStocks = await fetchStockPrices(stocks);
         setSearchResults(updatedStocks);
+
       } catch (err) {
         console.error('Error searching stocks:', err);
-        setError('Failed to search stocks. Please try again.');
+        setError('Failed to search stocks.');
         setSearchResults([]);
       } finally {
         setIsSearching(false);
@@ -489,16 +475,16 @@ const CustomDashboard: React.FC = () => {
       id: `saved-${stock.symbol}-${Date.now()}`,
       isSaved: true
     };
-    
+
     setSavedStocks(prev => {
       const updatedStocks = [...prev, newSavedStock];
       saveStocksToStorage(updatedStocks);
       return updatedStocks;
     });
-    
+
     // Subscribe to real-time updates for the new stock
     polygonService.subscribeToStock(stock.symbol);
-    
+
     setSearchQuery('');
     setSearchResults([]);
   };
@@ -509,7 +495,7 @@ const CustomDashboard: React.FC = () => {
       // Unsubscribe from real-time updates
       polygonService.unsubscribeFromStock(stockToRemove.symbol);
     }
-    
+
     setSavedStocks(prev => {
       const updatedStocks = prev.filter(stock => stock.id !== stockId);
       saveStocksToStorage(updatedStocks);
@@ -523,16 +509,16 @@ const CustomDashboard: React.FC = () => {
       id: `watchlist-${stock.symbol}-${Date.now()}`,
       addedAt: Date.now()
     };
-    
+
     setWatchlistStocks(prev => {
       const updatedStocks = [...prev, newWatchlistStock];
       saveWatchlistToStorage(updatedStocks);
       return updatedStocks;
     });
-    
+
     // Subscribe to real-time updates for the new stock
     polygonService.subscribeToStock(stock.symbol);
-    
+
     setSearchQuery('');
     setSearchResults([]);
   };
@@ -543,7 +529,7 @@ const CustomDashboard: React.FC = () => {
       // Unsubscribe from real-time updates
       polygonService.unsubscribeFromStock(stockToRemove.symbol);
     }
-    
+
     setWatchlistStocks(prev => {
       const updatedStocks = prev.filter(stock => stock.id !== stockId);
       saveWatchlistToStorage(updatedStocks);
@@ -569,10 +555,10 @@ const CustomDashboard: React.FC = () => {
         const oldIndex = items.findIndex(item => item.id === active.id);
         const newIndex = items.findIndex(item => item.id === over.id);
         const reorderedItems = arrayMove(items, oldIndex, newIndex);
-        
+
         // Save the reordered stocks to localStorage
         saveStocksToStorage(reorderedItems);
-        
+
         return reorderedItems;
       });
     }
@@ -634,14 +620,14 @@ const CustomDashboard: React.FC = () => {
             <h3 className="section-title">Add New Stocks</h3>
             <p className="section-subtitle">Search and add stocks to your dashboard</p>
           </div>
-          
+
           <div className="search-container" ref={searchContainerRef}>
             <SearchBar
               placeholder="Search for stocks by symbol or company name..."
               onSearch={handleSearch}
               className="stock-search"
             />
-            
+
             {searchQuery && (
               <div className="search-dropdown">
                 {isSearching ? (
@@ -733,7 +719,7 @@ const CustomDashboard: React.FC = () => {
               </Button>
             </div>
           </div>
-          
+
           {savedStocks.length > 0 ? (
             <DndContext
               sensors={sensors}
@@ -798,7 +784,7 @@ const CustomDashboard: React.FC = () => {
                 }}
               />
             ) : (
-              <h3 
+              <h3
                 className="section-title"
                 onClick={() => setIsEditingWatchlistTitle(true)}
                 style={{ cursor: 'pointer' }}
@@ -809,7 +795,7 @@ const CustomDashboard: React.FC = () => {
               </h3>
             )}
           </div>
-          
+
           {watchlistStocks.length > 0 ? (
             <div className="saved-stocks-container list">
               {watchlistStocks.map((stock) => (
@@ -867,7 +853,7 @@ const CustomDashboard: React.FC = () => {
               </div>
             )}
           </div>
-          
+
           {isLoadingIndices ? (
             <div className="loading-state">
               <div className="loading-spinner"></div>

@@ -14,11 +14,12 @@ import WatchPage from './pages/Watch';
 import PortfolioPage from './pages/Portfolio';
 import { HistoricalDataPage } from './pages/HistoricalData/HistoricalDataPage';
 import LiveMarketsPage from "./pages/LiveMarkets";
+import { SubscriptionProvider } from './context/SubscriptionContext';
+import SubscriptionModal from './components/features/Subscription/SubscriptionModal';
 import './App.css';
 
-import './App.css';
 // Protected Route Component (inline)
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { keycloak, initialized } = useKeycloak();
 
   if (!initialized) {
@@ -31,61 +32,64 @@ const ProtectedRoute = ({ children }) => {
     return <div>Redirecting to login...</div>;
   }
 
-  return children;
+  return <>{children}</>;
 };
 
 function App() {
-  return ( 
-    <Router>
-     <MainLayout>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/dashboard" element={
-          <ProtectedRoute>
-            <CustomDashboard />
-          </ProtectedRoute>
-        } />
-        <Route path="/historical-data" element={<HistoricalDataPage />} />
-        <Route path="/live-markets" element={<LiveMarketsPage />} />
-        <Route path="/news" element={
-          <ProtectedRoute>
-            <NewsPage />
-          </ProtectedRoute>
-        } />
-        <Route path="/markets" element={<MarketsPage />} />
-        <Route path="/research" element={
-          <ProtectedRoute>
-            <ResearchPage />
-          </ProtectedRoute>
-        } />
-        <Route path="/personal-finance" element={
-          <ProtectedRoute>
-            <PersonalFinancePage />
-          </ProtectedRoute>
-        } />
-        <Route path="/videos" element={
-          <ProtectedRoute>
-            <VideosPage />
-          </ProtectedRoute>
-        } />
-        <Route path="/watch" element={
-          <ProtectedRoute>
-            <WatchPage />
-          </ProtectedRoute>
-        } />
-         <Route path="/portfolio" element={
-          <ProtectedRoute>
-          <PortfolioPage />
-          </ProtectedRoute>
-        } />
-        <Route path="/profile" element={
-          <ProtectedRoute>
-            <ProfilePage />
-          </ProtectedRoute>
-        } />
-      </Routes>
-    </MainLayout>
-  </Router>
+  return (
+    <SubscriptionProvider>
+      <Router>
+        <MainLayout>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <CustomDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/historical-data" element={<HistoricalDataPage />} />
+            <Route path="/live-markets" element={<LiveMarketsPage />} />
+            <Route path="/news" element={
+              <ProtectedRoute>
+                <NewsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/markets" element={<MarketsPage />} />
+            <Route path="/research" element={
+              <ProtectedRoute>
+                <ResearchPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/personal-finance" element={
+              <ProtectedRoute>
+                <PersonalFinancePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/videos" element={
+              <ProtectedRoute>
+                <VideosPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/watch" element={
+              <ProtectedRoute>
+                <WatchPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/portfolio" element={
+              <ProtectedRoute>
+                <PortfolioPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            } />
+          </Routes>
+        </MainLayout>
+        <SubscriptionModal />
+      </Router>
+    </SubscriptionProvider>
   );
 }
 export default App;

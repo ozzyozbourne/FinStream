@@ -1,160 +1,449 @@
 /* ProfilePage.css */
 
 .profile-page {
+  width: 100%;
+  min-height: calc(100vh - 80px);
+  padding: 40px 24px;
+  background-color: #0a0a0a;
+  /* Pitch black page background */
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile-header-section {
+  text-align: center;
+  margin-bottom: 40px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.gradient-text {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #fff;
+  /* Minimalist white instead of gradient */
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: #888;
+  font-size: 1.1rem;
+}
+
+/* Minimal Flat Container */
+.profile-container.glass-panel {
+  /* Keeping class name to avoid TSX refactor, but style is flat */
+  display: flex;
+  width: 100%;
+  max-width: 1000px;
+  background: #111111;
+  /* Near pitch black for the card */
+  backdrop-filter: none;
+  /* No blur */
+  border: 1px solid #333;
+  /* Neutral gray border */
+  border-radius: 16px;
+  /* Slightly tighter radius */
+  overflow: hidden;
+  box-shadow: none;
+  /* Remove shadow for flat look */
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Sidebar (Left) */
+.profile-sidebar {
+  width: 300px;
+  background: transparent;
+  /* Inherit from container for unified look */
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-right: 1px solid #333;
+  /* Matching border color */
+}
+
+.avatar-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #222;
+  /* Very dark neutral gray */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #00d4aa;
+  font-size: 2.5rem;
+  font-weight: bold;
+  border: none;
+  box-shadow: none;
+  margin-bottom: 20px;
+}
+
+.profile-name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #fff;
+  text-align: center;
+}
+
+.subscription-badge {
+  padding: 6px 16px;
+  border-radius: 6px;
+  /* Less rounded */
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.subscription-badge.premium {
+  background: #00d4aa;
+  color: #000;
+  border: none;
+}
+
+.subscription-badge.free {
+  background: #333;
+  color: #aaa;
+  border: none;
+}
+
+/* Main Details Area (Right) */
+.profile-details {
+  flex: 1;
+  padding: 40px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #333;
+}
+
+.section-header h3 {
+  font-size: 1.2rem;
+  color: #fff;
+  font-weight: 500;
+}
+
+.icon-btn.edit-btn {
+  background: transparent;
+  color: #888;
+  border: 1px solid #333;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.icon-btn.edit-btn:hover {
+  color: #fff;
+  border-color: #555;
+  background: #222;
+  transform: none;
+}
+
+.btn-icon,
+.btn-icon-sm {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-icon-sm {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+}
+
+/* Form Grid */
+.fields-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.profile-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-field.full-width {
+  grid-column: span 2;
+}
+
+.profile-field label {
+  color: #888;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.field-icon {
+  width: 16px;
+  height: 16px;
+  color: #555;
+  /* Muted icon color */
+}
+
+.field-value {
+  padding: 10px 0;
+  background: transparent;
+  border-bottom: 1px solid #333;
+  border-radius: 0;
+  color: #e0e0e0;
+  font-size: 1rem;
+}
+
+/* Inputs */
+.glass-input {
+  /* Solid flat input */
+  padding: 10px 12px;
+  background: #000;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.glass-input:focus {
+  border-color: #00d4aa;
+  box-shadow: none;
+}
+
+.glass-input:disabled {
+  opacity: 0.6;
+  background: #111;
+  border-color: #222;
+  cursor: not-allowed;
+}
+
+/* Subscription Row */
+.plan-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  background: transparent;
+  border-bottom: 1px solid #333;
+  border-radius: 0;
+}
+
+.plan-name {
+  font-weight: 600;
+  color: #fff;
+}
+
+.upgrade-link {
+  background: none;
+  border: none;
+  color: #00d4aa;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.upgrade-link:hover {
+  text-decoration: underline;
+}
+
+/* Footer Actions */
+.profile-actions-footer {
+  grid-column: span 2;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #333;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.action-btn.save-btn {
+  background: #00d4aa;
+  color: #000;
+}
+
+.action-btn.save-btn:hover {
+  background: #00ffcc;
+  box-shadow: none;
+}
+
+.action-btn.cancel-btn {
+  background: transparent;
+  border: 1px solid #333;
+  color: #ccc;
+}
+
+.action-btn.cancel-btn:hover {
+  background: #222;
+  border-color: #555;
+  color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .profile-container.glass-panel {
+    flex-direction: column;
+  }
+
+  .profile-sidebar {
     width: 100%;
-    padding: 24px;
+    border-right: none;
+    border-bottom: 1px solid #333;
+    padding: 30px 20px;
   }
-  
-  .profile-content {
-    display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: 24px;
-    align-items: start;
-  }
-  
-  .main-content-area {
-    min-height: 100vh;
-  }
-  
-  .profile-grid {
-    display: grid;
+
+  .fields-grid {
     grid-template-columns: 1fr;
-    gap: 24px;
   }
-  
-  .profile-card {
-    background: #1a1a1a;
+
+  .profile-field.full-width {
+    grid-column: span 1;
+  }
+
+  .profile-details {
     padding: 24px;
-    border-radius: 10px;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
   }
-  
-  .profile-field {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .profile-field label {
-    font-weight: bold;
-    min-width: 120px;
-  }
-  
-  .profile-field span {
-    flex: 1;
-    text-align: right;
-  }
-  
-  .profile-field input {
-    flex: 1;
-    margin-left: 20px;
-    padding: 8px 12px;
-    border-radius: 6px;
-    border: 1px solid #444;
-    background-color: #222;
-    color: #fff;
-  }
-  
-  .profile-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-  }
-  
-  /* Buttons */
-  .edit-btn, .save-btn, .cancel-btn {
-    padding: 8px 16px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  
-  .edit-btn {
-    background-color: #00d4aa;
-    color: #111;
-  }
-  
-  .save-btn {
-    background-color: #28a745;
-    color: #fff;
-  }
-  
-  .cancel-btn {
-    background-color: #ff4757;
-    color: #fff;
-  }
-  
-  /* Right sidebar (optional for additional info) */
-  .right-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    position: sticky;
-    top: 120px;
-  }
-  
-  /* Responsive design */
-  @media (max-width: 1200px) {
-    .profile-content {
-      grid-template-columns: 1fr 280px;
-      gap: 20px;
-    }
-  }
-  
-  @media (max-width: 1024px) {
-    .profile-content {
-      grid-template-columns: 1fr;
-    }
-    .right-sidebar {
-      position: static;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .profile-content {
-      gap: 20px;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .profile-content {
-      gap: 16px;
-    }
-    .profile-field {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    .profile-field input {
-      margin-left: 0;
-      width: 100%;
-    }
-  }
-  
-  /* Utilities matching home-page CSS */
-  .text-center {
-    text-align: center;
-  }
-  
-  .text-left {
-    text-align: left;
-  }
-  
-  .text-right {
-    text-align: right;
-  }
-  
-  .gap-1 { gap: 4px; }
-  .gap-2 { gap: 8px; }
-  .gap-3 { gap: 12px; }
-  .gap-4 { gap: 16px; }
-  .gap-5 { gap: 20px; }
-  .gap-6 { gap: 24px; }
-  
+}
+
+/* Tabs */
+.profile-tabs {
+  display: flex;
+  gap: 20px;
+  border-bottom: 1px solid #333;
+  margin-bottom: 30px;
+  padding-left: 40px;
+  width: 100%;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 12px 4px;
+  color: #888;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.tab-btn:hover {
+  color: #e0e0e0;
+}
+
+.tab-btn.active {
+  color: #00d4aa;
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #00d4aa;
+}
+
+/* History Table */
+.history-table-container {
+  overflow-x: auto;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.history-table th {
+  padding: 12px 16px;
+  color: #888;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-bottom: 1px solid #333;
+}
+
+.history-table td {
+  padding: 16px;
+  color: #e0e0e0;
+  font-size: 0.95rem;
+  border-bottom: 1px solid #222;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.status-badge.success {
+  background: rgba(0, 212, 170, 0.1);
+  color: #00d4aa;
+}
+
+.download-btn {
+  background: none;
+  border: 1px solid #333;
+  color: #ccc;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.download-btn:hover {
+  border-color: #555;
+  color: #fff;
+  background: #222;
+}
+
+.no-history {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-style: italic;
+}
