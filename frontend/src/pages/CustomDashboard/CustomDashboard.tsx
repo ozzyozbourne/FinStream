@@ -11,6 +11,7 @@ import MarketIndexComponent from '../../components/ui/MarketIndex';
 import Button from '../../components/ui/Button';
 import { ChartModal } from '../../components/ui/ChartModal/ChartModal';
 import StockMiniChart from '../../components/ui/StockMiniChart/StockMiniChart';
+import WatchlistCandleChart from '../../components/ui/WatchlistCandleChart';
 import './CustomDashboard.css';
 
 interface SavedStock extends Stock {
@@ -749,30 +750,35 @@ const CustomDashboard: React.FC = () => {
             <div className="saved-stocks-container list">
               {watchlistStocks.map((stock) => (
                 <div key={stock.id} className="saved-stock-item list-item">
-                  <div className="stock-info">
-                    <div className="stock-details">
-                      <span className="stock-symbol">{stock.symbol}</span>
-                      <span className="stock-name">{stock.name}</span>
+                  <div className="stock-item-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                    <div className="stock-info">
+                      <div className="stock-details">
+                        <span className="stock-symbol">{stock.symbol}</span>
+                        <span className="stock-name">{stock.name}</span>
+                      </div>
+                      <StockTicker
+                        ticker={{
+                          symbol: stock.symbol,
+                          price: stock.price,
+                          change: stock.change,
+                          changePercent: stock.changePercent
+                        }}
+                        showChange={true}
+                        className="compact"
+                      />
                     </div>
-                    <StockTicker
-                      ticker={{
-                        symbol: stock.symbol,
-                        price: stock.price,
-                        change: stock.change,
-                        changePercent: stock.changePercent
-                      }}
-                      showChange={true}
-                      className="compact"
-                    />
+                    <Button
+                      variant="outline"
+                      size="small"
+                      onClick={() => handleRemoveFromWatchlist(stock.id)}
+                      className="remove-button"
+                    >
+                      Remove
+                    </Button>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="small"
-                    onClick={() => handleRemoveFromWatchlist(stock.id)}
-                    className="remove-button"
-                  >
-                    Remove
-                  </Button>
+                  <div style={{ marginTop: '1rem', width: '100%' }}>
+                    <WatchlistCandleChart stock={stock} height={250} />
+                  </div>
                 </div>
               ))}
             </div>

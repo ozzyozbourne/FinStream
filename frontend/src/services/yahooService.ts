@@ -160,6 +160,28 @@ class YahooService {
             return [];
         }
     }
+    // Fetch Intraday History for Sparklines and Candles
+    async getStockHistory(symbol: string, range: string = '1d', interval: string = '5m'): Promise<{ timestamp: number; open: number; high: number; low: number; close: number; price: number }[]> {
+        try {
+            const response = await fetch(`${BACKEND_API}/history?symbol=${symbol}&range=${range}&interval=${interval}`);
+            const data = await response.json();
+
+            if (Array.isArray(data)) {
+                return data.map((d: any) => ({
+                    timestamp: d.timestamp * 1000, // Convert to ms
+                    open: d.open,
+                    high: d.high,
+                    low: d.low,
+                    close: d.close,
+                    price: d.close // Alias for compatibility
+                })).filter(d => d.open !== null && d.close !== null && d.high !== null && d.low !== null);
+            }
+            return [];
+        } catch (error) {
+            console.error('Error fetching history:', error);
+            return [];
+        }
+    }
 }
 
 export const yahooService = new YahooService();
