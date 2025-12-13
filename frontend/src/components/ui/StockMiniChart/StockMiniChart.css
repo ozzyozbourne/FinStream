@@ -1,0 +1,197 @@
+.stock-mini-chart {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 12px;
+    background: rgba(30, 30, 30, 0.4);
+    border-radius: 8px;
+    padding: 8px 12px;
+    border-left: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.stock-mini-chart:hover {
+    background: rgba(40, 40, 40, 0.6);
+    border-left-color: #4facfe;
+}
+
+.mini-chart-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+    gap: 4px;
+}
+
+.view-toggle-btn {
+    background: transparent;
+    border: 1px solid #444;
+    color: #aaa;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.view-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    border-color: #666;
+}
+
+.view-toggle-btn.active {
+    background: #00d4aa;
+    color: #000;
+    border-color: #00d4aa;
+    font-weight: 600;
+}
+
+.view-toggle-btn.active.negative-trend {
+    background: #ff6b6b;
+    border-color: #ff6b6b;
+}
+
+.mini-chart-content {
+    height: 60px;
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Trend View */
+.trend-chart-wrapper {
+    width: 100%;
+    height: 100%;
+}
+
+/* Change View */
+.change-view {
+    width: 100%;
+    padding: 0 10px;
+}
+
+.change-bar-container {
+    width: 100%;
+    height: 24px;
+    background: #333;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.change-zero-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #666;
+    z-index: 2;
+}
+
+.change-bar-fill {
+    height: 100%;
+    position: absolute;
+    top: 0;
+    transition: width 0.5s ease-out;
+}
+
+.change-bar-fill.positive {
+    background: linear-gradient(90deg, #00d4aa, #00bfa5);
+    left: 50%;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.change-bar-fill.negative {
+    background: linear-gradient(90deg, #ff6b6b, #ef5350);
+    right: 50%;
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+
+.change-label {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    z-index: 3;
+}
+
+/* Momentum View */
+.momentum-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 4px;
+}
+
+.momentum-meter {
+    display: flex;
+    gap: 4px;
+}
+
+.momentum-block {
+    width: 20px;
+    height: 12px;
+    background: #333;
+    border-radius: 2px;
+    transition: background 0.3s;
+}
+
+.momentum-block.active {
+    box-shadow: 0 0 8px currentColor;
+}
+
+.momentum-label {
+    font-size: 0.75rem;
+    color: #ccc;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+/* Risk View */
+.risk-view {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 12px;
+}
+
+.risk-badge {
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.risk-badge.low {
+    background: #00d4aa;
+}
+
+.risk-badge.medium {
+    background: #ffd700;
+}
+
+.risk-badge.high {
+    background: #ff6b6b;
+    color: #fff;
+}
+
+.risk-desc {
+    font-size: 0.8rem;
+    color: #888;
+}

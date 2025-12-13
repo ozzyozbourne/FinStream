@@ -10,6 +10,7 @@ import StockTicker from '../../components/ui/StockTicker';
 import MarketIndexComponent from '../../components/ui/MarketIndex';
 import Button from '../../components/ui/Button';
 import { ChartModal } from '../../components/ui/ChartModal/ChartModal';
+import StockMiniChart from '../../components/ui/StockMiniChart/StockMiniChart';
 import './CustomDashboard.css';
 
 interface SavedStock extends Stock {
@@ -782,61 +783,13 @@ const CustomDashboard: React.FC = () => {
           )}
         </div>
 
-        {/* Market Overview Section */}
-        <div className="market-overview-section">
-          <div className="section-header">
-            <h3 className="section-title">Market Overview</h3>
-            {lastUpdated && (
-              <div className="last-updated">
-                <span className="updated-label">Last Updated:</span>
-                <span className="updated-time">
-                  {lastUpdated.toLocaleString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    timeZoneName: 'short'
-                  })}
-                </span>
-              </div>
-            )}
-          </div>
 
-          {isLoadingIndices ? (
-            <div className="loading-state">
-              <div className="loading-spinner"></div>
-              <p>Loading market data...</p>
-            </div>
-          ) : error ? (
-            <div className="error-state">
-              <p>{error}</p>
-            </div>
-          ) : marketIndices.length > 0 ? (
-            <div className="market-indices-grid">
-              {marketIndices.map((index) => (
-                <MarketIndexComponent key={index.id} index={index} />
-              ))}
-            </div>
-          ) : isMarketOpen === false ? (
-            <div className="market-closed-overview">
-              <div className="closed-icon">📊</div>
-              <h4>Market Data Unavailable</h4>
-              <p>The market is currently closed. Market data will be available during trading hours.</p>
-              <div className="trading-hours">
-                <strong>Trading Hours:</strong> 9:30 AM - 4:00 PM EST (Monday-Friday)
-              </div>
-            </div>
-          ) : (
-            <div className="no-data-state">
-              <div className="no-data-icon">📈</div>
-              <p>No market data available at this time.</p>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );
 };
+
+
 
 // Sortable Stock Item Component
 const SortableStockItem: React.FC<{
@@ -910,40 +863,45 @@ const SortableStockItem: React.FC<{
       style={style}
       className={`saved-stock-item list-item ${isDragging ? 'dragging' : ''}`}
     >
-      <div {...attributes} {...listeners} className="drag-handle">⋮⋮</div>
-      <div className="stock-info">
-        <div className="stock-details">
-          <span className="stock-symbol">{stock.symbol}</span>
-          <span className="stock-name">{stock.name}</span>
+      <div className="stock-item-row" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+        <div {...attributes} {...listeners} className="drag-handle">⋮⋮</div>
+        <div className="stock-info">
+          <div className="stock-details">
+            <span className="stock-symbol">{stock.symbol}</span>
+            <span className="stock-name">{stock.name}</span>
+          </div>
+          <StockTicker
+            ticker={{
+              symbol: stock.symbol,
+              price: stock.price,
+              change: stock.change,
+              changePercent: stock.changePercent
+            }}
+            showChange={true}
+            className="compact"
+          />
         </div>
-        <StockTicker
-          ticker={{
-            symbol: stock.symbol,
-            price: stock.price,
-            change: stock.change,
-            changePercent: stock.changePercent
+        <div className="stock-actions">
+          <Button variant="primary" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onViewRealtime(stock.symbol); }}>Real-Time</Button>
+          <Button variant="outline" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onViewHistorical(stock.symbol); }}>Historical</Button>
+          <Button variant="outline" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onViewChart(stock.symbol); }}>Chart</Button>
+          <Button variant="outline" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onAddToWatchlist(stock); }}>Watch</Button>
+        </div>
+        <Button
+          variant="outline"
+          size="small"
+          onClick={(e?: React.MouseEvent) => {
+            e?.stopPropagation();
+            onRemove(stock.id);
           }}
-          showChange={true}
-          className="compact"
-        />
+          className="remove-button"
+        >
+          Remove
+        </Button>
       </div>
-      <div className="stock-actions">
-        <Button variant="primary" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onViewRealtime(stock.symbol); }}>Real-Time</Button>
-        <Button variant="outline" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onViewHistorical(stock.symbol); }}>Historical</Button>
-        <Button variant="outline" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onViewChart(stock.symbol); }}>Chart</Button>
-        <Button variant="outline" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onAddToWatchlist(stock); }}>Watch</Button>
-      </div>
-      <Button
-        variant="outline"
-        size="small"
-        onClick={(e?: React.MouseEvent) => {
-          e?.stopPropagation();
-          onRemove(stock.id);
-        }}
-        className="remove-button"
-      >
-        Remove
-      </Button>
+
+      {/* Micro-Chart Section */}
+      <StockMiniChart stock={stock} />
     </div>
   );
 };
