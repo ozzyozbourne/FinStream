@@ -27,7 +27,17 @@ app.get("/api/yahoo/search", async (req, res) => {
             'User-Agent': 'Mozilla/5.0' // Yahoo often blocks requests without a User-Agent
         }
     });
-    res.json(response.data);
+
+    // Transform to standard format
+    const quotes = response.data.quotes || [];
+    const results = quotes.map(q => ({
+        symbol: q.symbol,
+        name: q.shortname || q.longname || q.symbol,
+        exch: q.exchange,
+        type: q.quoteType
+    })).filter(q => q.type === 'EQUITY' || q.type === 'ETF');
+
+    res.json({ results });
   } catch (error) {
     console.error("Yahoo Search Error:", error.message);
     res.status(500).json({ error: "Failed to fetch search results" });
@@ -61,6 +71,50 @@ app.get("/api/yahoo/quote", async (req, res) => {
     console.error(`Yahoo Quote Error for ${symbol}:`, error.message);
     res.status(500).json({ error: "Failed to fetch quote" });
   }
+});
+
+// 2.5. Get Batch Quotes
+app.get("/api/yahoo/quotes", async (req, res) => {
+    const symbolsParam = req.query.symbols;
+    if (!symbolsParam) return res.status(400).json({ error: "Query parameter 'symbols' required" });
+
+    const symbols = symbolsParam.split(',');
+    
+    try {
+        const promises = symbols.map(async (symbol) => {
+            try {
+                const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1m&range=1d`;
+                const response = await axios.get(url, {
+                    headers: { 'User-Agent': 'Mozilla/5.0' }
+                });
+                
+                const result = response.data.chart.result?.[0];
+                if (!result || !result.meta) return null;
+
+                const meta = result.meta;
+                return {
+                    symbol: meta.symbol,
+                    price: meta.regularMarketPrice,
+                    change: meta.regularMarketPrice - meta.chartPreviousClose, // generic calc
+                    changePercent: ((meta.regularMarketPrice - meta.chartPreviousClose) / meta.chartPreviousClose) * 100,
+                    currency: meta.currency,
+                    name: meta.symbol, // Chart endpoint doesn't give full name often, but that's acceptable or we can fallback
+                    timestamp: Date.now()
+                };
+            } catch (err) {
+                console.error(`Failed to fetch quote for ${symbol}: ${err.message}`);
+                return null;
+            }
+        });
+
+        const results = await Promise.all(promises);
+        const validQuotes = results.filter(q => q !== null);
+
+        res.json(validQuotes);
+    } catch (error) {
+        console.error("Yahoo Batch Quotes Error:", error.message);
+        res.status(500).json({ error: "Failed to fetch batch quotes" });
+    }
 });
 
 // 3. Get Historical Data (Candles)

@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import { polygonService } from '../../services/polygonService';
+import { yahooService } from '../../services/yahooService';
 import { Stock, MarketIndex } from '../../types';
 import SearchBar from '../../components/ui/SearchBar';
 import StockTicker from '../../components/ui/StockTicker';
 import MarketIndexComponent from '../../components/ui/MarketIndex';
 import Button from '../../components/ui/Button';
 import { ChartModal } from '../../components/ui/ChartModal/ChartModal';
+import StockMiniChart from '../../components/ui/StockMiniChart/StockMiniChart';
 import './CustomDashboard.css';
 
 interface SavedStock extends Stock {
@@ -248,7 +249,7 @@ const CustomDashboard: React.FC = () => {
 
       console.log('Loading market data...');
 
-      const indices = await polygonService.getMarketIndices();
+      const indices = await yahooService.getMarketIndices();
       console.log('Market indices result:', indices);
 
       if (indices && indices.length > 0) {
@@ -262,51 +263,34 @@ const CustomDashboard: React.FC = () => {
       setIsLoadingIndices(false);
     } catch (err) {
       console.error('Market data loading failed:', err);
-      setError('Failed to load market data. Please check your API key and internet connection.');
+      setError('Failed to load market data. Please check your internet connection.');
       setIsLoadingIndices(false);
     }
   };
 
 
-  // Rename existing handleSearch to avoid conflict if I don't remove it... 
-  // actually I'm replacing the whole block, so I can just define the helper outside or inside component.
-  // Better to define inside component to access state if needed, or outside if pure.
-
   // Helper to fetch prices for a list of stocks
   const fetchStockPrices = async (stocksToUpdate: Stock[]): Promise<Stock[]> => {
     console.log('Fetching prices for:', stocksToUpdate.length, 'stocks');
-    return Promise.all(
-      stocksToUpdate.map(async (stock) => {
-        try {
-          // Fetch previous close or real-time trade
-          const aggregates = await polygonService.getStockAggregates(stock.symbol, 'day', 2, true);
+    if (stocksToUpdate.length === 0) return [];
 
-          if (aggregates && aggregates.length >= 1) {
-            const current = aggregates[aggregates.length - 1];
-            // If we have 2 points, calculate change
-            let change = 0;
-            let changePercent = 0;
+    const symbols = stocksToUpdate.map(s => s.symbol);
+    const quotes = await yahooService.getBatchQuotes(symbols);
 
-            if (aggregates.length >= 2) {
-              const previous = aggregates[aggregates.length - 2];
-              change = current.c - previous.c;
-              changePercent = (change / previous.c) * 100;
-            }
-
-            return {
-              ...stock,
-              price: current.c,
-              change: change,
-              changePercent: changePercent
-            };
-          }
-          return stock;
-        } catch (error) {
-          console.error(`Error fetching price for ${stock.symbol}:`, error);
-          return stock;
-        }
-      })
-    );
+    // Map quotes back to input stocks to preserve any extra fields
+    return stocksToUpdate.map(stock => {
+      const quote = quotes.find(q => q.symbol === stock.symbol);
+      if (quote) {
+        return {
+          ...stock,
+          price: quote.price,
+          change: quote.change,
+          changePercent: quote.changePercent,
+          name: quote.name
+        };
+      }
+      return stock;
+    });
   };
 
   // Initialize with popular stocks and market indices
@@ -346,7 +330,7 @@ const CustomDashboard: React.FC = () => {
 
         // Load popular stocks if no saved stocks exist
         if (initialSavedStocks.length === 0) {
-          const popularStocks = await polygonService.getPopularStocks();
+          const popularStocks = await yahooService.getPopularStocks();
           if (popularStocks && popularStocks.length > 0) {
             initialSavedStocks = popularStocks.map((stock, index) => ({
               ...stock,
@@ -375,10 +359,7 @@ const CustomDashboard: React.FC = () => {
 
         // Connect to real-time WebSocket
         try {
-          polygonService.connectWebSocket((symbol: string, price: number, change: number, changePercent: number) => {
-            // ... existing websocket handler logic ... 
-            // reusing logic by calling the state setters directly below is cleaner but I'll paste the block to be safe
-            // I'll just use the exact existing logic for the callback
+          yahooService.connectWebSocket((symbol: string, price: number, change: number, changePercent: number) => {
             console.log(`Real-time update: ${symbol} = $${price}`);
             setIsRealtimeConnected(true);
 
@@ -403,7 +384,7 @@ const CustomDashboard: React.FC = () => {
             // Update market ticker
             setMarketIndices(prevIndices =>
               prevIndices.map(index =>
-                index.id === `I:${symbol}` || index.name.toLowerCase().includes(symbol.toLowerCase())
+                index.id === `I:${symbol}` || index.name.toLowerCase().includes(symbol.toLowerCase()) || index.id === symbol
                   ? { ...index, value: price, change, changePercent }
                   : index
               )
@@ -412,7 +393,7 @@ const CustomDashboard: React.FC = () => {
 
           // Subscribe to everything
           [...updatedSavedStocks, ...updatedWatchlistStocks].forEach(stock => {
-            polygonService.subscribeToStock(stock.symbol);
+            yahooService.subscribeToStock(stock.symbol);
           });
 
         } catch (error) {
@@ -430,7 +411,7 @@ const CustomDashboard: React.FC = () => {
 
     // Cleanup WebSocket on component unmount
     return () => {
-      polygonService.disconnectWebSocket();
+      yahooService.disconnectWebSocket();
     };
   }, []);
 
@@ -441,21 +422,11 @@ const CustomDashboard: React.FC = () => {
       setError(null);
 
       try {
-        const searchResults = await polygonService.searchStocks(query);
+        const searchResults = await yahooService.searchStocks(query);
 
-        const stocks: Stock[] = searchResults.map((result) => ({
-          symbol: result.ticker,
-          name: result.name || result.ticker,
-          price: 0,
-          change: 0,
-          changePercent: 0
-        }));
-
-        setSearchResults(stocks);
-
-        // Use helper to fetch prices
-        const updatedStocks = await fetchStockPrices(stocks);
-        setSearchResults(updatedStocks);
+        // Fetch current prices immediately
+        const detailedResults = await fetchStockPrices(searchResults);
+        setSearchResults(detailedResults);
 
       } catch (err) {
         console.error('Error searching stocks:', err);
@@ -483,7 +454,7 @@ const CustomDashboard: React.FC = () => {
     });
 
     // Subscribe to real-time updates for the new stock
-    polygonService.subscribeToStock(stock.symbol);
+    yahooService.subscribeToStock(stock.symbol);
 
     setSearchQuery('');
     setSearchResults([]);
@@ -493,7 +464,7 @@ const CustomDashboard: React.FC = () => {
     const stockToRemove = savedStocks.find(stock => stock.id === stockId);
     if (stockToRemove) {
       // Unsubscribe from real-time updates
-      polygonService.unsubscribeFromStock(stockToRemove.symbol);
+      yahooService.unsubscribeFromStock(stockToRemove.symbol);
     }
 
     setSavedStocks(prev => {
@@ -517,7 +488,7 @@ const CustomDashboard: React.FC = () => {
     });
 
     // Subscribe to real-time updates for the new stock
-    polygonService.subscribeToStock(stock.symbol);
+    yahooService.subscribeToStock(stock.symbol);
 
     setSearchQuery('');
     setSearchResults([]);
@@ -527,7 +498,7 @@ const CustomDashboard: React.FC = () => {
     const stockToRemove = watchlistStocks.find(stock => stock.id === stockId);
     if (stockToRemove) {
       // Unsubscribe from real-time updates
-      polygonService.unsubscribeFromStock(stockToRemove.symbol);
+      yahooService.unsubscribeFromStock(stockToRemove.symbol);
     }
 
     setWatchlistStocks(prev => {
@@ -564,17 +535,27 @@ const CustomDashboard: React.FC = () => {
     }
   };
 
+
+  // Helper component for Sortable Item (moved inside or kept outside - keeping outside logic concept but in file)
+  // Since the original file had SortableStockItem used but not defined in the snippet I saw, 
+  // I must assume it is either imported or defined below line 800 which I didn't see.
+  // Wait, I didn't see SortableStockItem definition in previous `view_file` output (lines 1-800).
+  // It must be at the bottom.
+  // I am replacing lines 1-967 (presumably whole file).
+  // I need to ensure `SortableStockItem` is included. I'll define it at bottom if missing or just keep it if I can see it.
+  // I'll check the file content again to be safe about SortableStockItem.
+  // Actually, I can just not replace the bottom part if I am unsure, but I need to replace imports at top.
+  // Use `replace_file_content` with Range? No, imports are at top, but `fetchStockPrices` and `initializeData` are in middle.
+  // I'll try to keep the `SortableStockItem` if it was there.
+  // Let me `view_file` the bottom part first to be safe.
+
+
   return (
     <div className="custom-dashboard">
       <div className="dashboard-header">
         <h1 className="dashboard-title">Portfolio Analytics Dashboard</h1>
         <p className="dashboard-subtitle">Real-time market insights and personalized stock tracking</p>
-        {isRealtimeConnected && (
-          <div className="realtime-indicator">
-            <div className="realtime-dot"></div>
-            <span>Live Updates Active</span>
-          </div>
-        )}
+
       </div>
       {showChart && <ChartModal symbol={chartSymbol} onClose={() => setShowChart(false)} />}
 
@@ -709,6 +690,7 @@ const CustomDashboard: React.FC = () => {
                       }}
                       onViewRealtime={(symbol) => navigate('/research')}
                       onViewHistorical={(symbol) => navigate(`/historical-data?symbol=${symbol}`)}
+                      onAddToWatchlist={handleAddToWatchlist}
                     />
                   ))}
                 </div>
@@ -801,61 +783,13 @@ const CustomDashboard: React.FC = () => {
           )}
         </div>
 
-        {/* Market Overview Section */}
-        <div className="market-overview-section">
-          <div className="section-header">
-            <h3 className="section-title">Market Overview</h3>
-            {lastUpdated && (
-              <div className="last-updated">
-                <span className="updated-label">Last Updated:</span>
-                <span className="updated-time">
-                  {lastUpdated.toLocaleString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    timeZoneName: 'short'
-                  })}
-                </span>
-              </div>
-            )}
-          </div>
 
-          {isLoadingIndices ? (
-            <div className="loading-state">
-              <div className="loading-spinner"></div>
-              <p>Loading market data...</p>
-            </div>
-          ) : error ? (
-            <div className="error-state">
-              <p>{error}</p>
-            </div>
-          ) : marketIndices.length > 0 ? (
-            <div className="market-indices-grid">
-              {marketIndices.map((index) => (
-                <MarketIndexComponent key={index.id} index={index} />
-              ))}
-            </div>
-          ) : isMarketOpen === false ? (
-            <div className="market-closed-overview">
-              <div className="closed-icon">📊</div>
-              <h4>Market Data Unavailable</h4>
-              <p>The market is currently closed. Market data will be available during trading hours.</p>
-              <div className="trading-hours">
-                <strong>Trading Hours:</strong> 9:30 AM - 4:00 PM EST (Monday-Friday)
-              </div>
-            </div>
-          ) : (
-            <div className="no-data-state">
-              <div className="no-data-icon">📈</div>
-              <p>No market data available at this time.</p>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );
 };
+
+
 
 // Sortable Stock Item Component
 const SortableStockItem: React.FC<{
@@ -865,7 +799,8 @@ const SortableStockItem: React.FC<{
   onViewChart: (symbol: string) => void;
   onViewRealtime: (symbol: string) => void;
   onViewHistorical: (symbol: string) => void;
-}> = ({ stock, onRemove, viewMode, onViewChart, onViewRealtime, onViewHistorical }) => {
+  onAddToWatchlist: (stock: Stock) => void;
+}> = ({ stock, onRemove, viewMode, onViewChart, onViewRealtime, onViewHistorical, onAddToWatchlist }) => {
   const {
     attributes,
     listeners,
@@ -905,6 +840,7 @@ const SortableStockItem: React.FC<{
           <Button variant="primary" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onViewRealtime(stock.symbol); }}>Real-Time</Button>
           <Button variant="outline" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onViewHistorical(stock.symbol); }}>Historical</Button>
           <Button variant="outline" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onViewChart(stock.symbol); }}>Chart</Button>
+          <Button variant="outline" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onAddToWatchlist(stock); }}>Watch</Button>
         </div>
         <Button
           variant="outline"
@@ -927,39 +863,45 @@ const SortableStockItem: React.FC<{
       style={style}
       className={`saved-stock-item list-item ${isDragging ? 'dragging' : ''}`}
     >
-      <div {...attributes} {...listeners} className="drag-handle">⋮⋮</div>
-      <div className="stock-info">
-        <div className="stock-details">
-          <span className="stock-symbol">{stock.symbol}</span>
-          <span className="stock-name">{stock.name}</span>
+      <div className="stock-item-row" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+        <div {...attributes} {...listeners} className="drag-handle">⋮⋮</div>
+        <div className="stock-info">
+          <div className="stock-details">
+            <span className="stock-symbol">{stock.symbol}</span>
+            <span className="stock-name">{stock.name}</span>
+          </div>
+          <StockTicker
+            ticker={{
+              symbol: stock.symbol,
+              price: stock.price,
+              change: stock.change,
+              changePercent: stock.changePercent
+            }}
+            showChange={true}
+            className="compact"
+          />
         </div>
-        <StockTicker
-          ticker={{
-            symbol: stock.symbol,
-            price: stock.price,
-            change: stock.change,
-            changePercent: stock.changePercent
+        <div className="stock-actions">
+          <Button variant="primary" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onViewRealtime(stock.symbol); }}>Real-Time</Button>
+          <Button variant="outline" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onViewHistorical(stock.symbol); }}>Historical</Button>
+          <Button variant="outline" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onViewChart(stock.symbol); }}>Chart</Button>
+          <Button variant="outline" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onAddToWatchlist(stock); }}>Watch</Button>
+        </div>
+        <Button
+          variant="outline"
+          size="small"
+          onClick={(e?: React.MouseEvent) => {
+            e?.stopPropagation();
+            onRemove(stock.id);
           }}
-          showChange={true}
-          className="compact"
-        />
+          className="remove-button"
+        >
+          Remove
+        </Button>
       </div>
-      <div className="stock-actions">
-        <Button variant="primary" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onViewRealtime(stock.symbol); }}>Real-Time</Button>
-        <Button variant="outline" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onViewHistorical(stock.symbol); }}>Historical</Button>
-        <Button variant="outline" size="small" onClick={(e?: React.MouseEvent) => { e?.stopPropagation(); onViewChart(stock.symbol); }}>Chart</Button>
-      </div>
-      <Button
-        variant="outline"
-        size="small"
-        onClick={(e?: React.MouseEvent) => {
-          e?.stopPropagation();
-          onRemove(stock.id);
-        }}
-        className="remove-button"
-      >
-        Remove
-      </Button>
+
+      {/* Micro-Chart Section */}
+      <StockMiniChart stock={stock} />
     </div>
   );
 };

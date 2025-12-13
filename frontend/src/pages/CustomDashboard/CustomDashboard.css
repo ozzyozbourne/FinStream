@@ -364,7 +364,8 @@
 
 .saved-stock-item {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: 1rem;
   padding: 1rem;
   background: #2a2a2a;
@@ -373,6 +374,14 @@
   cursor: grab;
   transition: all 0.2s ease;
   position: relative;
+}
+
+.stock-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
 }
 
 .saved-stock-item:hover {
