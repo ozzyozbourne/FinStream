@@ -536,6 +536,26 @@ const CustomDashboard: React.FC = () => {
     }
   };
 
+  const handleDragEndWatchlist = (event: any) => {
+    const { active, over } = event;
+    setIsDragging(false);
+
+    if (active && over && active.id !== over.id) {
+      setWatchlistStocks((items) => {
+        const oldIndex = items.findIndex(item => item.id === active.id);
+        const newIndex = items.findIndex(item => item.id === over.id);
+
+        if (oldIndex !== -1 && newIndex !== -1) {
+          const reorderedItems = arrayMove(items, oldIndex, newIndex);
+          // Save the reordered watchlist to localStorage
+          saveWatchlistToStorage(reorderedItems);
+          return reorderedItems;
+        }
+        return items;
+      });
+    }
+  };
+
 
   // Helper component for Sortable Item (moved inside or kept outside - keeping outside logic concept but in file)
   // Since the original file had SortableStockItem used but not defined in the snippet I saw, 
@@ -553,94 +573,85 @@ const CustomDashboard: React.FC = () => {
 
   return (
     <div className="custom-dashboard">
-      <div className="dashboard-header">
+      <div className="dashboard-header-container">
         <h1 className="dashboard-title">Portfolio Analytics Dashboard</h1>
-        <p className="dashboard-subtitle">Real-time market insights and personalized stock tracking</p>
 
+        {/* Search Section Moved Here */}
+        <div className="search-container-header" ref={searchContainerRef}>
+          <SearchBar
+            placeholder="Search for stocks..."
+            onSearch={handleSearch}
+            className="stock-search"
+          />
+
+          {searchQuery && (
+            <div className="search-dropdown">
+              {isSearching ? (
+                <div className="search-loading">
+                  <div className="loading-spinner"></div>
+                  <span>Searching stocks...</span>
+                </div>
+              ) : searchResults.length > 0 ? (
+                <div className="search-results">
+                  <div className="results-header">
+                    <span className="results-count">{searchResults.length} results found</span>
+                  </div>
+                  <div className="results-list">
+                    {searchResults.map((stock) => (
+                      <div key={stock.symbol} className="search-result-item">
+                        <div className="result-info">
+                          <div className="result-header">
+                            <span className="result-symbol">{stock.symbol}</span>
+                            <span className="result-name">{stock.name}</span>
+                          </div>
+                          <div className="result-price">
+                            {stock.price > 0 ? (
+                              <>
+                                <span className="price">${stock.price.toFixed(2)}</span>
+                                <span className={`change ${stock.change >= 0 ? 'positive' : 'negative'}`}>
+                                  {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)} ({stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%)
+                                </span>
+                              </>
+                            ) : (
+                              <span className="price loading">Loading price...</span>
+                            )}
+                          </div>
+                        </div>
+                        <Button
+                          variant="primary"
+                          size="small"
+                          onClick={() => handleAddStock(stock)}
+                          className="add-button"
+                        >
+                          Add
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="small"
+                          onClick={() => handleAddToWatchlist(stock)}
+                          className="add-button"
+                        >
+                          Watch
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="no-results">
+                  <div className="no-results-icon">🔍</div>
+                  <span>No stocks found matching "{searchQuery}"</span>
+                  <p>Try searching with a different term</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
+
       {showChart && <ChartModal symbol={chartSymbol} onClose={() => setShowChart(false)} />}
 
-
-
       <div className="dashboard-content">
-        {/* Search Section */}
-        <div className="search-section-cd">
-          <div className="search-header">
-            <h3 className="section-title">Add New Stocks</h3>
-            <p className="section-subtitle">Search and add stocks to your dashboard</p>
-          </div>
-
-          <div className="search-container" ref={searchContainerRef}>
-            <SearchBar
-              placeholder="Search for stocks by symbol or company name..."
-              onSearch={handleSearch}
-              className="stock-search"
-            />
-
-            {searchQuery && (
-              <div className="search-dropdown">
-                {isSearching ? (
-                  <div className="search-loading">
-                    <div className="loading-spinner"></div>
-                    <span>Searching stocks...</span>
-                  </div>
-                ) : searchResults.length > 0 ? (
-                  <div className="search-results">
-                    <div className="results-header">
-                      <span className="results-count">{searchResults.length} results found</span>
-                    </div>
-                    <div className="results-list">
-                      {searchResults.map((stock) => (
-                        <div key={stock.symbol} className="search-result-item">
-                          <div className="result-info">
-                            <div className="result-header">
-                              <span className="result-symbol">{stock.symbol}</span>
-                              <span className="result-name">{stock.name}</span>
-                            </div>
-                            <div className="result-price">
-                              {stock.price > 0 ? (
-                                <>
-                                  <span className="price">${stock.price.toFixed(2)}</span>
-                                  <span className={`change ${stock.change >= 0 ? 'positive' : 'negative'}`}>
-                                    {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)} ({stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%)
-                                  </span>
-                                </>
-                              ) : (
-                                <span className="price loading">Loading price...</span>
-                              )}
-                            </div>
-                          </div>
-                          <Button
-                            variant="primary"
-                            size="small"
-                            onClick={() => handleAddStock(stock)}
-                            className="add-button"
-                          >
-                            Add
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="small"
-                            onClick={() => handleAddToWatchlist(stock)}
-                            className="add-button"
-                          >
-                            Watch
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="no-results">
-                    <div className="no-results-icon">🔍</div>
-                    <span>No stocks found matching "{searchQuery}"</span>
-                    <p>Try searching with a different term</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
 
         {/* Saved Stocks Section */}
         <div className="saved-stocks-section">
@@ -747,41 +758,25 @@ const CustomDashboard: React.FC = () => {
           </div>
 
           {watchlistStocks.length > 0 ? (
-            <div className="saved-stocks-container list">
-              {watchlistStocks.map((stock) => (
-                <div key={stock.id} className="saved-stock-item list-item">
-                  <div className="stock-item-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                    <div className="stock-info">
-                      <div className="stock-details">
-                        <span className="stock-symbol">{stock.symbol}</span>
-                        <span className="stock-name">{stock.name}</span>
-                      </div>
-                      <StockTicker
-                        ticker={{
-                          symbol: stock.symbol,
-                          price: stock.price,
-                          change: stock.change,
-                          changePercent: stock.changePercent
-                        }}
-                        showChange={true}
-                        className="compact"
-                      />
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="small"
-                      onClick={() => handleRemoveFromWatchlist(stock.id)}
-                      className="remove-button"
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                  <div style={{ marginTop: '1rem', width: '100%' }}>
-                    <WatchlistCandleChart stock={stock} height={250} />
-                  </div>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEndWatchlist}
+              modifiers={[restrictToVerticalAxis]}
+            >
+              <SortableContext items={watchlistStocks.map(stock => stock.id)} strategy={verticalListSortingStrategy}>
+                <div className="saved-stocks-container list">
+                  {watchlistStocks.map((stock) => (
+                    <SortableWatchlistItem
+                      key={stock.id}
+                      stock={stock}
+                      onRemove={handleRemoveFromWatchlist}
+                    />
+                  ))}
                 </div>
-              ))}
-            </div>
+              </SortableContext>
+            </DndContext>
           ) : (
             <div className="empty-state">
               <p>No stocks in watchlist yet. Search and add stocks to watch!</p>
@@ -908,6 +903,71 @@ const SortableStockItem: React.FC<{
 
       {/* Micro-Chart Section */}
       <StockMiniChart stock={stock} />
+    </div>
+  );
+};
+
+// Sortable Watchlist Item Component
+const SortableWatchlistItem: React.FC<{
+  stock: WatchlistStock;
+  onRemove: (stockId: string) => void;
+}> = ({ stock, onRemove }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: stock.id });
+
+  const style = {
+    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 1,
+    position: 'relative' as 'relative', // Explicitly cast to valid CSS position type
+    marginBottom: '1rem',
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`saved-stock-item list-item ${isDragging ? 'dragging' : ''}`}
+    >
+      <div className="stock-item-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
+          <div {...attributes} {...listeners} className="drag-handle" style={{ cursor: 'grab', color: '#666', fontSize: '1.2rem' }}>⋮⋮</div>
+          <div className="stock-info">
+            <div className="stock-details">
+              <span className="stock-symbol">{stock.symbol}</span>
+              <span className="stock-name">{stock.name}</span>
+            </div>
+            <StockTicker
+              ticker={{
+                symbol: stock.symbol,
+                price: stock.price,
+                change: stock.change,
+                changePercent: stock.changePercent
+              }}
+              showChange={true}
+              className="compact"
+            />
+          </div>
+        </div>
+        <Button
+          variant="outline"
+          size="small"
+          onClick={() => onRemove(stock.id)}
+          className="remove-button"
+        >
+          Remove
+        </Button>
+      </div>
+      <div style={{ marginTop: '1rem', width: '100%' }}>
+        <WatchlistCandleChart stock={stock} height={250} />
+      </div>
     </div>
   );
 };

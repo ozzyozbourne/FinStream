@@ -54,7 +54,7 @@ const SecondaryNav: React.FC = () => {
     { id: 'dashboard', label: 'Custom Dashboard', href: '/dashboard' },
     { id: 'markets', label: 'Markets', href: '/markets' },
     { id: 'research', label: 'Live Market Data', href: '/research' },
-    { id: 'personal-finance', label: 'Personal Finance', href: '/personal-finance' },
+    { id: 'historical-data', label: 'Historical Data', href: '/historical-data' },
   ];
 
   // FETCH CURRENT SUBSCRIPTION
