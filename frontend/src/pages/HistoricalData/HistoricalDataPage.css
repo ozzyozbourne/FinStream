@@ -8,6 +8,9 @@
 }
 
 .historical-data-page h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #00e6b8;
   margin-bottom: 2rem;
 }
 
@@ -48,7 +51,7 @@
 }
 
 .data-table th {
-  color: #00d4aa;
+  color: #00e6b8;
   font-weight: 600;
 }
 
