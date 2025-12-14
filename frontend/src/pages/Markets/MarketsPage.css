@@ -30,7 +30,7 @@
 }
 
 .markets-controls {
-  max-width: 1200px;
+  width: 100%;
   margin: 0 auto 40px;
   display: flex;
   flex-direction: column;
@@ -63,7 +63,7 @@
 }
 
 .markets-content {
-  max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -87,8 +87,13 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .search-results {

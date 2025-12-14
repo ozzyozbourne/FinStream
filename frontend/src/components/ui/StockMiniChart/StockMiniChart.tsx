@@ -12,6 +12,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { Stock } from '../../../types';
+import { yahooService } from '../../../services/yahooService';
 import './StockMiniChart.css';
 
 // Register ChartJS components
@@ -34,45 +35,49 @@ type ViewType = 'trend' | 'change' | 'momentum' | 'risk';
 const StockMiniChart: React.FC<StockMiniChartProps> = ({ stock }) => {
     const [view, setView] = useState<ViewType>('trend');
     const [dataPoints, setDataPoints] = useState<number[]>([]);
+    const [dataLabels, setDataLabels] = useState<string[]>([]);
 
     const isPositive = stock.change >= 0;
     const color = isPositive ? '#00d4aa' : '#ff6b6b';
 
-    // Generate or fetch simplistic sparkline data on mount
+    // Fetch real intraday data
     useEffect(() => {
-        // In a real app, we'd fetch historical intraday data here.
-        // For now, we'll generate a realistic-looking "day trend" based on open/close behavior
-        // using the current price and change to reverse-engineer a path.
-        const generateSparkline = () => {
-            const points = [];
-            const numPoints = 20;
-            const startPrice = stock.price - stock.change;
-            let current = startPrice;
+        const fetchHistory = async () => {
+            try {
+                // Fetch 1 day of data with 5 minute intervals
+                const history = await yahooService.getStockHistory(stock.symbol, '1d', '5m');
 
-            points.push(startPrice);
+                if (history && history.length > 0) {
+                    const points = history.map(h => h.price);
 
-            for (let i = 1; i < numPoints - 1; i++) {
-                // Random walk towards current price
-                const volatility = (stock.price * 0.005); // 0.5% volatility step
-                const trendRequest = (stock.price - current) / (numPoints - i); // Pull towards target
-                const change = (Math.random() - 0.5) * volatility + trendRequest;
-                current += change;
-                points.push(current);
+                    // Format time labels (e.g., "9:30 AM")
+                    const labels = history.map(h => {
+                        const date = new Date(h.timestamp);
+                        return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                    });
+
+                    setDataPoints(points);
+                    setDataLabels(labels);
+                }
+            } catch (err) {
+                console.error('Failed to load chart data', err);
             }
-
-            points.push(stock.price); // Ensure it ends exactly at current price
-            setDataPoints(points);
         };
 
-        generateSparkline();
-    }, [stock.symbol, stock.price, stock.change]); // Re-gen if price changes significantly
+        fetchHistory();
+
+        // Refresh chart data every 30 seconds
+        const intervalId = setInterval(fetchHistory, 30000);
+
+        return () => clearInterval(intervalId);
+    }, [stock.symbol]);
 
     // --- Views ---
 
     // 1. Trend View (Sparkline)
     const renderTrend = () => {
         const data = {
-            labels: dataPoints.map((_, i) => i.toString()),
+            labels: dataLabels,
             datasets: [
                 {
                     fill: true,
@@ -104,9 +109,31 @@ const StockMiniChart: React.FC<StockMiniChartProps> = ({ stock }) => {
                 tooltip: { enabled: false },
             },
             scales: {
-                x: { display: false },
+                x: {
+                    display: true,
+                    grid: { display: false },
+                    ticks: {
+                        color: '#666',
+                        font: { size: 9 },
+                        maxTicksLimit: 6,
+                        maxRotation: 0
+                    }
+                },
                 y: {
-                    display: false,
+                    display: true,
+                    position: 'right' as const,
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.05)',
+                        drawBorder: false,
+                    },
+                    ticks: {
+                        color: '#666',
+                        font: { size: 9 },
+                        maxTicksLimit: 4,
+                        callback: function (value: any) {
+                            return parseFloat(value).toFixed(2);
+                        }
+                    },
                     min: Math.min(...dataPoints) * 0.999,
                     max: Math.max(...dataPoints) * 1.001
                 },

@@ -15,12 +15,16 @@
   padding: 0 20px;
 }
 
+.content-container.full-width {
+  max-width: 100%;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .main-content {
     padding: 16px 0;
   }
-  
+
   .content-container {
     padding: 0 16px;
   }

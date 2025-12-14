@@ -56,9 +56,17 @@
 }
 
 @keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.5; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
 .status-text {
@@ -101,7 +109,7 @@
 }
 
 .watch-content {
-  max-width: 1400px;
+  width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
