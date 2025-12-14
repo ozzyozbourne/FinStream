@@ -4,11 +4,12 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
+  backdrop-filter: blur(5px);
 }
 
 .chart-modal-content {
@@ -16,43 +17,48 @@
   border: 1px solid #333;
   border-radius: 12px;
   width: 95%;
-  max-width: 1400px;
-  max-height: 95vh;
+  max-width: 1200px;
+  height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
   overflow: hidden;
 }
 
 .chart-modal-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem;
-  border-bottom: 1px solid #333;
-  background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
+  align-items: flex-start;
+  padding: 1.5rem 1.5rem 0.5rem;
+  background: #1a1a1a;
+  border-bottom: none;
 }
 
-.chart-modal-header h2 {
+.header-info h2 {
   margin: 0 0 0.5rem 0;
   color: #fff;
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
 .price-info {
   display: flex;
   gap: 1rem;
   align-items: baseline;
-  margin-bottom: 0.5rem;
 }
 
 .current-price {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 600;
   color: #fff;
+  font-family: 'Roboto Mono', monospace;
 }
 
 .price-change {
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: 'Roboto Mono', monospace;
 }
 
 .price-change.positive {
@@ -63,86 +69,90 @@
   color: #ff6b6b;
 }
 
-.date-range {
-  margin: 0;
-  color: #a0a0a0;
-  font-size: 0.875rem;
-  font-weight: 400;
-}
-
-.chart-stats {
+/* Stats Bar */
+.chart-stats-bar {
   display: flex;
-  gap: 2rem;
-  padding: 1rem 1.5rem;
-  background: #0f0f0f;
-  border-bottom: 1px solid #333;
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.stat-item.legend {
-  flex-direction: row;
   gap: 1rem;
-  margin-left: auto;
-  align-items: center;
+  padding: 0 1.5rem 1rem;
+  background: #1a1a1a;
+  border-bottom: 1px solid #2a2a2a;
+  flex-wrap: wrap;
 }
 
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: #a0a0a0;
-}
-
-.legend-color {
-  width: 20px;
-  height: 3px;
-  border-radius: 2px;
-}
-
-.stat-label {
-  font-size: 0.75rem;
+.stat-pill {
+  font-size: 0.85rem;
   color: #888;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  background: #252525;
+  padding: 4px 10px;
+  border-radius: 4px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
 }
 
-.stat-value {
-  font-size: 1rem;
-  color: #fff;
+.stat-pill span {
+  color: #e0e0e0;
   font-weight: 600;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.legend-ma span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
 }
 
 .close-btn {
-  background: none;
+  background: rgba(255, 255, 255, 0.05);
   border: none;
-  color: #fff;
-  font-size: 1.5rem;
+  color: #aaa;
+  font-size: 1.25rem;
   cursor: pointer;
-  padding: 0.5rem;
-}
-
-.close-btn:hover {
-  color: #00d4aa;
-}
-
-.chart-container {
-  padding: 1.5rem;
-  height: 600px;
-  background: #0f0f0f;
-}
-
-.loading, .error {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  color: #a0a0a0;
-  font-size: 1.1rem;
+  transition: all 0.2s;
 }
 
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+/* Chart Container */
+.chart-container-wrapper {
+  flex: 1;
+  position: relative;
+  background: #1a1a1a;
+  padding: 0;
+  overflow: hidden;
+}
+
+.tradingview-chart-container {
+  width: 100%;
+  height: 100%;
+}
+
+.chart-loading,
+.chart-error {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 0.9rem;
+  z-index: 10;
+  background: rgba(26, 26, 26, 0.8);
+}
+
+.chart-error {
+  color: #ff6b6b;
+}
