@@ -1,0 +1,90 @@
+.subscription-modal {
+    max-width: 450px;
+    width: 100%;
+    background: #1a1a1a;
+    border-radius: 12px;
+    border: 1px solid #333;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.modal-description {
+    color: #d1d4dc;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.holdings-preview {
+    color: #00e6b8;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.subscription-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.email-input {
+    width: 100%;
+    padding: 12px 16px;
+    background: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #fff;
+    transition: all 0.2s;
+}
+
+.email-input:focus {
+    outline: none;
+    border-color: #00d4aa;
+    background: #333;
+}
+
+.subscribe-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    background: #00d4aa;
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.subscribe-btn:hover:not(:disabled) {
+    background: #00bfa5;
+    transform: translateY(-1px);
+}
+
+.subscribe-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.error-message {
+    color: #ff6b6b;
+    font-size: 0.9rem;
+    text-align: center;
+    margin: 0;
+}
+
+.success-message {
+    color: #00d4aa;
+    font-size: 0.9rem;
+    text-align: center;
+    margin: 0;
+}
+
+.disclaimer {
+    margin-top: 1.5rem;
+    font-size: 0.75rem;
+    color: #666;
+    text-align: center;
+}

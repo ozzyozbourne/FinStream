@@ -657,7 +657,7 @@ const CustomDashboard: React.FC = () => {
         <div className="saved-stocks-section">
           <div className="section-header">
             <h3 className="section-title">
-              Saved Stocks ({savedStocks.length})
+              Saved Stocks
               <span className="drag-hint">Drag to rearrange</span>
             </h3>
             <div className="view-controls">
@@ -759,7 +759,7 @@ const CustomDashboard: React.FC = () => {
                 style={{ cursor: 'pointer' }}
                 title="Click to edit title"
               >
-                {watchlistTitle} ({watchlistStocks.length})
+                {watchlistTitle}
                 {/* <span style={{ fontSize: '0.75rem', marginLeft: '8px', opacity: 0.6 }}>✏️</span> */}
               </h3>
             )}

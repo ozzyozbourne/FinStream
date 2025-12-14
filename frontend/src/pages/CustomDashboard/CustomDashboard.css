@@ -295,6 +295,24 @@
   font-style: italic;
 }
 
+/* Section Headers */
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.drag-hint {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #888;
+  font-style: italic;
+}
+
 /* Saved Stocks Section */
 .saved-stocks-section {
   background: #1a1a1a;

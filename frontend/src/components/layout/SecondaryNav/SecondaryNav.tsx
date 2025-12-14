@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import React, { useState, useEffect, useCallback } from 'react';
 import Button from '../../ui/Button';
 import { useKeycloak } from '@react-keycloak/web';
@@ -52,8 +52,9 @@ const SecondaryNav: React.FC = () => {
     { id: 'my-profile', label: 'Profile', href: '/profile' },
     { id: 'my-portfolio', label: 'Portfolio', href: '/portfolio' },
     { id: 'dashboard', label: 'Custom Dashboard', href: '/dashboard' },
+    { id: 'news', label: 'News', href: '/news' },
     { id: 'markets', label: 'Markets', href: '/markets' },
-    { id: 'research', label: 'Live Market Data', href: '/research' },
+    { id: 'research', label: 'Live Market Data', href: '/live-markets' }, // Corrected href from /research if needed, keeping context
     { id: 'historical-data', label: 'Historical Data', href: '/historical-data' },
   ];
 
@@ -103,9 +104,14 @@ const SecondaryNav: React.FC = () => {
                 return true;
               }).map((item) => (
                 <li key={item.id} className="secondary-nav-item">
-                  <a href={item.href} className="secondary-nav-link">
+                  <NavLink
+                    to={item.href}
+                    className={({ isActive }) =>
+                      isActive ? 'secondary-nav-link active' : 'secondary-nav-link'
+                    }
+                  >
                     {item.label}
-                  </a>
+                  </NavLink>
                 </li>
               ))}
             </ul>
