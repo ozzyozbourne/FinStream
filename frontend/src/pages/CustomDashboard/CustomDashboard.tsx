@@ -178,7 +178,7 @@ const CustomDashboard: React.FC = () => {
   const [isLoadingIndices, setIsLoadingIndices] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isRealtimeConnected, setIsRealtimeConnected] = useState(false);
-  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [viewMode, setViewMode] = useState<'list' | 'columns' | 'grid'>('list');
   const [isDragging, setIsDragging] = useState(false);
   const [isMarketOpen, setIsMarketOpen] = useState<boolean | null>(null);
   const [marketStatus, setMarketStatus] = useState<string>('');
@@ -670,6 +670,14 @@ const CustomDashboard: React.FC = () => {
                 List
               </Button>
               <Button
+                variant={viewMode === 'columns' ? 'primary' : 'outline'}
+                size="small"
+                onClick={() => setViewMode('columns')}
+                className="view-toggle"
+              >
+                Columns
+              </Button>
+              <Button
                 variant={viewMode === 'grid' ? 'primary' : 'outline'}
                 size="small"
                 onClick={() => setViewMode('grid')}
@@ -796,7 +804,7 @@ const CustomDashboard: React.FC = () => {
 const SortableStockItem: React.FC<{
   stock: SavedStock;
   onRemove: (stockId: string) => void;
-  viewMode: 'list' | 'grid';
+  viewMode: 'list' | 'columns' | 'grid';
   onViewChart: (symbol: string) => void;
   onViewRealtime: (symbol: string) => void;
   onViewHistorical: (symbol: string) => void;

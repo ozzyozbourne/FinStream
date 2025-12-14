@@ -317,6 +317,36 @@
   gap: 1rem;
 }
 
+.saved-stocks-container.columns {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+/* Columns specific adjustments to prevent overflow */
+.saved-stocks-container.columns .stock-item-row {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.saved-stocks-container.columns .stock-info {
+  min-width: 180px;
+}
+
+.saved-stocks-container.columns .stock-actions {
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.saved-stocks-container.columns .saved-stock-item button {
+  padding: 4px 8px;
+  font-size: 0.75rem;
+}
+
+.saved-stocks-container.columns .saved-stock-item {
+  overflow-x: hidden;
+}
+
 .saved-stocks-container.dragging-active {
   background: rgba(0, 212, 170, 0.05);
   border-radius: 8px;
@@ -637,7 +667,8 @@
     justify-content: center;
   }
 
-  .saved-stocks-container.grid {
+  .saved-stocks-container.grid,
+  .saved-stocks-container.columns {
     grid-template-columns: 1fr;
   }
 
