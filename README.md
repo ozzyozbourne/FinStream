@@ -1,7 +1,7 @@
 # FinStream
 **Real-time Financial Monitoring & Risk Management Platform**
 
-**Team 3 Members**: [Add your GitHub usernames here]  
+**Team 3 Members**: 
 **Course**: CRN73222  
 
 See DeepWiki for more documentation: [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ozzyozbourne/FinStream)
