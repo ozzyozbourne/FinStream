@@ -47,8 +47,41 @@ const LiveChart: React.FC<Props> = ({ symbol, onRemove }) => {
     const [data, setData] = useState<DataPoint[]>([]);
     const [stats, setStats] = useState({ high: 0, low: Infinity, vol: 0 });
 
-    // Connect to WebSocket
+    // Connect to WebSocket & Fetch History
     useEffect(() => {
+        let isMounted = true;
+
+        // 1. Fetch Historical Data first (so we have something to show immediately)
+        const fetchHistory = async () => {
+            try {
+                // Fetch last 1 day of 5-minute intervals
+                const response = await fetch(`http://localhost:3001/api/yahoo/history?symbol=${symbol}&range=1d&interval=5m`);
+                const history = await response.json();
+
+                if (isMounted && Array.isArray(history) && history.length > 0) {
+                    const formattedHistory = history.map((h: any) => ({
+                        x: h.timestamp * 1000,
+                        y: h.close,
+                        v: h.volume
+                    }));
+                    setData(formattedHistory);
+
+                    // Initialize stats from history
+                    const prices = formattedHistory.map((d: any) => d.y);
+                    setStats({
+                        high: Math.max(...prices),
+                        low: Math.min(...prices),
+                        vol: formattedHistory.reduce((acc: number, curr: any) => acc + curr.v, 0)
+                    });
+                }
+            } catch (err) {
+                console.error("Failed to load history for", symbol, err);
+            }
+        };
+
+        fetchHistory();
+
+        // 2. Subscribe to Live Updates
         const ws = connectLiveFinnhub(symbol, (trade) => {
             if (trade.s === symbol) {
                 const price = trade.p;
@@ -56,14 +89,15 @@ const LiveChart: React.FC<Props> = ({ symbol, onRemove }) => {
                 const time = trade.t;
 
                 setData((prev) => {
-                    // Filter out any potential duplicates or invalid timestamps first if needed
-                    const newData = [...prev, { x: time, y: price, v: vol }];
+                    // Avoid duplicates if WS sends old data overlapping with history
+                    const filteredPrev = prev.filter(d => d.x < time);
+                    const newData = [...filteredPrev, { x: time, y: price, v: vol }];
 
-                    // Sort by timestamp to ensure line draws left-to-right correctly
+                    // Sort by timestamp
                     newData.sort((a, b) => a.x - b.x);
 
-                    // Keep last 100 points
-                    return newData.slice(-100);
+                    // Keep reasonable history length (e.g. 500 points) to avoid memory leaks
+                    return newData.slice(-500);
                 });
 
                 setStats((prev) => ({
@@ -74,7 +108,10 @@ const LiveChart: React.FC<Props> = ({ symbol, onRemove }) => {
             }
         });
 
-        return () => ws.close();
+        return () => {
+            isMounted = false;
+            ws.close();
+        };
     }, [symbol]);
 
     // Chart Configuration
