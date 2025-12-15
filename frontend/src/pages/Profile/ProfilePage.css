@@ -32,10 +32,9 @@
 }
 
 .gradient-text {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
-  color: #fff;
-  /* Minimalist white instead of gradient */
+  color: #00e6b8;
   margin-bottom: 8px;
 }
 
@@ -51,8 +50,8 @@
   width: 100%;
   /* width: 100%; already there, just removing max-width */
   /* max-width: 1000px; REMOVED */
-  background: #111111;
-  /* Near pitch black for the card */
+  background: #1a1a1a;
+  /* Standard card background */
   backdrop-filter: none;
   /* No blur */
   border: 1px solid #333;
@@ -87,7 +86,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #00d4aa;
+  color: #00e6b8;
   font-size: 2.5rem;
   font-weight: bold;
   border: none;
@@ -114,7 +113,7 @@
 }
 
 .subscription-badge.premium {
-  background: #00d4aa;
+  background: #00e6b8;
   color: #000;
   border: none;
 }
@@ -235,7 +234,7 @@
 }
 
 .glass-input:focus {
-  border-color: #00d4aa;
+  border-color: #00e6b8;
   box-shadow: none;
 }
 
@@ -265,7 +264,7 @@
 .upgrade-link {
   background: none;
   border: none;
-  color: #00d4aa;
+  color: #00e6b8;
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
@@ -300,7 +299,7 @@
 }
 
 .action-btn.save-btn {
-  background: #00d4aa;
+  background: #00e6b8;
   color: #000;
 }
 
@@ -374,7 +373,7 @@
 }
 
 .tab-btn.active {
-  color: #00d4aa;
+  color: #00e6b8;
 }
 
 .tab-btn.active::after {
@@ -384,7 +383,7 @@
   left: 0;
   width: 100%;
   height: 2px;
-  background: #00d4aa;
+  background: #00e6b8;
 }
 
 /* History Table */
@@ -421,8 +420,8 @@
 }
 
 .status-badge.success {
-  background: rgba(0, 212, 170, 0.1);
-  color: #00d4aa;
+  background: rgba(0, 230, 184, 0.1);
+  color: #00e6b8;
 }
 
 .download-btn {

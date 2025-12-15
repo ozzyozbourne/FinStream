@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { createChart, ColorType, IChartApi, CandlestickSeries, HistogramSeries, LineSeries, Time } from 'lightweight-charts';
 import { stockDataService } from '../../../services/stockDataService';
+import { yahooFinanceService } from '../../../services/yahooFinance';
 import './ChartModal.css';
 
 interface ChartModalProps {
@@ -37,7 +38,10 @@ export const ChartModal: React.FC<ChartModalProps> = ({ symbol, onClose }) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const data = await stockDataService.getEODData(symbol);
+        const [data, quote] = await Promise.all([
+          stockDataService.getEODData(symbol),
+          yahooFinanceService.getStockQuote(symbol)
+        ]);
 
         if (!data || !data.data || data.data.length === 0) {
           throw new Error('No data available');
@@ -55,18 +59,30 @@ export const ChartModal: React.FC<ChartModalProps> = ({ symbol, onClose }) => {
         })).sort((a: any, b: any) => new Date(a.time).getTime() - new Date(b.time).getTime());
 
         // Stats calculation
-        const latest = candles[candles.length - 1];
-        const previous = candles[candles.length - 2];
-        const change = latest.close - previous.close;
-        const changePercent = (change / previous.close) * 100;
+        let currentPrice = 0;
+        let change = 0;
+        let changePercent = 0;
+
+        if (quote) {
+          currentPrice = quote.price;
+          change = quote.price - quote.previousClose;
+          changePercent = (change / quote.previousClose) * 100;
+        } else {
+          // Fallback to last candle if quote fails
+          const latest = candles[candles.length - 1];
+          const previous = candles[candles.length - 2];
+          currentPrice = latest.close;
+          change = latest.close - previous.close;
+          changePercent = (change / previous.close) * 100;
+        }
 
         setStats({
-          current: latest.close,
+          current: currentPrice,
           change: change,
           changePercent: changePercent,
           high: Math.max(...candles.map((c: any) => c.high)),
           low: Math.min(...candles.map((c: any) => c.low)),
-          volume: latest.volume
+          volume: candles[candles.length - 1].volume
         });
 
         if (chartContainerRef.current) {

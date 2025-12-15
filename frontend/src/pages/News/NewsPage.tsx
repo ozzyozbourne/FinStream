@@ -1,118 +1,55 @@
 import React, { useState, useEffect } from 'react';
-import { polygonService } from '../../services/polygonService';
 import ArticleCard from '../../components/ui/ArticleCard';
 import SearchBar from '../../components/ui/SearchBar';
 import Button from '../../components/ui/Button';
+import { newsService, NewsArticle } from '../../services/newsService';
+import { usePortfolio } from '../../context/PortfolioContext';
+import EmailSubscriptionModal from '../../components/features/News/EmailSubscriptionModal';
 import './NewsPage.css';
-
-interface NewsArticle {
-  id: string;
-  title: string;
-  description: string;
-  source: string;
-  timestamp: string;
-  imageUrl?: string;
-  stockTicker?: string;
-  stockChange?: number;
-  stockChangePercent?: number;
-  isPremium?: boolean;
-}
 
 const NewsPage: React.FC = () => {
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredArticles, setFilteredArticles] = useState<NewsArticle[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [activeTab, setActiveTab] = useState<'market' | 'portfolio'>('market');
+  const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
 
-  const categories = [
-    { id: 'all', label: 'All News' },
-    { id: 'market', label: 'Market News' },
-    { id: 'earnings', label: 'Earnings' },
-    { id: 'ipo', label: 'IPO' },
-    { id: 'mergers', label: 'M&A' }
-  ];
+  const { holdings } = usePortfolio();
 
   useEffect(() => {
     loadNews();
-  }, []);
+  }, [activeTab]); // Reload when tab changes
 
-  useEffect(() => {
-    filterArticles();
-  }, [articles, searchQuery, selectedCategory]);
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    // If query is empty, reload default news. If has value, search.
+    loadNews(query);
+  };
 
-  const loadNews = async () => {
+  // Modify loadNews to accept optional query override
+  const loadNews = async (queryOverride?: string) => {
     try {
       setIsLoading(true);
-      
-      // Mock news data with some real stock tickers
-      const mockNews: NewsArticle[] = [
-        {
-          id: '1',
-          title: 'Apple Reports Strong Q4 Earnings, Stock Surges 5%',
-          description: 'Apple Inc. reported better-than-expected quarterly earnings, driven by strong iPhone sales and services revenue growth.',
-          source: 'Reuters',
-          timestamp: '2h ago',
-          imageUrl: '/api/placeholder/400/250',
-          stockTicker: 'AAPL',
-          stockChange: 8.45,
-          stockChangePercent: 4.8
-        },
-        {
-          id: '2',
-          title: 'Tesla Announces New Gigafactory in Texas',
-          description: 'Tesla plans to build a new manufacturing facility in Austin, Texas, creating thousands of jobs.',
-          source: 'Bloomberg',
-          timestamp: '4h ago',
-          imageUrl: '/api/placeholder/400/250',
-          stockTicker: 'TSLA',
-          stockChange: 12.30,
-          stockChangePercent: 2.1
-        },
-        {
-          id: '3',
-          title: 'Microsoft Cloud Revenue Exceeds Expectations',
-          description: 'Microsoft Azure and Office 365 continue to drive strong growth in the cloud computing sector.',
-          source: 'CNBC',
-          timestamp: '6h ago',
-          imageUrl: '/api/placeholder/400/250',
-          stockTicker: 'MSFT',
-          stockChange: -2.15,
-          stockChangePercent: -0.6
-        },
-        {
-          id: '4',
-          title: 'Federal Reserve Signals Potential Rate Cut',
-          description: 'The Fed hints at possible interest rate adjustments in response to economic indicators.',
-          source: 'Wall Street Journal',
-          timestamp: '8h ago',
-          imageUrl: '/api/placeholder/400/250'
-        },
-        {
-          id: '5',
-          title: 'Google Parent Alphabet Reports Record Revenue',
-          description: 'Alphabet Inc. posts record quarterly revenue driven by strong advertising growth.',
-          source: 'Financial Times',
-          timestamp: '10h ago',
-          imageUrl: '/api/placeholder/400/250',
-          stockTicker: 'GOOGL',
-          stockChange: 15.75,
-          stockChangePercent: 1.2
-        },
-        {
-          id: '6',
-          title: 'Amazon Expands Prime Delivery Network',
-          description: 'Amazon announces expansion of its same-day delivery service to 50 new cities.',
-          source: 'MarketWatch',
-          timestamp: '12h ago',
-          imageUrl: '/api/placeholder/400/250',
-          stockTicker: 'AMZN',
-          stockChange: 22.40,
-          stockChangePercent: 1.8
-        }
-      ];
+      let news: NewsArticle[] = [];
 
-      setArticles(mockNews);
+      // If explicit search query (from search bar)
+      if (queryOverride) {
+        news = await newsService.getNews(queryOverride);
+      }
+      // Else use tabs
+      else if (activeTab === 'portfolio') {
+        if (holdings.length > 0) {
+          const symbols = holdings.map(h => h.symbol);
+          news = await newsService.getNews(symbols);
+        } else {
+          news = [];
+        }
+      } else {
+        // General market news
+        news = await newsService.getNews([]);
+      }
+
+      setArticles(news);
     } catch (error) {
       console.error('Error loading news:', error);
     } finally {
@@ -120,61 +57,47 @@ const NewsPage: React.FC = () => {
     }
   };
 
-  const filterArticles = () => {
-    let filtered = articles;
-
-    // Filter by category
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(article => 
-        article.title.toLowerCase().includes(selectedCategory) ||
-        article.description.toLowerCase().includes(selectedCategory)
-      );
-    }
-
-    // Filter by search query
-    if (searchQuery.trim()) {
-      filtered = filtered.filter(article =>
-        article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        article.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        article.source.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    setFilteredArticles(filtered);
-  };
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-  };
-
   return (
     <div className="news-page">
-      <div className="news-header">
-        <h1 className="news-title">Financial News</h1>
-        <p className="news-subtitle">Stay updated with the latest market news and analysis</p>
+      <div className="news-header-container">
+        <div className="news-header">
+          <h1 className="news-title">Financial News</h1>
+          <p className="news-subtitle">Live market updates and portfolio insights</p>
+        </div>
+
+        <div className="news-actions">
+          <Button
+            variant="primary"
+            onClick={() => setIsSubscriptionModalOpen(true)}
+            className="subscribe-button-header"
+          >
+            Get Daily Alerts
+          </Button>
+        </div>
       </div>
 
       <div className="news-controls">
+        <div className="category-tabs">
+          <Button
+            variant={activeTab === 'market' ? 'primary' : 'outline'}
+            onClick={() => setActiveTab('market')}
+          >
+            Market News
+          </Button>
+          <Button
+            variant={activeTab === 'portfolio' ? 'primary' : 'outline'}
+            onClick={() => setActiveTab('portfolio')}
+          >
+            My Portfolio News
+          </Button>
+        </div>
+
         <div className="search-section">
           <SearchBar
-            placeholder="Search news articles..."
+            placeholder="Search headlines..."
             onSearch={handleSearch}
             className="news-search"
           />
-        </div>
-
-        <div className="category-filters">
-          {categories.map(category => (
-            <Button
-              key={category.id}
-              variant={selectedCategory === category.id ? 'primary' : 'outline'}
-              size="small"
-              onClick={() => setSelectedCategory(category.id)}
-              className="category-button"
-            >
-              {category.label}
-            </Button>
-          ))}
         </div>
       </div>
 
@@ -182,33 +105,38 @@ const NewsPage: React.FC = () => {
         {isLoading ? (
           <div className="loading-state">
             <div className="loading-spinner"></div>
-            <p>Loading latest news...</p>
+            <p>Loading {activeTab} news...</p>
           </div>
         ) : (
           <div className="articles-grid">
-            {filteredArticles.map((article, index) => (
-              <div key={article.id} className={`article-item ${index === 0 ? 'featured' : ''}`}>
-                <ArticleCard
-                  article={article}
-                  variant={index === 0 ? 'featured' : 'standard'}
-                />
+            {articles.length > 0 ? (
+              articles.map((article, index) => (
+                <div key={article.id || index} className="article-item">
+                  <ArticleCard
+                    article={{
+                      ...article,
+                      timestamp: article.timestamp ? new Date(article.timestamp * 1000).toLocaleString() : 'Just now'
+                    }}
+                    variant="standard"
+                  />
+                </div>
+              ))
+            ) : (
+              <div className="no-results">
+                {activeTab === 'portfolio' && holdings.length === 0 ? (
+                  <p>Add stocks to your portfolio to see personalized news.</p>
+                ) : (
+                  <p>No articles found.</p>
+                )}
               </div>
-            ))}
-          </div>
-        )}
-
-        {!isLoading && filteredArticles.length === 0 && (
-          <div className="no-results">
-            <p>No articles found matching your criteria.</p>
-            <Button variant="outline" onClick={() => {
-              setSearchQuery('');
-              setSelectedCategory('all');
-            }}>
-              Clear Filters
-            </Button>
+            )}
           </div>
         )}
       </div>
+
+      {isSubscriptionModalOpen && (
+        <EmailSubscriptionModal onClose={() => setIsSubscriptionModalOpen(false)} />
+      )}
     </div>
   );
 };

@@ -295,6 +295,24 @@
   font-style: italic;
 }
 
+/* Section Headers */
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.drag-hint {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #888;
+  font-style: italic;
+}
+
 /* Saved Stocks Section */
 .saved-stocks-section {
   background: #1a1a1a;
@@ -315,6 +333,36 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1rem;
+}
+
+.saved-stocks-container.columns {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+/* Columns specific adjustments to prevent overflow */
+.saved-stocks-container.columns .stock-item-row {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.saved-stocks-container.columns .stock-info {
+  min-width: 180px;
+}
+
+.saved-stocks-container.columns .stock-actions {
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.saved-stocks-container.columns .saved-stock-item button {
+  padding: 4px 8px;
+  font-size: 0.75rem;
+}
+
+.saved-stocks-container.columns .saved-stock-item {
+  overflow-x: hidden;
 }
 
 .saved-stocks-container.dragging-active {
@@ -637,7 +685,8 @@
     justify-content: center;
   }
 
-  .saved-stocks-container.grid {
+  .saved-stocks-container.grid,
+  .saved-stocks-container.columns {
     grid-template-columns: 1fr;
   }
 

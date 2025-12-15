@@ -29,6 +29,8 @@ export interface Stock {
   price: number;
   change: number;
   changePercent: number;
+  exch?: string;
+  type?: string;
 }
 
 export interface StockTicker {

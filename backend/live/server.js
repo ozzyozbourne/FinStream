@@ -15,6 +15,111 @@ const server = app.listen(3001, () => {
 
 // --- Yahoo Finance Proxy Endpoints ---
 
+// Import Email Service
+const emailService = require('./emailService');
+emailService.initCron(); // Start Cron Job
+
+// 0. Email Subscriptions
+app.use(express.json()); // Enable JSON parsing
+
+app.post("/api/subscribe", (req, res) => {
+    const { email, symbols } = req.body;
+    if (!email || !symbols || !Array.isArray(symbols)) {
+        return res.status(400).json({ error: "Invalid data. Email and symbols array required." });
+    }
+    emailService.saveSubscription(email, symbols);
+    res.json({ success: true, message: "Subscribed successfully" });
+});
+
+app.post("/api/unsubscribe", (req, res) => {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: "Email required" });
+    emailService.removeSubscription(email);
+    res.json({ success: true, message: "Unsubscribed successfully" });
+});
+
+app.post("/api/trigger-email", async (req, res) => {
+    try {
+        const { email, symbols } = req.body;
+        
+        let result;
+        if (email) {
+            // Direct Test Mode
+            const previewUrl = await emailService.sendTestEmail(email, symbols);
+            result = { success: true, message: "Test email sent", previewUrl };
+        } else {
+            // Global Broadcast Mode
+            const previews = await emailService.sendDailyDigest();
+            result = { success: true, message: "Daily digest triggered", previews };
+        }
+        
+        res.json(result);
+    } catch (error) {
+        console.error("Manual trigger failed:", error);
+        res.status(500).json({ error: "Failed to trigger email: " + error.message });
+    }
+});
+
+// 0.5 News Proxy
+app.get("/api/yahoo/news", async (req, res) => {
+    const symbols = req.query.symbols; 
+    const query = req.query.q;
+
+    try {
+        let url;
+        let isSearch = false;
+
+        if (query) {
+            // Explicit generic search
+            url = `https://query2.finance.yahoo.com/v1/finance/search?q=${query}&newsCount=20`;
+        } else {
+            // "News" request (portfolio or market)
+            // v2/news is blocked/unreliable, so we fallback to v1/search
+            // We take the first symbol from the list to search for relevant news
+            let targetSymbol = 'market';
+            if (symbols && symbols !== 'market') {
+                const parts = symbols.split(',');
+                targetSymbol = parts[0]; // Search for the first/primary symbol
+            } else {
+                targetSymbol = 'economy'; // General market news search term
+            }
+            url = `https://query2.finance.yahoo.com/v1/finance/search?q=${targetSymbol}&newsCount=20`;
+        }
+
+        console.log(`Fetching News from: ${url}`);
+
+        const response = await axios.get(url, {
+            headers: { 
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'Accept': 'application/json'
+            }
+        });
+        
+        let articles = [];
+        const news = response.data.news || [];
+        
+        // Map V1 Search Results to our Article format
+        articles = news.map(item => ({
+            id: item.uuid,
+            title: item.title,
+            description: item.publisher || 'Click to read more', // Search API lacks summary
+            source: item.publisher,
+            timestamp: item.providerPublishTime,
+            url: item.link,
+            imageUrl: item.thumbnail?.url, // Fix: Capture thumbnail URL
+            stockTicker: item.relatedTickers?.[0] || 'MARKET'
+        }));
+
+        console.log(`Found ${articles.length} articles`);
+        res.json(articles.slice(0, 20));
+
+    } catch (error) {
+        console.error("Yahoo News Error Details:", error.response?.data || error.message);
+        // Fallback or empty array instead of 500 to prevent UI crash
+        res.json([]); 
+    }
+});
+
 // 1. Search Stock
 app.get("/api/yahoo/search", async (req, res) => {
   const query = req.query.q;

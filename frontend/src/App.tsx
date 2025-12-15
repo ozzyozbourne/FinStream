@@ -6,7 +6,6 @@ import HomePage from './pages/HomePage';
 import ProfilePage from './pages/Profile/ProfilePage';
 import CustomDashboard from './pages/CustomDashboard';
 import NewsPage from './pages/News';
-import MarketsPage from './pages/Markets';
 import ResearchPage from './pages/Research';
 import PersonalFinancePage from './pages/PersonalFinance';
 import VideosPage from './pages/Videos';
@@ -56,7 +55,6 @@ function App() {
                   <NewsPage />
                 </ProtectedRoute>
               } />
-              <Route path="/markets" element={<MarketsPage />} />
               <Route path="/research" element={
                 <ProtectedRoute>
                   <ResearchPage />

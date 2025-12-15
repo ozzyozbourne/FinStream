@@ -178,7 +178,7 @@ const CustomDashboard: React.FC = () => {
   const [isLoadingIndices, setIsLoadingIndices] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isRealtimeConnected, setIsRealtimeConnected] = useState(false);
-  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [viewMode, setViewMode] = useState<'list' | 'columns' | 'grid'>('list');
   const [isDragging, setIsDragging] = useState(false);
   const [isMarketOpen, setIsMarketOpen] = useState<boolean | null>(null);
   const [marketStatus, setMarketStatus] = useState<string>('');
@@ -574,7 +574,7 @@ const CustomDashboard: React.FC = () => {
   return (
     <div className="custom-dashboard">
       <div className="dashboard-header-container">
-        <h1 className="dashboard-title">Portfolio Analytics Dashboard</h1>
+        <h1 className="dashboard-title">Analytics Dashboard</h1>
 
         {/* Search Section Moved Here */}
         <div className="search-container-header" ref={searchContainerRef}>
@@ -657,7 +657,7 @@ const CustomDashboard: React.FC = () => {
         <div className="saved-stocks-section">
           <div className="section-header">
             <h3 className="section-title">
-              Saved Stocks ({savedStocks.length})
+              Saved Stocks
               <span className="drag-hint">Drag to rearrange</span>
             </h3>
             <div className="view-controls">
@@ -668,6 +668,14 @@ const CustomDashboard: React.FC = () => {
                 className="view-toggle"
               >
                 List
+              </Button>
+              <Button
+                variant={viewMode === 'columns' ? 'primary' : 'outline'}
+                size="small"
+                onClick={() => setViewMode('columns')}
+                className="view-toggle"
+              >
+                Columns
               </Button>
               <Button
                 variant={viewMode === 'grid' ? 'primary' : 'outline'}
@@ -751,7 +759,7 @@ const CustomDashboard: React.FC = () => {
                 style={{ cursor: 'pointer' }}
                 title="Click to edit title"
               >
-                {watchlistTitle} ({watchlistStocks.length})
+                {watchlistTitle}
                 {/* <span style={{ fontSize: '0.75rem', marginLeft: '8px', opacity: 0.6 }}>✏️</span> */}
               </h3>
             )}
@@ -796,7 +804,7 @@ const CustomDashboard: React.FC = () => {
 const SortableStockItem: React.FC<{
   stock: SavedStock;
   onRemove: (stockId: string) => void;
-  viewMode: 'list' | 'grid';
+  viewMode: 'list' | 'columns' | 'grid';
   onViewChart: (symbol: string) => void;
   onViewRealtime: (symbol: string) => void;
   onViewHistorical: (symbol: string) => void;

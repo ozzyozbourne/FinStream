@@ -15,13 +15,10 @@
 }
 
 .portfolio-title {
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 700;
+  color: #00e6b8;
   margin: 0;
-  background: linear-gradient(135deg, #00d4aa, #0099cc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .portfolio-subtitle {
@@ -71,7 +68,7 @@
 }
 
 .summary-value.positive {
-  color: #00d4aa;
+  color: #00e6b8;
 }
 
 .summary-value.negative {
@@ -84,7 +81,7 @@
 }
 
 .summary-change.positive {
-  color: #00d4aa;
+  color: #00e6b8;
 }
 
 .summary-change.negative {
@@ -173,7 +170,7 @@
 }
 
 .highlight-content .value.positive {
-  color: #00d4aa;
+  color: #00e6b8;
 }
 
 .highlight-content .value.negative {
@@ -221,7 +218,7 @@
 
 .updating-indicator {
   font-size: 0.8rem;
-  color: #00d4aa;
+  color: #00e6b8;
   margin-right: 8px;
   animation: pulse 1.5s infinite;
 }
@@ -288,7 +285,7 @@
 }
 
 .gain-loss.positive {
-  color: #00d4aa;
+  color: #00e6b8;
 }
 
 .gain-loss.negative {
@@ -301,7 +298,7 @@
 }
 
 .gain-percent.positive {
-  color: #00d4aa;
+  color: #00e6b8;
 }
 
 .gain-percent.negative {
@@ -427,7 +424,7 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #00d4aa;
+  border-color: #00e6b8;
 }
 
 .search-dropdown-pf {
@@ -463,9 +460,24 @@
 
 .item-symbol {
   font-weight: 700;
-  color: #00d4aa;
+  color: #00e6b8;
   margin-right: 8px;
   min-width: 50px;
+}
+
+.item-price {
+  font-weight: 600;
+  margin-right: 8px;
+  min-width: 60px;
+  text-align: right;
+}
+
+.item-price.positive {
+  color: #00e6b8;
+}
+
+.item-price.negative {
+  color: #ff4757;
 }
 
 .item-name {
@@ -483,8 +495,8 @@
 }
 
 .selected-preview {
-  background: rgba(0, 212, 170, 0.1);
-  border: 1px solid #00d4aa;
+  background: rgba(0, 230, 184, 0.1);
+  border: 1px solid #00e6b8;
   padding: 12px;
   border-radius: 6px;
   margin-bottom: 20px;
@@ -514,8 +526,8 @@
 .loading-bar {
   text-align: center;
   padding: 8px;
-  background: rgba(0, 212, 170, 0.1);
-  color: #00d4aa;
+  background: rgba(0, 230, 184, 0.1);
+  color: #00e6b8;
   font-size: 0.9rem;
   margin-bottom: 20px;
   border-radius: 4px;

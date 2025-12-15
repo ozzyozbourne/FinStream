@@ -5,7 +5,64 @@
 
 .charts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
   gap: 20px;
   margin-top: 20px;
+}
+
+/* Default Responsive Grid */
+.charts-grid.layout-grid {
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+}
+
+/* Compact 1x2 Grid (Fixed 2 Columns) */
+.charts-grid.layout-compact {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Vertical List (1 Column) */
+.charts-grid.layout-vertical {
+  grid-template-columns: 1fr;
+  max-width: 100%;
+}
+
+.charts-grid.layout-vertical .chart-wrapper {
+  height: 450px;
+}
+
+/* Header Controls */
+.live-header-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.layout-toggles {
+  display: flex;
+  gap: 10px;
+}
+
+.layout-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ccc;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.layout-btn:hover,
+.layout-btn.active {
+  background: #00ffbf;
+  color: #000;
+  border-color: #00ffbf;
+}
+
+/* Search Container override */
+.search-container-live {
+  width: 300px;
 }

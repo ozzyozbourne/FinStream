@@ -299,6 +299,11 @@ const PortfolioPage: React.FC = () => {
                       <div key={result.symbol} className="search-item" onClick={() => handleSelectStock(result)}>
                         <span className="item-symbol">{result.symbol}</span>
                         <span className="item-name">{result.shortname || result.longname}</span>
+                        {result.price !== undefined && (
+                          <span className={`item-price ${result.change && result.change >= 0 ? 'positive' : 'negative'}`}>
+                            ${result.price.toFixed(2)}
+                          </span>
+                        )}
                         <span className="item-exch">{result.exchange}</span>
                       </div>
                     ))}

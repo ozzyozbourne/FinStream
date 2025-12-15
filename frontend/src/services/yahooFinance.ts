@@ -8,6 +8,9 @@ export interface YahooSearchResult {
     longname: string;
     exchange: string;
     quoteType: string;
+    price?: number;
+    change?: number;
+    changePercent?: number;
 }
 
 export interface YahooQuote {
@@ -30,15 +33,34 @@ export interface YahooHistoryCandle {
 
 export const yahooFinanceService = {
     /**
-     * Search for stocks using Yahoo Finance API
+     * Search for stocks using Yahoo Finance API and fetch current prices
      */
     searchStocks: async (query: string): Promise<YahooSearchResult[]> => {
         try {
             const response = await axios.get(`${API_BASE_URL}/search`, {
                 params: { q: query }
             });
-            // The Yahoo API structure for search returns data.quotes
-            return response.data.quotes || [];
+            // Backend returns { results: [...] }
+            let results = response.data.results || [];
+
+            // Enhance with prices
+            if (results.length > 0) {
+                const symbols = results.map((r: any) => r.symbol);
+                const quotes = await yahooFinanceService.getMultipleQuotes(symbols);
+
+                results = results.map((r: any) => {
+                    const quote = quotes.find(q => q.symbol === r.symbol);
+                    return {
+                        ...r,
+                        price: quote ? quote.price : null,
+                        change: quote ? (quote.price - quote.previousClose) : null,
+                        changePercent: quote ? ((quote.price - quote.previousClose) / quote.previousClose) * 100 : null
+
+                    };
+                });
+            }
+
+            return results;
         } catch (error) {
             console.error('Error searching stocks:', error);
             return [];
