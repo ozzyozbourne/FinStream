@@ -293,4 +293,4 @@ const LiveChart: React.FC<Props> = ({ symbol, onRemove }) => {
     );
 };
 
-export default LiveChart;
+export default React.memo(LiveChart);

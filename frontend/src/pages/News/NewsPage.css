@@ -9,8 +9,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 40px;
-  padding: 20px 0;
+  margin-bottom: 20px;
+  padding: 10px 0;
   border-bottom: 1px solid #333;
 }
 
@@ -21,17 +21,14 @@
 }
 
 .news-title {
-  font-size: 3rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  margin: 0 0 8px 0;
-  background: linear-gradient(135deg, #00d4aa, #0099cc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  margin: 0;
+  color: #00d4aa;
 }
 
 .news-subtitle {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #a0a0a0;
   margin: 0;
 }
@@ -48,7 +45,7 @@
 
 .news-controls {
   width: 100%;
-  margin: 0 auto 40px;
+  margin: 0 auto 20px;
   display: flex;
   flex-direction: column;
   gap: 24px;

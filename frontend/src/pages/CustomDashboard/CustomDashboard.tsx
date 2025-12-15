@@ -574,7 +574,7 @@ const CustomDashboard: React.FC = () => {
   return (
     <div className="custom-dashboard">
       <div className="dashboard-header-container">
-        <h1 className="dashboard-title">Portfolio Analytics Dashboard</h1>
+        <h1 className="dashboard-title">Analytics Dashboard</h1>
 
         {/* Search Section Moved Here */}
         <div className="search-container-header" ref={searchContainerRef}>

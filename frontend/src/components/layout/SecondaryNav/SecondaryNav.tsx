@@ -53,7 +53,7 @@ const SecondaryNav: React.FC = () => {
     { id: 'my-portfolio', label: 'Portfolio', href: '/portfolio' },
     { id: 'dashboard', label: 'Custom Dashboard', href: '/dashboard' },
     { id: 'news', label: 'News', href: '/news' },
-    { id: 'markets', label: 'Markets', href: '/markets' },
+
     { id: 'research', label: 'Live Market Data', href: '/live-markets' }, // Corrected href from /research if needed, keeping context
     { id: 'historical-data', label: 'Historical Data', href: '/historical-data' },
   ];

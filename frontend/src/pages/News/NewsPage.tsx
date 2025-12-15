@@ -71,7 +71,7 @@ const NewsPage: React.FC = () => {
             onClick={() => setIsSubscriptionModalOpen(true)}
             className="subscribe-button-header"
           >
-            🔔 Get Daily Alerts
+            Get Daily Alerts
           </Button>
         </div>
       </div>
@@ -111,13 +111,13 @@ const NewsPage: React.FC = () => {
           <div className="articles-grid">
             {articles.length > 0 ? (
               articles.map((article, index) => (
-                <div key={article.id || index} className={`article-item ${(index === 0 && !searchQuery) ? 'featured' : ''}`}>
+                <div key={article.id || index} className="article-item">
                   <ArticleCard
                     article={{
                       ...article,
                       timestamp: article.timestamp ? new Date(article.timestamp * 1000).toLocaleString() : 'Just now'
                     }}
-                    variant={(index === 0 && !searchQuery) ? 'featured' : 'standard'}
+                    variant="standard"
                   />
                 </div>
               ))

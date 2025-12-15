@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import LiveChart from "../../components/ui/LiveChart/LiveChart";
-import SearchBar from "../../components/ui/SearchBar/SearchBar";
+import StockSearch from "../../components/ui/StockSearch/StockSearch";
+import { Stock } from "../../types";
 import "./LiveMarketsPage.css";
 
 const LiveMarketsPage = () => {
@@ -8,16 +9,19 @@ const LiveMarketsPage = () => {
   const [symbols, setSymbols] = useState<string[]>(["AAPL", "TSLA", "MSFT", "NVDA", "GOOGL"]);
   const [layout, setLayout] = useState<'grid' | 'compact' | 'vertical'>('grid');
 
-  const handleAddSymbol = (query: string) => {
-    const symbol = query.toUpperCase().trim();
-    if (symbol && !symbols.includes(symbol)) {
-      setSymbols(prev => [symbol, ...prev]);
-    }
-  };
+  const handleAddSymbol = React.useCallback((stock: Stock) => {
+    const symbol = stock.symbol;
+    setSymbols(prev => {
+      if (symbol && !prev.includes(symbol)) {
+        return [symbol, ...prev];
+      }
+      return prev;
+    });
+  }, []);
 
-  const handleRemoveSymbol = (symbolToRemove: string) => {
+  const handleRemoveSymbol = React.useCallback((symbolToRemove: string) => {
     setSymbols(prev => prev.filter(s => s !== symbolToRemove));
-  };
+  }, []);
 
   return (
     <div className="live-markets-container">
@@ -52,9 +56,9 @@ const LiveMarketsPage = () => {
         </div>
 
         <div className="search-container-live">
-          <SearchBar
+          <StockSearch
             placeholder="Add Symbol (e.g. AMZN)..."
-            onSearch={handleAddSymbol}
+            onSelect={handleAddSymbol}
           />
         </div>
       </div>
